@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustainopedia - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/x-icon" href="/static/img/logo.ico">
+    <link rel="stylesheet" href="login-style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="static/img/logo.png" alt="Sustainopedia Logo" class="login-logo">
+                <h1>Sustainopedia</h1>
+                <p class="login-subtitle">Life Cycle Assessment & ESG Reporting Platform</p>
+            </div>
+
+            <div class="login-form-wrapper">
+                <!-- Login Form -->
+                <form id="loginForm" class="login-form active">
+                    <h2>Welcome Back</h2>
+                    
+                    <div class="form-group">
+                        <label for="loginUsername">Username</label>
+                        <input type="text" id="loginUsername" name="username" placeholder="Enter your username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" name="password" placeholder="Enter your password" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-login">Login</button>
+                    </div>
+
+                    <div id="loginError" class="error-message"></div>
+                    <!-- <div id="loginLoading" class="loading-spinner" style="display: none;"></div> -->
+
+                    <div class="form-toggle">
+                        <p>Don't have an account? <button type="button" id="toggleToRegister" class="btn-link">Register here</button></p>
+                    </div>
+                </form>
+
+                <!-- Register Form -->
+                <form id="registerForm" class="register-form">
+                    <h2>Create Account</h2>
+                    
+                    <div class="form-group">
+                        <label for="registerUsername">Username</label>
+                        <input type="text" id="registerUsername" name="username" placeholder="Choose a username" required minlength="3">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" name="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input type="password" id="registerPassword" name="password" placeholder="Create a password" required minlength="6">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerConfirmPassword">Confirm Password</label>
+                        <input type="password" id="registerConfirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-register">Register</button>
+                    </div>
+
+                    <div id="registerError" class="error-message"></div>
+                    <div id="registerLoading" class="loading-spinner" style="display: none;"></div>
+
+                    <div class="form-toggle">
+                        <p>Already have an account? <button type="button" id="toggleToLogin" class="btn-link">Login here</button></p>
+                    </div>
+                </form>
+            </div>
+
+            <div class="login-footer">
+                <p>&copy; 2026 Sustainopedia. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>

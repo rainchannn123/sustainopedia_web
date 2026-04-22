@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustainopedia – LCA Records</title>
+    <link rel="icon" type="image/x-icon" href="/static/img/logo.ico">
+    <link rel="stylesheet" href="style.css">
+    <script src="js lib/chart.umd.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left Navigation -->
+        <nav class="left-nav">
+            <ul>
+                <li class="tab logo-tab">
+                    <img src="static/img/logo.png" alt="Sustainopedia Logo" class="logo-img">
+                    <span>Sustainopedia</span>
+                </li>
+                <li class="tab"><a href="/index.html">Chat</a></li>
+                <li class="tab active"><a href="/records.html">LCA Records</a></li>
+                <li class="tab"><a href="/settings.html">Settings</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-left">
+                    <h2 id="pageTitle" class="page-title"></h2>
+                </div>
+                <div class="top-right">
+                    <div class="user-menu">
+                        <span id="topbarUsername" class="topbar-username"></span>
+                        <img src="static/img/setting.png" alt="User Avatar" class="user-avatar">
+                        <div class="dropdown" id="userDropdown">
+                            <div class="dropdown-item">
+                                <p id="username" class="username"></p>
+                            </div>
+                            <div class="dropdown-item">
+                                <button id="settingsBtn" class="btn btn-text"><i class="fas fa-cog"></i> Settings</button>
+                            </div>
+                            <hr class="divider">
+                            <div class="dropdown-item">
+                                <button id="logoutBtn" class="btn btn-text"><i class="fas fa-sign-out-alt"></i> Log out</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="content-wrapper">
+                <div id="records" class="page active">
+                    <div class="records-header">
+                        <h2>LCA Records &amp; Analysis</h2>
+                        <div class="records-filters">
+                            <input type="text" id="recordsSearch" class="search-input" placeholder="Search by product name...">
+                            <select id="recordsSort" class="sort-select">
+                                <option value="recent">Most Recent</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="product">Product Name</option>
+                                <option value="emissions">Highest Emissions</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="recordsContainer" class="records-container">
+                        <div class="empty-state">
+                            <p>No LCA records yet. Run your first LCA from the Chat tab to see results here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js lib/markdown-it.min.js"></script>
+    <script src="functions/lcia-utils.js"></script>
+    <script src="shared.js"></script>
+    <script src="records.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+// shared.js — Loaded on every authenticated page before page-specific scripts.
+// Provides globals: checkAuth(), apiReq()
+// Also wires up the common header (username display, user dropdown, logout).
+
+function checkAuth() {
+    if (!localStorage.getItem('token') || !localStorage.getItem('username')) {
+        window.location.href = '/login.html';
+        return false;
+    }
+    return true;
+}
+
+async function apiReq(method, url, body) {
+    const token = localStorage.getItem('token');
+    const opts = {
+        method,
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+    };
+    if (body !== undefined) opts.body = JSON.stringify(body);
+    const res = await fetch(url, opts);
+    if (res.status === 401) { window.location.href = '/login.html'; throw new Error('Unauthorized'); }
+    return res.json();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (!checkAuth()) return;
+
+    const username = localStorage.getItem('username');
+    const usernameEl      = document.getElementById('username');
+    const topbarUsernameEl = document.getElementById('topbarUsername');
+    const userAvatar      = document.querySelector('.user-avatar');
+    const userDropdown    = document.getElementById('userDropdown');
+    const logoutBtn       = document.getElementById('logoutBtn');
+
+    if (usernameEl) usernameEl.textContent = username;
+    if (topbarUsernameEl) topbarUsernameEl.textContent = 'User: ' + username;
+
+    if (userAvatar && userDropdown) {
+        userAvatar.addEventListener('click', () => userDropdown.classList.toggle('show'));
+        document.addEventListener('click', (e) => {
+            if (!userAvatar.contains(e.target) && !userDropdown.contains(e.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('username');
+            localStorage.removeItem('email');
+            window.location.href = '/login.html';
+        });
+    }
+
+    // ── Mobile navigation ────────────────────────────────────────────────────
+    const topLeft  = document.querySelector('.top-left');
+    const leftNav  = document.querySelector('.left-nav');
+
+    if (topLeft && leftNav) {
+        // Inject hamburger button as first child of top-left
+        const menuBtn = document.createElement('button');
+        menuBtn.className = 'mobile-menu-btn';
+        menuBtn.setAttribute('aria-label', 'Open navigation');
+        menuBtn.innerHTML = '&#9776;';
+        topLeft.insertBefore(menuBtn, topLeft.firstChild);
+
+        // Inject semi-transparent overlay
+        menuBtn.addEventListener('click', () => document.body.classList.add('nav-open'));
+        overlay.addEventListener('click', () => document.body.classList.remove('nav-open'));
+        leftNav.querySelectorAll('a').forEach(link =>
+            link.addEventListener('click', () => document.body.classList.remove('nav-open'))
+        );
+    }
+});

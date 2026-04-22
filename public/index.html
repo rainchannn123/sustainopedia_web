@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustainopedia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/x-icon" href="/static/img/logo.ico">
+    <!-- test -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"> -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEu1pX1q4dAaLyYah4py5ZKX+ZpSsgVmQ==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+    <link rel="stylesheet" href="style.css">
+    <script src="js lib/chart.umd.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left Navigation / Tabs -->
+        <nav class="left-nav">
+            <ul>
+                <li class="tab logo-tab">
+                    <img src="static/img/logo.png" alt="Sustainopedia Logo" class="logo-img">
+                    <span>Sustainopedia</span>
+                </li>
+                <li class="tab active"><a href="/index.html">Chat</a></li>
+                <li class="tab"><a href="/records.html">LCA Records</a></li>
+                <li class="tab"><a href="/settings.html">Settings</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-left">
+                    <h2 id="pageTitle" class="page-title"></h2>
+                </div>
+                <div class="top-right">
+                    <div class="user-menu">
+                        <span id="topbarUsername" class="topbar-username"></span>
+                        <img src="static/img/setting.png" alt="User Avatar" class="user-avatar">
+                        <div class="dropdown" id="userDropdown">
+                            <div class="dropdown-item">
+                                <p id="username" class="username"></p>
+                            </div>
+                            <div class="dropdown-item">
+                                <button id="settingsBtn" class="btn btn-text"><i class="fas fa-cog"></i> Settings</button>
+                            </div>
+                            <hr class="divider">
+                            <div class="dropdown-item">
+                                <button id="logoutBtn" class="btn btn-text"><i class="fas fa-sign-out-alt"></i> Log out</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content Container -->
+            <div class="content-wrapper">
+                <!-- Chatbot Page -->
+                <div id="chatbot" class="page active">
+                    <div class="chat-header">
+                        <div class="conversation-picker-container">
+                            <div class="conversation-picker-header">
+                                <input type="text" id="conversationTitleInput" class="conversation-title-input" value="Conversations" readonly>
+                                <button id="toggleConversationList" class="btn btn-icon" title="Toggle">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <div id="conversationListPanel" class="conversation-list-panel">
+                                <ul id="conversationList" class="conversation-list"></ul>
+                            </div>
+                            <!-- current conversation shown in the header span -->
+                        </div>
+                        <button id="newChatBtn" class="btn btn-primary new-chat-btn" title="New Chat">
+                            <i class="fas fa-plus"></i> Start a New Chat
+                        </button>
+                    </div>
+
+                    <div class="chat-window" id="chatWindow">
+                        <!-- Messages and welcome greeting are injected here -->
+                    </div>
+
+                    <form id="chatForm" class="input-form">
+                        <div class="product-input-wrapper">
+                            <label for="productInput" class="product-label">Product:</label>
+                            <input id="productInput" class="product-input" type="text" placeholder="e.g. Crude Steel" />
+                        </div>
+
+                        <div class="input-wrapper">
+                            <textarea id="userInput" rows="1" placeholder="Enter your question here"></textarea>
+                            <!-- Mode selector inline with the input row -->
+                            <button type="button" id="modeMenuBtn" class="mode-btn" aria-expanded="false">
+                                <span class="">Mode: </span>
+                                <span id="modeBtnLabel">Thinking</span> 
+                            </button>
+                            <!-- Mode menu popup -->
+                            <div id="modeMenu" class="mode-menu" hidden>
+                                <button class="mode-menu-item active" data-mode="thinking" type="button">
+                                    <div class="mode-item-text">
+                                        <strong>Thinking</strong>
+                                        <span>Full LCIA calculation with a detailed results table</span>
+                                    </div>
+                                </button>
+                                <button class="mode-menu-item" data-mode="fast" type="button">
+                                    <div class="mode-item-text">
+                                        <strong>Fast</strong>
+                                        <span>Quick AI response using LCA knowledge base</span>
+                                    </div>
+                                </button>
+                            </div>
+                            <button type="submit" class="btn btn-primary send-btn" title="Send">
+                                <img class="send-btn-img" src="./static/img/send-button.png" alt="Send">
+                            </button>
+                        </div>
+
+                        <!-- Toolbar: feature/prompt shortcuts -->
+                        <div class="input-toolbar">
+                            <button type="button" id="featureMenuBtn" class="toolbar-btn" aria-expanded="false">
+                                <span class="toolbar-btn-plus">+</span> Explore
+                            </button>
+                            <!-- Feature menu popup -->
+                            <div id="featureMenu" class="feature-menu" hidden>
+                                <button class="feature-menu-item" data-feature="lcia" type="button">
+                                    <div class="fmenu-text">
+                                        <strong>LCIA Computation</strong>
+                                        <span>Carbon footprint with Monte Carlo analysis</span>
+                                    </div>
+                                </button>
+                                <button class="feature-menu-item coming-soon" data-feature="literature" type="button">
+                                    <div class="fmenu-text">
+                                        <strong>Literature Retrieval</strong>
+                                        <span>Coming soon&hellip;</span>
+                                    </div>
+                                </button>
+                                <button class="feature-menu-item coming-soon" data-feature="compare" type="button">
+                                    <div class="fmenu-text">
+                                        <strong>Compare Materials</strong>
+                                        <span>Coming soon&hellip;</span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Sample query cards shown after selecting a feature -->
+                        <div id="sampleQueries" class="sample-queries" hidden></div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js lib/markdown-it.min.js"></script>
+    <script src="functions/lcia-utils.js"></script>
+    <script src="shared.js"></script>
+    <script src="script.js"></script>
+</body>
+
+<!-- New Chat Modal -->
+<div id="newChatModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>New Conversation</h3>
+        <p>Enter a name for your new chat:</p>
+        <input id="newChatNameInput" type="text" placeholder="e.g. Materials LCA - Steel" />
+        <div class="modal-actions">
+            <button id="createChatBtn" class="btn btn-primary">Create</button>
+            <button id="cancelCreateBtn" class="btn btn-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
+</html>
+</body>
+</html>

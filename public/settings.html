@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustainopedia – Settings</title>
+    <link rel="icon" type="image/x-icon" href="/static/img/logo.ico">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left Navigation -->
+        <nav class="left-nav">
+            <ul>
+                <li class="tab logo-tab">
+                    <img src="static/img/logo.png" alt="Sustainopedia Logo" class="logo-img">
+                    <span>Sustainopedia</span>
+                </li>
+                <li class="tab"><a href="/index.html">Chat</a></li>
+                <li class="tab"><a href="/records.html">LCA Records</a></li>
+                <li class="tab active"><a href="/settings.html">Settings</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-left">
+                    <h2 id="pageTitle" class="page-title"></h2>
+                </div>
+                <div class="top-right">
+                    <div class="user-menu">
+                        <span id="topbarUsername" class="topbar-username"></span>
+                        <img src="static/img/setting.png" alt="User Avatar" class="user-avatar">
+                        <div class="dropdown" id="userDropdown">
+                            <div class="dropdown-item">
+                                <p id="username" class="username"></p>
+                            </div>
+                            <div class="dropdown-item">
+                                <button id="settingsBtn" class="btn btn-text"><i class="fas fa-cog"></i> Settings</button>
+                            </div>
+                            <hr class="divider">
+                            <div class="dropdown-item">
+                                <button id="logoutBtn" class="btn btn-text"><i class="fas fa-sign-out-alt"></i> Log out</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="content-wrapper">
+                <div id="settings" class="page active">
+                    <div class="settings-container">
+                        <h2>Settings</h2>
+                        <div class="settings-section">
+                            <h3>Account</h3>
+                            <div class="setting-item">
+                                <label>Username</label>
+                                <p id="settingsUsername" class="setting-value"></p>
+                            </div>
+                            <div class="setting-item">
+                                <label>Email</label>
+                                <p id="settingsEmail" class="setting-value"></p>
+                            </div>
+                        </div>
+                        <!-- <div class="settings-section">
+                            <h3>Data Management</h3>
+                            <div class="setting-item">
+                                <button id="exportDataBtn" class="btn btn-secondary">Export All Data</button>
+                                <p class="setting-help">Download all your chat history and LCA records as JSON</p>
+                            </div>
+                            <div class="setting-item">
+                                <button id="clearDataBtn" class="btn btn-secondary">Clear All Data</button>
+                                <p class="setting-help">Permanently delete all your conversations and LCA records from the server</p>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="settings.js"></script>
+</body>
+</html>
