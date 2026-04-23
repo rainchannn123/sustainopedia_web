@@ -79,6 +79,11 @@ app.use(helmet({
 
 app.use(cors({ origin: 'https://agreeable-ground-09e2ba800.4.azurestaticapps.net' }));
 app.use(express.json({ limit: '10mb' }));
+
+// Root route: always serve login page first.
+// login.js will immediately redirect to /index.html if the user already has a valid token.
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware to verify JWT token

@@ -36,10 +36,13 @@ body {
     background: linear-gradient(135deg, #f8fdfb 0%, #e8f5f0 100%);
     color: var(--text-primary);
     display: flex;
-    justify-content: center;
+    justify-content: right;
     align-items: center;
     min-height: 100vh;
     padding: var(--spacing-md);
+    background-image: url('static/img/background.jpg');
+    background-size: cover;
+    background-position: center;
 }
 
 .login-container {
@@ -48,6 +51,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-right: 7vw;
+    box-shadow: 0 10px 12px 0 rgba(45, 106, 79, 0.1);
 }
 
 .login-card {

@@ -1,4 +1,17 @@
 // Login and Registration Logic
+
+// If a valid (non-expired) token is already stored, skip the login page entirely.
+(function redirectIfAuthenticated() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.exp && Date.now() / 1000 < payload.exp) {
+            window.location.replace('/index.html');
+        }
+    } catch { /* malformed token — fall through to login page */ }
+})();
+
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
 const toggleToRegister = document.getElementById('toggleToRegister');

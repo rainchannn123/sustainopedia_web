@@ -2,8 +2,24 @@
 // Provides globals: checkAuth(), apiReq()
 // Also wires up the common header (username display, user dropdown, logout).
 
+// Decode a JWT payload without a library (verification happens server-side).
+function _jwtExpired(token) {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.exp ? Date.now() / 1000 > payload.exp : false;
+    } catch {
+        return true; // malformed token — treat as expired
+    }
+}
+
 function checkAuth() {
-    if (!localStorage.getItem('token') || !localStorage.getItem('username')) {
+    const token = localStorage.getItem('token');
+    if (!token || !localStorage.getItem('username')) {
+        window.location.href = '/login.html';
+        return false;
+    }
+    if (_jwtExpired(token)) {
+        ['token', 'userId', 'username', 'email'].forEach(k => localStorage.removeItem(k));
         window.location.href = '/login.html';
         return false;
     }
@@ -66,11 +82,14 @@ document.addEventListener('DOMContentLoaded', () => {
         menuBtn.innerHTML = '&#9776;';
         topLeft.insertBefore(menuBtn, topLeft.firstChild);
 
-        // Inject semi-transparent overlay
+        // Inject semi-transparent overlay that closes the nav when tapped
+        const overlay = document.createElement('div');
+        overlay.className = 'nav-overlay';
+        document.body.appendChild(overlay);
+
+        const closeNav = () => document.body.classList.remove('nav-open');
         menuBtn.addEventListener('click', () => document.body.classList.add('nav-open'));
-        overlay.addEventListener('click', () => document.body.classList.remove('nav-open'));
-        leftNav.querySelectorAll('a').forEach(link =>
-            link.addEventListener('click', () => document.body.classList.remove('nav-open'))
-        );
+        overlay.addEventListener('click', closeNav);
+        leftNav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeNav));
     }
 });
