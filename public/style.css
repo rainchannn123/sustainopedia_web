@@ -794,9 +794,10 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     padding: 12px 16px;
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
-    font-size: 1.1rem;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.7;
     resize: none;
-    line-height: 1.5;
 }
 
 #userInput:focus {
