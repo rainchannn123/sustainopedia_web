@@ -310,10 +310,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    async function createConversation(name) {
+    // Persist a new conversation to MongoDB and update local state.
+    // Pure data — does not affect the UI so it can be called before appendMessage.
+    async function _createConvDoc(name) {
         const header = name || ('Chat ' + formatTime(new Date()));
         if (conversationTitleInput) conversationTitleInput.value = header;
-        showWelcomeScreen();
         try {
             const result = await apiReq('POST', '/api/chat-histories', { conversationName: header });
             const newConv = result.history;
@@ -323,6 +324,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (err) {
             console.error('Failed to create conversation:', err);
         }
+    }
+
+    async function createConversation(name) {
+        const header = name || ('Chat ' + formatTime(new Date()));
+        showWelcomeScreen();
+        await _createConvDoc(header);
     }
 
     let currentChatId = null;
@@ -621,6 +628,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Transition out of welcome mode (FLIP animation) on first message
         hideWelcomeScreen();
+
+        // Auto-create a conversation on the user's very first message so all
+        // subsequent appendMessage calls have a valid activeConvId to persist to.
+        if (!activeConvId) {
+            await _createConvDoc(productName || 'Welcome');
+        }
 
         const now = formatTime(new Date().toISOString());
         lastUserQuery = query;
