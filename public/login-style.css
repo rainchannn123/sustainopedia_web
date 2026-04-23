@@ -268,22 +268,15 @@ body {
     }
 }
 
-.loading-spinner {
-    width: 20px;
-    height: 20px;
-    border: 3px solid var(--border-color);
-    border-top-color: var(--text-secondary);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: var(--spacing-md) auto 0;
-}
-
 @keyframes spin {
     to {
         transform: rotate(360deg);
     }
 }
 
+.btn-register {
+    display: none;
+}
 .loading-spinner.show {
     display: block !important;
 }

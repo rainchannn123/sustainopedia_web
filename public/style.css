@@ -805,6 +805,19 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
 }
 
+.modal-actions .btn {
+    width: 40px;
+    height:30px;
+    background-color: var(--btn-primary-bg);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-actions .btn:hover {
+    background-color: var(--btn-primary-hover);
+}
+
 .send-btn {
     width: 60px;
     height: 52px;
@@ -1636,6 +1649,24 @@ margin-top: 0.5em !important;
 @keyframes cursorBlink {
     0%, 49% { opacity: 1; }
     50%,100% { opacity: 0; }
+}
+
+/* Compact classification badge shown above each bot response */
+.intent-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    background: var(--btn-bg);
+    border: 1px solid var(--border-color);
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+    opacity: 0.75;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

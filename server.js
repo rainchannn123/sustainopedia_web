@@ -41,6 +41,7 @@ const chatHistorySchema = new mongoose.Schema({
         role: { type: String, enum: ['user', 'bot'] },
         content: String,
         lciData: mongoose.Schema.Types.Mixed,
+        queryMeta: mongoose.Schema.Types.Mixed,  // intent classification params for analytics
         timestamp: { type: Date, default: Date.now }
     }],
     createdAt: { type: Date, default: Date.now },
@@ -212,10 +213,10 @@ app.post('/api/chat-histories', verifyToken, async (req, res) => {
 // Append a single message to an existing conversation
 app.put('/api/chat-histories/:id', verifyToken, async (req, res) => {
     try {
-        const { role, content, lciData, timestamp } = req.body;
+        const { role, content, lciData, queryMeta, timestamp } = req.body;
         const history = await ChatHistory.findOneAndUpdate(
             { _id: req.params.id, userId: req.userId },
-            { $push: { messages: { role, content, lciData, timestamp } }, $set: { updatedAt: new Date() } },
+            { $push: { messages: { role, content, lciData, queryMeta, timestamp } }, $set: { updatedAt: new Date() } },
             { new: true }
         );
         if (!history) return res.status(404).json({ message: 'Conversation not found' });

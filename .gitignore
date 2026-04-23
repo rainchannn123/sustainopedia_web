@@ -4,4 +4,6 @@ prev/
 models/
 screenshots/
 src/
-functions/
+.env
+.venv
+*.env

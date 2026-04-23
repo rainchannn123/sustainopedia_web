@@ -1,6 +1,7 @@
 // Chat page logic — requires shared.js (checkAuth, apiReq globals)
 
-const FLASK_BASE = 'http://localhost:5052';
+// const FLASK_BASE = 'https://teamsustainopedia-backend-hbcvdcbvcsb4fmaf.eastasia-01.azurewebsites.net';
+const FLASK_BASE = 'http://localhost:5052'; // for local development
 const POLL_INTERVAL_MS = 2500;
 
 let chatting = false;
@@ -56,7 +57,8 @@ function _startPolling(jobId, typingEl, extractionTimer, onMessage) {
                 const lciaObj = data.answer_pack['processed_json']
                     ? JSON.parse(data.answer_pack['processed_json'])
                     : null;
-                onMessage('bot-message', data.answer_pack['answer'], lciaObj);
+                const intentParams = data.answer_pack['intent_params'] || null;
+                onMessage('bot-message', data.answer_pack['answer'], lciaObj, undefined, intentParams);
                 document.querySelector('.send-btn').disabled = false;
 
             } else if (data.status === 'error') {
@@ -98,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function serverMsgToFrontend(msg) {
         return msg.role === 'user'
             ? { user: msg.content, lcia_table: msg.lciData ?? '', timestamp: msg.timestamp }
-            : { bot:  msg.content, lcia_table: msg.lciData ?? '', timestamp: msg.timestamp };
+            : { bot:  msg.content, lcia_table: msg.lciData ?? '', queryMeta: msg.queryMeta ?? null, timestamp: msg.timestamp };
     }
 
     // Elements
@@ -361,7 +363,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (msg.user !== undefined) {
                 appendMessage('user-message', msg.user, msg.lcia_table, msg.timestamp);
             } else if (msg.bot !== undefined) {
-                appendMessage('bot-message', msg.bot, msg.lcia_table, msg.timestamp);
+                appendMessage('bot-message', msg.bot, msg.lcia_table, msg.timestamp, msg.queryMeta ?? null);
             }
         });
         chatting = true;
@@ -676,7 +678,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
 
-    function appendMessage(type, text, lcia_table, timestamp = new Date().toISOString()) {
+    // Build a compact classification badge displayed above each bot response
+    function buildIntentBadge(intentParams) {
+        if (!intentParams || !intentParams.intent) return null;
+        const el = document.createElement('div');
+        el.className = 'intent-badge';
+        const parts = [];
+        if (intentParams.intent === 'computation') {
+            parts.push('Computation');
+            if (intentParams.product && intentParams.product !== 'Not Specified') parts.push(intentParams.product);
+            parts.push(`${intentParams.amount} ${intentParams.unit}`);
+            parts.push(intentParams.system_boundary);
+            if (intentParams.region) parts.push(intentParams.region);
+            if (intentParams.run_mc) parts.push(`Monte Carlo \u00d7${intentParams.n_simulations}`);
+        } else if (intentParams.intent === 'literature') {
+            parts.push('Literature Retrieval');
+            if (intentParams.product && intentParams.product !== 'Not Specified') parts.push(intentParams.product);
+        } else {
+            parts.push('General LCA Query');
+        }
+        el.textContent = parts.join(' \u00b7 ');
+        return el;
+    }
+
+    function appendMessage(type, text, lcia_table, timestamp = new Date().toISOString(), intentParams = null) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}`;
 
@@ -692,6 +717,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         contentDiv.className = 'message-content';
 
         if (type === 'bot-message') {
+            // Show intent classification badge if available
+            const badge = buildIntentBadge(intentParams);
+            if (badge) contentDiv.appendChild(badge);
+
             // Render full markdown once, then animate each top-level block in sequence
             const rendered = processMarkdown(text || '');
             const tempDiv = document.createElement('div');
@@ -770,6 +799,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     role:      type === 'user-message' ? 'user' : 'bot',
                     content:   text,
                     lciData:   lcia_table || null,
+                    queryMeta: intentParams || null,  // intent params for analytics and history
                     timestamp
                 };
                 activeConv.messages.push(serverMsg);
