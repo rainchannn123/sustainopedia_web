@@ -1,7 +1,5 @@
 // Chat page logic — requires shared.js (checkAuth, apiReq globals)
-
-// const FLASK_BASE = 'https://teamsustainopedia-backend-hbcvdcbvcsb4fmaf.eastasia-01.azurewebsites.net';
-const FLASK_BASE = 'http://localhost:5052'; // for local development
+const FLASK_BASE = process.env.BACKEND_URI; // for local development
 const POLL_INTERVAL_MS = 2500;
 
 let chatting = false;
