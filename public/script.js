@@ -973,9 +973,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     dropdownSettingBtn = document.getElementById('settingsBtn');
-    dropdownSettingBtn.addEventListener('click', () => {
-        window.location.href = './settings.html';
-    })
+    if (dropdownSettingBtn) {
+        dropdownSettingBtn.addEventListener('click', () => {
+            window.location.href = './settings.html';
+        });
+    }
 });
 
 

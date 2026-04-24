@@ -44,12 +44,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const username = localStorage.getItem('username');
     const usernameEl      = document.getElementById('username');
     const topbarUsernameEl = document.getElementById('topbarUsername');
+    const navUsernameEl   = document.getElementById('navUsername');
     const userAvatar      = document.querySelector('.user-avatar');
     const userDropdown    = document.getElementById('userDropdown');
     const logoutBtn       = document.getElementById('logoutBtn');
 
     if (usernameEl) usernameEl.textContent = username;
     if (topbarUsernameEl) topbarUsernameEl.textContent = 'User: ' + username;
+    if (navUsernameEl) navUsernameEl.textContent = 'Beta user: ' + username;
 
     if (userAvatar && userDropdown) {
         userAvatar.addEventListener('click', () => userDropdown.classList.toggle('show'));
