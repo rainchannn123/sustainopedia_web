@@ -7,7 +7,7 @@
     --text-tertiary: #f6fff8;
     --border-color: #789f86;
     --user-msg-bg: #40916c;
-    --btn-bg: #f6fff8;
+    --btn-bg: #eef6f1;
     --btn-hover: #d8f3dc;
     --btn-primary-bg: #2d6a4f;
     --btn-primary-hover: #1b4332;
@@ -23,7 +23,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
     height: 100vh;
@@ -126,6 +126,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     height: 30px;
     border-radius: 50%;
     cursor: pointer;
+    padding:2px;
 }
 
 .user-menu {
@@ -202,11 +203,17 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 
 .new-chat-btn {
     white-space: nowrap;
-    width: 140px;
+    min-width: 140px;
+    padding: 5px 12px;
     height:100%;
     background-color: var(--btn-bg);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
+    border: none;
+    border-radius: 20px;
+    font-family: inherit;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    box-shadow: var(--btn-primary-hover) 0px 1px 3px;
 }
 
 .new-chat-btn:hover {
@@ -256,12 +263,13 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
-    background: var(--btn-bg);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
+    background: #eef6f1;
+    border: none;
+    border-radius: 20px;
     cursor: pointer;
     user-select: none;
     width: 100%;
+    box-shadow: var(--btn-primary-hover) 0px 1px 3px;
 }
 
 .conversation-title-input {
@@ -284,7 +292,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 
 
 .conversation-title-input:not([readonly]) {
-    border-bottom: 2px solid var(--btn-primary-bg);
     cursor: text;
 }
 
@@ -314,14 +321,28 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     max-height: 300px;
     overflow-y: auto;
     margin-top: 4px;
-    width:60%;
+    width:100%;
+    animation:slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-10px);
+    }
+    to {
+        transform: translateY(0);
+    }
 }
 
 #toggleConversationList{
-    background-color: lightgray;
     width: 20px;
     height: 20px;
-    border: black 1px solid;
+    border: none;
+    border-radius: 50%;
+}
+
+#toggleConversationList span {
+    font-size: 1rem;
 }
 
 .conversation-list {
@@ -416,17 +437,16 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     gap: 24px;          /* space between greeting and form */
 }
 
-/* Form is moved inside .chat-window in welcome mode — center + card style */
+/* Form is moved inside .chat-window in welcome mode — center + constrain width */
 #chatbot.welcome-mode .chat-window .input-form {
     max-width: 800px;
     width: calc(100% - 48px);
     flex-shrink: 0;
-    border: 1px solid var(--border-color);
-    border-top: 1px solid var(--border-color);
-    border-radius: 16px;
-    box-shadow: 0 4px 28px rgba(45, 106, 79, 0.10);
-    padding: 14px 18px 12px;
-    background: white;
+}
+
+/* Conversation mode — floating card with breathing room at bottom */
+#chatbot:not(.welcome-mode) > .input-form {
+    margin: 0 24px 24px;
 }
 .welcome-core {
     text-align: center;
@@ -486,31 +506,36 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 2px 2px;
+    gap: 5px;
 }
 
 .toolbar-btn {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 4px 12px;
-    border: 1px solid var(--border-color);
-    background-color: var(--bg-primary);
-    border-radius: var(--radius);
+    padding: 5px 12px;
+    min-height:38px;
+    border: none;
+    background: #eef6f1;
+    border-radius: 20px;
     color: var(--text-primary);
-    font-size: 0.8rem;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    transition: background 0.15s ease;
     user-select: none;
+}
+
+.toolbar-btn:hover {
+    background: var(--btn-hover);
 }
 
 .toolbar-btn-plus {
     font-size: 1rem;
     line-height: 1;
-    font-weight: 600;
-    color: var(--text-secondary);
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
 /* Feature menu popup */
@@ -590,25 +615,35 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     color: #9ca3af;
 }
 
-/* Mode selector — sits between textarea and send button, same height as the row */
+/* Mode selector — pill button in the bottom action bar */
 .mode-btn {
-    height: 52px;
-    min-width: 70px;
+    min-width: auto;
+    min-height:38px;
     white-space: nowrap;
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     gap: 5px;
     padding: 0 12px;
-    border: 2px solid var(--border-color);
-    background-color: var(--bg-primary);
-    border-radius: var(--radius);
+    border: none;
+    background: #eef6f1;
+    border-radius: 20px;
     color: var(--text-primary);
-    font-size: 1rem;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    transition: background 0.15s ease;
     user-select: none;
+}
+
+.mode-btn:hover {
+    background: var(--btn-hover);
+}
+
+/* Relative wrapper so .mode-menu pops up correctly */
+.mode-btn-wrapper {
+    position: relative;
 }
 
 .toolbar-btn-chevron {
@@ -750,35 +785,79 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 
 
 
-/* Input area */
+/* Input area — Gemini-style floating card */
 .input-form {
     position: relative;
-    padding: 12px 24px 16px;
-    border-top: 1px solid var(--border-color);
+    background: #ffffff;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 2px 18px rgba(45, 106, 79, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
+    padding: 14px 16px 12px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    gap: 0;
+    transition: box-shadow 0.25s ease;
+}
+
+.input-form:focus-within {
+    box-shadow: 0 4px 28px rgba(45, 106, 79, 0.16), 0 2px 8px rgba(0, 0, 0, 0.09);
+}
+
+/* Bottom action bar: product · explore  |  mode · send */
+.input-bottom-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #edf4ef;
+    flex-wrap: wrap;
+}
+
+.input-bottom-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.input-bottom-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .product-input-wrapper {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 5px;
+    background: #eef6f1;
+    border-radius: 20px;
+    padding: 5px 12px;
+    min-height:38px;
 }
 
 .product-label {
-    font-weight: 600;
-    color: #555;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
 }
 
 .product-input {
-    padding: 8px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    font-size: 1rem;
-    width: 240px;
+    padding: 0 4px;
+    border: none;
+    background: transparent;
+    font-size: 0.88rem;
+    font-family: inherit;
+    width: 130px;
+    color: var(--text-primary);
+}
+
+.product-input:focus {
+    outline: none;
 }
 
 .input-wrapper {
@@ -788,22 +867,21 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 }
 
 #userInput {
-    flex: 1;
-    min-height: 52px;
+    width: 100%;
+    min-height: 44px;
     max-height: 180px;
-    padding: 12px 16px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
+    padding: 4px 4px 10px;
+    border: none;
+    background: transparent;
     font-family: inherit;
     font-size: 1rem;
     line-height: 1.7;
     resize: none;
+    color: var(--text-primary);
 }
 
 #userInput:focus {
     outline: none;
-    border-color: var(--btn-primary-bg);
-    box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
 }
 
 .modal-actions .btn {
@@ -820,22 +898,28 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 }
 
 .send-btn {
-    width: 60px;
-    height: 52px;
-    background: transparent;
+    width: 40px;
+    height: 40px;
+    background: var(--btn-primary-bg);
     border: none;
+    border-radius: 50%;
     cursor: pointer;
-    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease, transform 0.1s ease;
 }
 
 .send-btn:hover {
-    background: var(--btn-hover);
-    border-radius: 50%;
+    background: var(--btn-primary-hover);
+    transform: scale(1.06);
 }
 
 .send-btn-img {
-    width: 36px;
-    height: 36px;
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
 }
 
 .feature-buttons {
@@ -1032,10 +1116,10 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 .search-input,
 .sort-select {
     padding: 10px 12px;
-    border: 1px solid var(--border-color);
+    border: none;
     border-radius: var(--radius);
     font-size: 0.95rem;
-    background: var(--bg-light-green, #d8f3dc);
+    background: var(--btn-bg);
     color: var(--text-primary);
     transition: var(--transition);
 }
@@ -1562,7 +1646,7 @@ margin-top: 0.5em !important;
     border: 1px solid #c8e6d4;
     border-radius: 4px;
     padding: 1px 5px;
-    font-family: 'Consolas', 'Monaco', monospace;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
     font-size: 0.87em;
     color: #1b4332;
 }
@@ -1858,34 +1942,31 @@ body.nav-open {
 
     /* ── Input form ─────────────────────────────────────────────────── */
     .input-form {
-        padding: 8px 12px 10px;
+        padding: 10px 12px 10px;
+        border-radius: 16px;
     }
 
-    .product-input-wrapper {
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 8px;
+    #chatbot:not(.welcome-mode) > .input-form {
+        margin: 0 10px 14px;
     }
 
     .product-input {
-        flex: 1;
-        width: auto;
-        min-width: 100px;
+        width: 90px;
     }
 
     #userInput {
         font-size: 1rem;
-        min-height: 44px;
+        min-height: 40px;
     }
 
     .send-btn {
-        width: 48px;
-        height: 44px;
+        width: 36px;
+        height: 36px;
     }
 
     .send-btn-img {
-        width: 28px;
-        height: 28px;
+        width: 17px;
+        height: 17px;
     }
 
     /* ── Welcome screen ─────────────────────────────────────────────── */

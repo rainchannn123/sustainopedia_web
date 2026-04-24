@@ -64,7 +64,7 @@
                             <div class="conversation-picker-header">
                                 <input type="text" id="conversationTitleInput" class="conversation-title-input" value="Conversations" readonly>
                                 <button id="toggleConversationList" class="btn btn-icon" title="Toggle">
-                                    <i class="fas fa-chevron-down"></i>
+                                    <span class="toggle-icon">⮟</span>
                                 </button>
                             </div>
                             <div id="conversationListPanel" class="conversation-list-panel">
@@ -73,7 +73,7 @@
                             <!-- current conversation shown in the header span -->
                         </div>
                         <button id="newChatBtn" class="btn btn-primary new-chat-btn" title="New Chat">
-                            <i class="fas fa-plus"></i> Start a New Chat
+                            <i class="fas fa-plus"></i> Open a new conversation
                         </button>
                     </div>
 
@@ -82,62 +82,69 @@
                     </div>
 
                     <form id="chatForm" class="input-form">
-                        <div class="product-input-wrapper">
-                            <label for="productInput" class="product-label">Product:</label>
-                            <input id="productInput" class="product-input" type="text" placeholder="e.g. Crude Steel" />
-                        </div>
+                        <!-- Textarea — top of the card -->
+                        <textarea id="userInput" rows="1" placeholder="Ask about any product's environmental impact..."></textarea>
 
-                        <div class="input-wrapper">
-                            <textarea id="userInput" rows="1" placeholder="Enter your question here"></textarea>
-                            <!-- Mode selector inline with the input row -->
-                            <button type="button" id="modeMenuBtn" class="mode-btn" aria-expanded="false">
-                                <span class="">Mode: </span>
-                                <span id="modeBtnLabel">Thinking</span> 
-                            </button>
-                            <!-- Mode menu popup -->
-                            <div id="modeMenu" class="mode-menu" hidden>
-                                <button class="mode-menu-item active" data-mode="thinking" type="button">
-                                    <div class="mode-item-text">
-                                        <strong>Thinking</strong>
-                                        <span>Full LCIA calculation with a detailed results table</span>
+                        <!-- Bottom action bar: product · explore · mode · send -->
+                        <div class="input-bottom-bar">
+                            <div class="input-bottom-left">
+                                <!-- Product pill -->
+                                <div class="product-input-wrapper">
+                                    <label for="productInput" class="product-label">Product</label>
+                                    <input id="productInput" class="product-input" type="text" placeholder="e.g. Crude Steel" />
+                                </div>
+                                <!-- Explore button + feature menu -->
+                                <div class="input-toolbar">
+                                    <button type="button" id="featureMenuBtn" class="toolbar-btn" aria-expanded="false">
+                                        <span class="toolbar-btn-plus">+</span> Toolbar
+                                    </button>
+                                    <div id="featureMenu" class="feature-menu" hidden>
+                                        <button class="feature-menu-item" data-feature="lcia" type="button">
+                                            <div class="fmenu-text">
+                                                <strong>LCIA Computation</strong>
+                                                <span>Carbon footprint with Monte Carlo analysis</span>
+                                            </div>
+                                        </button>
+                                        <button class="feature-menu-item coming-soon" data-feature="literature" type="button">
+                                            <div class="fmenu-text">
+                                                <strong>Literature Retrieval</strong>
+                                                <span>Coming soon&hellip;</span>
+                                            </div>
+                                        </button>
+                                        <button class="feature-menu-item coming-soon" data-feature="compare" type="button">
+                                            <div class="fmenu-text">
+                                                <strong>Compare Materials</strong>
+                                                <span>Coming soon&hellip;</span>
+                                            </div>
+                                        </button>
                                     </div>
-                                </button>
-                                <button class="mode-menu-item" data-mode="fast" type="button">
-                                    <div class="mode-item-text">
-                                        <strong>Fast</strong>
-                                        <span>Quick AI response using LCA knowledge base</span>
-                                    </div>
-                                </button>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary send-btn" title="Send">
-                                <img class="send-btn-img" src="./static/img/send-button.png" alt="Send">
-                            </button>
-                        </div>
 
-                        <!-- Toolbar: feature/prompt shortcuts -->
-                        <div class="input-toolbar">
-                            <button type="button" id="featureMenuBtn" class="toolbar-btn" aria-expanded="false">
-                                <span class="toolbar-btn-plus">+</span> Explore
-                            </button>
-                            <!-- Feature menu popup -->
-                            <div id="featureMenu" class="feature-menu" hidden>
-                                <button class="feature-menu-item" data-feature="lcia" type="button">
-                                    <div class="fmenu-text">
-                                        <strong>LCIA Computation</strong>
-                                        <span>Carbon footprint with Monte Carlo analysis</span>
+                            <div class="input-bottom-right">
+                                <!-- Mode button + popup -->
+                                <div class="mode-btn-wrapper">
+                                    <button type="button" id="modeMenuBtn" class="mode-btn" aria-expanded="false">
+                                        <span id="modeBtnLabel">Thinking ⮝</span>
+                                    </button>
+                                    <div id="modeMenu" class="mode-menu" hidden>
+                                        <button class="mode-menu-item active" data-mode="thinking" type="button">
+                                            <div class="mode-item-text">
+                                                <strong>Thinking</strong>
+                                                <span>Full LCIA calculation with a detailed results table</span>
+                                            </div>
+                                        </button>
+                                        <button class="mode-menu-item" data-mode="fast" type="button">
+                                            <div class="mode-item-text">
+                                                <strong>Fast</strong>
+                                                <span>Quick AI response using LCA knowledge base</span>
+                                            </div>
+                                        </button>
                                     </div>
-                                </button>
-                                <button class="feature-menu-item coming-soon" data-feature="literature" type="button">
-                                    <div class="fmenu-text">
-                                        <strong>Literature Retrieval</strong>
-                                        <span>Coming soon&hellip;</span>
-                                    </div>
-                                </button>
-                                <button class="feature-menu-item coming-soon" data-feature="compare" type="button">
-                                    <div class="fmenu-text">
-                                        <strong>Compare Materials</strong>
-                                        <span>Coming soon&hellip;</span>
-                                    </div>
+                                </div>
+                                <!-- Send button -->
+                                <button type="submit" class="send-btn" title="Send">
+                                    <img class="send-btn-img" src="./static/img/send-button.png" alt="Send">
                                 </button>
                             </div>
                         </div>
