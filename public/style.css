@@ -203,17 +203,22 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 
 .new-chat-btn {
     white-space: nowrap;
-    min-width: 140px;
-    padding: 5px 12px;
+    padding: 5px 5px;
     height:100%;
+    width: 45px;
     background-color: var(--btn-bg);
     border: none;
-    border-radius: 20px;
+    border-radius: 50%;
     font-family: inherit;
     color: var(--text-primary);
-    font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 600;
     box-shadow: var(--btn-primary-hover) 0px 1px 3px;
+    justify-content: center;
+}
+
+.new-chat-btn img {
+    width: 10px;
+    height: 10px;
 }
 
 .new-chat-btn:hover {
@@ -427,6 +432,14 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     flex-direction: column;
     gap: 16px;
     transition: flex 0.4s ease;
+    border-bottom: 1px solid transparent;
+    /* Apply a fade mask at the bottom */
+    -webkit-mask-image: linear-gradient(to top, transparent 0px, black 20px);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-image: linear-gradient(to top, transparent 0px, black 20px);
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
 }
 
 /* ── Welcome mode: center greeting and give form a max-width ───────────── */
@@ -444,9 +457,10 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     flex-shrink: 0;
 }
 
-/* Conversation mode — floating card with breathing room at bottom */
+/* Conversation mode — floating card centered at the bottom */
 #chatbot:not(.welcome-mode) > .input-form {
-    margin: 0 24px 24px;
+    margin: 0 auto 24px;
+    width: calc(100% - 48px);
 }
 .welcome-core {
     text-align: center;
@@ -797,6 +811,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     flex-direction: column;
     gap: 0;
     transition: box-shadow 0.25s ease;
+    max-width: 800px;
 }
 
 .input-form:focus-within {
@@ -868,7 +883,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 
 #userInput {
     width: 100%;
-    min-height: 44px;
+    min-height: 70px;
     max-height: 180px;
     padding: 4px 4px 10px;
     border: none;
@@ -1947,7 +1962,8 @@ body.nav-open {
     }
 
     #chatbot:not(.welcome-mode) > .input-form {
-        margin: 0 10px 14px;
+        margin: 0 auto 14px;
+        width: calc(100% - 20px);
     }
 
     .product-input {
