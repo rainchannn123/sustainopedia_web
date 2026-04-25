@@ -1897,6 +1897,9 @@ body.nav-open {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
+    body {
+        height: 100dvh;
+    }
 
     /* ── Navigation drawer ──────────────────────────────────────────── */
     .mobile-menu-btn {
@@ -2021,6 +2024,7 @@ body.nav-open {
     .input-form {
         padding: 10px 12px 10px;
         border-radius: 16px;
+        /* padding-bottom: env(safe-area-inset-bottom); */
     }
 
     #chatbot:not(.welcome-mode) > .input-form {
@@ -2149,7 +2153,6 @@ body.nav-open {
 @media (max-width: 480px) {
     body {
         height: 100dvh;
-        overflow: hidden;
     }
 
     .top-bar {
