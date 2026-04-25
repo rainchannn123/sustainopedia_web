@@ -2148,8 +2148,8 @@ body.nav-open {
 
 @media (max-width: 480px) {
     body {
+        height: 100dvh;
         overflow: hidden;
-        height: 100%;
     }
 
     .top-bar {
