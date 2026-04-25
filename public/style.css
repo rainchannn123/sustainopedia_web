@@ -2008,13 +2008,22 @@ body.nav-open {
         padding-bottom: env(safe-area-inset-bottom);
     }
 
+    .input-bottom-bar {
+        min-height: 60px;
+        padding:4px;
+    }
+
+    .input-bottom-right {
+        margin-left: auto;
+    }
+
     .product-input {
         width: 90px;
     }
 
     #userInput {
         font-size: 1rem;
-        min-height: 40px;
+        min-height: 60px;
     }
 
     .send-btn {
