@@ -1888,9 +1888,9 @@ body.nav-open {
 }
 
 /* Bottom nav bar — removed */
-.mobile-bottom-nav {
+/* .mobile-bottom-nav {
     display: none !important;
-}
+} */
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Responsive — Tablet & Mobile  (≤ 768 px)
@@ -1905,13 +1905,9 @@ body.nav-open {
     }
 
     .content-wrapper {
-        height: 100dvh;
+        height: 100dvh !important;
     }
 
-    .input-form {
-        flex-shrink: 0;
-        padding-bottom: env(safe-area-inset-bottom);
-    }
     /* ── Navigation drawer ──────────────────────────────────────────── */
     .mobile-menu-btn {
         display: flex;
@@ -1957,43 +1953,7 @@ body.nav-open {
     }
 
     /* ── Bottom navigation bar ──────────────────────────────────────── */
-    .mobile-bottom-nav {
-        display: flex;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        background: white;
-        border-top: 1px solid var(--border-color);
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
-        /* Respect iOS home-indicator safe area */
-        padding-bottom: env(safe-area-inset-bottom, 0px);
-        height: calc(56px + env(safe-area-inset-bottom, 0px));
-    }
-
-    .mobile-nav-item {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 3px;
-        text-decoration: none;
-        color: #9ca3af;
-        font-size: 0.66rem;
-        font-weight: 500;
-        transition: color 0.15s ease;
-    }
-
-    .mobile-nav-item.active {
-        color: var(--text-secondary);
-    }
-
-    .mobile-nav-item-icon {
-        font-size: 1.2rem;
-        line-height: 1;
-    }
+    
 
     /* ── Chat header ────────────────────────────────────────────────── */
     .chat-header {
@@ -2039,8 +1999,13 @@ body.nav-open {
     }
 
     #chatbot:not(.welcome-mode) > .input-form {
+        position: absolute;
+        bottom: 0;
+        width: 95%;
+        left:2.5%;
         margin: 0 auto 14px;
-        width: calc(100% - 20px);
+        flex-shrink: 0;
+        padding-bottom: env(safe-area-inset-bottom);
     }
 
     .product-input {
@@ -2167,15 +2132,6 @@ body.nav-open {
         overflow: hidden;
         margin: 0;
         padding: 0;
-    }
-
-    .content-wrapper {
-        height: 100dvh;
-    }
-
-    .input-form {
-        flex-shrink: 0;
-        padding-bottom: env(safe-area-inset-bottom);
     }
     .top-bar {
         padding: 8px 10px;
