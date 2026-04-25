@@ -1979,8 +1979,8 @@ body.nav-open {
 
     /* ── Chat window ────────────────────────────────────────────────── */
     .chat-window {
-        padding-bottom: 50px;
-        border-bottom: 30vw solid white;
+        padding-bottom: 100px;
+        border-bottom: 40vw solid white;
     }
 
     /* ── Messages ───────────────────────────────────────────────────── */
