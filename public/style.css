@@ -2147,6 +2147,11 @@ body.nav-open {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 480px) {
+    body {
+        overflow: hidden;
+        height: 100%;
+    }
+
     .top-bar {
         padding: 8px 10px;
     }
