@@ -1,6 +1,6 @@
 // Chat page logic — requires shared.js (checkAuth, apiReq globals)
-// const FLASK_BASE = "http://localhost:5052";
-const FLASK_BASE = "https://teamsustainopedia-backend-hbcvdcbvcsb4fmaf.eastasia-01.azurewebsites.net"; // for local development
+const FLASK_BASE = "http://localhost:5052";
+// const FLASK_BASE = "https://teamsustainopedia-backend-hbcvdcbvcsb4fmaf.eastasia-01.azurewebsites.net"; // for local development
 const POLL_INTERVAL_MS = 2500;
 
 let chatting = false;
@@ -601,7 +601,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentMode = item.dataset.mode;
         // Update button label to reflect the selected mode
         document.getElementById('modeBtnLabel').textContent =
-            currentMode === 'thinking' ? 'Thinking ⮝' : 'Fast ⮝';
+            currentMode === 'thinking' ? 'Thinking ⮝' : 'General ⮝';
         // Update active state on menu items
         modeMenuEl.querySelectorAll('.mode-menu-item').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.mode === currentMode);
@@ -878,7 +878,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
             <div class="typing-extra">
                 Extracting Life Cycle Inventory sources&hellip;
-                <span class="typing-eta">Estimated response time: ${currentMode === 'fast' ? '30 s' : '10 mins'}</span>
+                <span class="typing-eta">Estimated response time: ${currentMode === 'fast' ? '30 s' : '10-15 mins'}</span>
             </div>
         `;
         messageDiv.appendChild(contentDiv);
