@@ -1897,10 +1897,21 @@ body.nav-open {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
-    body {
+    html, body {
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
+
+    .content-wrapper {
         height: 100dvh;
     }
 
+    .input-form {
+        flex-shrink: 0;
+        padding-bottom: env(safe-area-inset-bottom);
+    }
     /* ── Navigation drawer ──────────────────────────────────────────── */
     .mobile-menu-btn {
         display: flex;
@@ -2151,10 +2162,21 @@ body.nav-open {
 ═══════════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 480px) {
-    body {
+    html, body {
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
+
+    .content-wrapper {
         height: 100dvh;
     }
 
+    .input-form {
+        flex-shrink: 0;
+        padding-bottom: env(safe-area-inset-bottom);
+    }
     .top-bar {
         padding: 8px 10px;
     }
