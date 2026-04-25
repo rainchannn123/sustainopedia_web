@@ -236,6 +236,10 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     height: 70px;
 }
 
+.chat-header .mobile-menu-btn {
+    color: white;
+}
+
 .new-chat-btn {
     white-space: nowrap;
     padding: 5px 5px;
@@ -260,6 +264,9 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     cursor: pointer;
 }
 
+.setting-header {
+    color: var(--text-tertiary);
+}
 .chat-history-container {
     flex: 1;
     overflow-x: auto;
@@ -493,11 +500,19 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     flex-shrink: 0;
 }
 
+#chatbot.welcome-mode .input-toolbar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
 /* Conversation mode — floating card centered at the bottom */
 #chatbot:not(.welcome-mode) > .input-form {
     margin: 0 auto 24px;
     width: calc(100% - 48px);
 }
+
 .welcome-core {
     text-align: center;
     max-width: 540px;
@@ -552,11 +567,9 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 }
 
 /* ── Input toolbar (feature menu button) ───────────────────────────────── */
+
 .input-toolbar {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    display: none;
 }
 
 .toolbar-btn {
@@ -1152,9 +1165,20 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     background: var(--bg-secondary);
 }
 
+.records-header-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.records-header-top .mobile-menu-btn {
+    color: white;
+}
+
 .records-header h2 {
     color: white;
-    margin-bottom: 16px;
+    margin-bottom: 0;
     font-size: 1.6rem;
 }
 
@@ -1970,6 +1994,8 @@ body.nav-open {
     }
 
     .new-chat-btn {
+        aspect-ratio: 1 / 1; 
+        height: 70%;
         width: auto;
         padding: 7px 10px;
         font-size: 0.8rem;
@@ -2077,7 +2103,8 @@ body.nav-open {
     }
 
     .settings-section {
-        min-width: 0;
+        margin-top: 10vw;
+        min-width: 70vw;
     }
 
     /* ── Record detail overlay ──────────────────────────────────────── */
@@ -2144,4 +2171,5 @@ body.nav-open {
     .detail-emission-value {
         font-size: 1.8rem;
     }
+
 }

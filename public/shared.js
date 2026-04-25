@@ -73,20 +73,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── Mobile navigation ────────────────────────────────────────────────────
-    const topLeft  = document.querySelector('.top-left');
-    const leftNav  = document.querySelector('.left-nav');
+    const leftNav = document.querySelector('.left-nav');
+    const menuBtn = document.getElementById('mobileMenuBtn');
 
-    if (topLeft && leftNav) {
-        // Inject hamburger button as first child of top-left
-        const menuBtn = document.createElement('button');
-        menuBtn.className = 'mobile-menu-btn';
-        menuBtn.setAttribute('aria-label', 'Open navigation');
-        menuBtn.innerHTML = '&#9776;';
-        topLeft.insertBefore(menuBtn, topLeft.firstChild);
-
+    if (menuBtn && leftNav) {
         // Inject semi-transparent overlay that closes the nav when tapped
         const overlay = document.createElement('div');
-        overlay.className = 'nav-overlay';
+        overlay.className = 'mobile-nav-overlay';
         document.body.appendChild(overlay);
 
         const closeNav = () => document.body.classList.remove('nav-open');
