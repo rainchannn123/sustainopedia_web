@@ -87,4 +87,13 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.addEventListener('click', closeNav);
         leftNav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeNav));
     }
+
+    // ── Dark mode toggle ─────────────────────────────────────────────────────
+    const darkModeBtn = document.getElementById('darkModeBtn');
+    if (darkModeBtn) {
+        darkModeBtn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+        });
+    }
 });

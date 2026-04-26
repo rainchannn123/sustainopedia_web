@@ -103,6 +103,111 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     object-fit: contain;
 }
 
+/* ── Chat tab in nav — label + action buttons ─────────────────────────── */
+.nav-chat-tab {
+    padding: 0;
+    align-items: stretch;
+}
+
+/* override .left-nav .tab > a (display:block / width:100%) for the shared-row design */
+.nav-chat-link {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    color: inherit;
+    font-weight: inherit;
+    width: auto;
+}
+
+.nav-chat-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 10px 0 0;
+    flex-shrink: 0;
+}
+
+.nav-icon-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    transition: background 0.15s ease;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.nav-icon {
+    padding-top: 2px;
+    font-weight: 600;
+    font-size: 19px;
+}
+
+/* In-nav conversation history panel */
+.nav-conv-list-item {
+    overflow: hidden;
+}
+
+.nav-conv-panel {
+    max-height: 0;
+    overflow-y: auto;
+    transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    scrollbar-width: none;
+    background: rgba(142, 202, 175, 0.14);
+}
+
+.nav-conv-panel::-webkit-scrollbar { display: none; }
+
+.nav-conv-list-item.open .nav-conv-panel {
+    max-height: 260px;
+}
+
+.nav-conv-panel .conversation-list li {
+    padding: 9px 16px 9px 32px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    border-bottom: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nav-conv-panel .conversation-list li.active {
+    background: var(--bg-tertiary);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* Inline rename span inside nav conversation items */
+.conv-name {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    outline: none;
+}
+
+.conv-name[contenteditable="true"] {
+    border-bottom: 1px solid var(--text-secondary);
+    cursor: text;
+    white-space: pre;
+    overflow: visible;
+}
+
+/* Mobile-only top bar — hidden on desktop */
+.mobile-topbar {
+    display: none;
+}
+
 /* Username footer pinned to bottom of left nav */
 .nav-user {
     margin-top: auto;
@@ -387,11 +492,11 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 }
 
 #toggleConversationList{
+    aspect-ratio: 1 / 1;
     border: none;
     border-radius: 50%;
     height: 100%;
-    width: 35px;
-    padding: 0;
+    padding-bottom: 3px;
 }
 
 #toggleConversationList span {
@@ -484,7 +589,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 .chat-window {
     flex: 1;
     overflow-y: auto;
-    padding: 24px;
+    padding: 65px 8% 24px;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -1044,7 +1149,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     flex-direction: row;
     align-items: flex-start;
     gap: 10px;
-    max-width: 85%;
+    max-width: 90%;
     animation: botMsgIn 0.28s cubic-bezier(0.34, 1.4, 0.64, 1) both;
 }
 
@@ -1085,10 +1190,10 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     min-width: 0;
     padding: 14px 18px;
     border-radius: 4px 18px 18px 18px;
-    background: #f8fffb;
+    /* background: #f8fffb;
     border: 1px solid #d4eddb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); */
     line-height: 1.7;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 /* ── Typing indicator (bot-typing) ───────────────────────────────────── */
@@ -1969,6 +2074,21 @@ body.nav-open {
     /* ── Bottom navigation bar ──────────────────────────────────────── */
     
 
+    /* ── Mobile top bar ─────────────────────────────────────────────── */
+    .mobile-topbar {
+        display: flex;
+        align-items: center;
+        padding: 8px 14px;
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        flex-shrink: 0;
+    }
+
+    .mobile-topbar .mobile-menu-btn {
+        display: flex;
+        color: white;
+    }
+
     /* ── Chat header ────────────────────────────────────────────────── */
     .chat-header {
         padding: 8px 12px;
@@ -1993,7 +2113,7 @@ body.nav-open {
 
     /* ── Chat window ────────────────────────────────────────────────── */
     .chat-window {
-        padding-bottom: 100px;
+        padding: 40px 4% 100px;
         border-bottom: 40vw solid white;
     }
 
@@ -2182,4 +2302,281 @@ body.nav-open {
         font-size: 1.8rem;
     }
 
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Dark Mode Toggle Button
+═══════════════════════════════════════════════════════════════════════════ */
+
+.dark-mode-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 4px;
+    margin-left: auto;
+    transition: background 0.15s ease;
+}
+
+.dark-mode-btn:hover {
+    background: rgba(0, 0, 0, 0.09);
+}
+
+.dark-mode-icon {
+    width: 18px;
+    height: 18px;
+    opacity: 0.55;
+    transition: opacity 0.15s ease;
+}
+
+.dark-mode-btn:hover .dark-mode-icon {
+    opacity: 0.9;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Dark Mode — body class applied via JS on toggle
+═══════════════════════════════════════════════════════════════════════════ */
+
+html.dark-mode {
+    color-scheme: dark;
+}
+
+html.dark-mode body {
+    --bg-primary:        #18211c;
+    --bg-secondary:      #1d2e26;
+    --bg-tertiary:       #273d31;
+    --text-primary:      #c8e6d4;
+    --text-secondary:    #74c69d;
+    --text-tertiary:     #e8f5ec;
+    --border-color:      #2b3f33;
+    --user-msg-bg:       #2d6a4f;
+    --btn-bg:            #1d2e26;
+    --btn-hover:         #243630;
+    --btn-primary-bg:    #40916c;
+    --btn-primary-hover: #2d6a4f;
+    --shadow-sm:         0 4px 5px 0 rgba(0, 0, 0, 0.4);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Left nav */
+html.dark-mode .left-nav {
+    background: #1b2b23;
+}
+
+/* Input floating card */
+html.dark-mode .input-form {
+    background: #1d2e26;
+    box-shadow: 0 2px 18px rgba(0, 0, 0, 0.45), 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+html.dark-mode .input-form:focus-within {
+    box-shadow: 0 4px 28px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+html.dark-mode .input-bottom-bar {
+    border-top-color: #2b3f33;
+}
+
+html.dark-mode .product-input-wrapper,
+html.dark-mode .toolbar-btn,
+html.dark-mode .mode-btn {
+    background: #243530;
+}
+
+/* Popup menus */
+html.dark-mode .feature-menu,
+html.dark-mode .mode-menu,
+html.dark-mode .conversation-list-panel {
+    background: #1d2e26;
+    border-color: #2b3f33;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5);
+}
+
+html.dark-mode .feature-menu-item:not(:last-child),
+html.dark-mode .mode-menu-item:not(:last-child) {
+    border-bottom-color: #2b3f33;
+}
+
+html.dark-mode .sample-queries {
+    background: #1d2e26;
+    border-color: #2b3f33;
+}
+
+html.dark-mode .sample-query-card {
+    border-bottom-color: #2b3f33;
+}
+
+/* Muted grey text → softer light-green */
+html.dark-mode .fmenu-text span,
+html.dark-mode .mode-item-text span,
+html.dark-mode .welcome-core-sub,
+html.dark-mode .record-date,
+html.dark-mode .setting-help,
+html.dark-mode .intent-badge {
+    color: #7aa88e;
+}
+
+/* Modal */
+html.dark-mode .modal-box {
+    background: #1d2e26;
+}
+
+html.dark-mode .modal-box p {
+    color: #9dc4ae;
+}
+
+html.dark-mode .modal-box input[type="text"] {
+    background: #243530;
+    color: var(--text-primary);
+    border-color: #2b3f33;
+}
+
+/* Old conversation picker (legacy) */
+html.dark-mode .conversation-picker-header {
+    background: #1d2e26;
+    color: var(--text-primary);
+}
+
+html.dark-mode .new-chat-btn {
+    background-color: #1d2e26;
+    color: var(--text-primary);
+}
+
+/* Record cards */
+html.dark-mode .record-card {
+    background: #1d2e26;
+    border-color: #2b3f33;
+}
+
+html.dark-mode .record-card:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.45);
+}
+
+/* Settings sections */
+html.dark-mode .settings-section {
+    background: #1d2e26;
+    border-color: #2b3f33;
+}
+
+/* Record detail overlay */
+html.dark-mode .record-detail-overlay {
+    background: #18211c;
+}
+
+html.dark-mode .detail-section {
+    background: #1d2e26;
+    border-color: #2b3f33;
+}
+
+html.dark-mode .detail-section-title {
+    color: #74c69d;
+    border-bottom-color: #273d31;
+}
+
+html.dark-mode .detail-summary {
+    background: linear-gradient(135deg, #1d3a2a 0%, #243f32 100%);
+}
+
+html.dark-mode .detail-emission-value { color: #b7e4c7; }
+html.dark-mode .detail-emission-label { color: #74c69d; }
+
+html.dark-mode .detail-query-text {
+    background: #1b2b23;
+    color: var(--text-primary);
+}
+
+/* LCIA tables */
+html.dark-mode .lcia-detail-table td              { border-bottom-color: #2b3f33; }
+html.dark-mode .lcia-detail-table tbody tr:nth-child(even) td { background: #1b2b23; }
+html.dark-mode .lcia-detail-table tbody tr:hover td           { background: #243530; }
+html.dark-mode .lcia-total-row td {
+    background: #1d3a2a !important;
+    color: #b7e4c7;
+    border-top-color: #40916c;
+}
+
+/* Markdown table */
+html.dark-mode .markdown-table th { background: #243530; color: var(--text-primary); }
+html.dark-mode .markdown-table td { border-color: #2b3f33; }
+
+/* Typing indicator */
+html.dark-mode .bot-typing .message-content {
+    background: #1d2e26;
+    border-color: #2b3f33;
+}
+
+/* Code blocks */
+html.dark-mode .bot-message .message-content code,
+html.dark-mode .bot-message-prose code {
+    background: #243530;
+    border-color: #2b3f33;
+    color: #8ecaaf;
+}
+
+html.dark-mode .bot-message .message-content blockquote,
+html.dark-mode .bot-message-prose blockquote {
+    background: #1d2e26;
+    border-left-color: #40916c;
+    color: var(--text-primary);
+}
+
+html.dark-mode .bot-message .message-content h2,
+html.dark-mode .bot-message-prose h2 {
+    border-bottom-color: #2b3f33;
+}
+
+/* Buttons (records page) */
+html.dark-mode .btn-small {
+    background: #1d2e26;
+    border-color: #2b3f33;
+    color: var(--text-primary);
+}
+
+html.dark-mode .btn-small:hover {
+    background: #243530;
+    border-color: var(--text-secondary);
+}
+
+/* Search / sort inputs */
+html.dark-mode .search-input,
+html.dark-mode .sort-select {
+    background: #1d2e26;
+    color: var(--text-primary);
+    border: 1px solid #2b3f33;
+}
+
+/* Dropdown */
+html.dark-mode .dropdown {
+    background: #1d2e26;
+    border-color: #2b3f33;
+}
+
+html.dark-mode .dropdown-item button {
+    color: var(--text-primary);
+}
+
+html.dark-mode .dropdown-item button:hover {
+    background: #243530;
+}
+
+/* Dark mode toggle icon — invert to white in dark mode */
+html.dark-mode .dark-mode-icon {
+    filter: brightness(0) invert(1);
+    opacity: 0.75;
+}
+
+html.dark-mode .dark-mode-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Nav conversation history panel background in dark mode */
+html.dark-mode .nav-conv-panel {
+    background: rgba(39, 61, 49, 0.45);
 }

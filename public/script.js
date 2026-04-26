@@ -108,7 +108,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const chatWindow = document.getElementById('chatWindow');
     const newChatBtn = document.getElementById('newChatBtn');
     const toggleConversationBtn = document.getElementById('toggleConversationList');
-    const conversationListPanel = document.getElementById('conversationListPanel');
+    const navConvListItem = document.getElementById('navConvListItem');
+    const conversationListPanel = document.getElementById('conversationListPanel'); // null with new layout; kept for compat
     const conversationList = document.getElementById('conversationList');
     const conversationTitleInput = document.getElementById('conversationTitleInput');
 
@@ -118,7 +119,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const createChatBtn = document.getElementById('createChatBtn');
     const cancelCreateBtn = document.getElementById('cancelCreateBtn');
     newChatModal.style.display = 'none';
-    conversationListPanel.style.display = 'none';
 
     // Initialize markdown renderer here so processMarkdown works during loadConversations
     md = window.markdownit({ html: false, breaks: true, linkify: true });
@@ -341,16 +341,61 @@ document.addEventListener('DOMContentLoaded', async () => {
     // renderConversationList reads the module-level `conversations` array.
     function renderConversationList() {
         conversationList.innerHTML = '';
-        conversations.forEach((conv, idx) => {
+        conversations.forEach((conv) => {
             const li = document.createElement('li');
-            li.textContent = conv.conversationName;
             li.dataset.convId = conv._id;
             li.setAttribute('role', 'button');
             li.setAttribute('tabindex', '0');
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'conv-name';
+            nameSpan.textContent = conv.conversationName;
+            li.appendChild(nameSpan);
+
             li.addEventListener('click', () => selectConversation(conv._id));
             li.addEventListener('keydown', e => {
                 if (e.key === 'Enter' || e.key === ' ') selectConversation(conv._id);
             });
+
+            // Double-click on the active item to rename it inline
+            li.addEventListener('dblclick', (e) => {
+                if (conv._id !== activeConvId) return;
+                e.stopPropagation();
+                const original = nameSpan.textContent;
+                nameSpan.contentEditable = 'true';
+                nameSpan.focus();
+                const range = document.createRange();
+                range.selectNodeContents(nameSpan);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+
+                const saveRename = async () => {
+                    nameSpan.contentEditable = 'false';
+                    const newName = nameSpan.textContent.trim();
+                    if (!newName || newName === original) { nameSpan.textContent = original; return; }
+                    conv.conversationName = newName;
+                    if (conversationTitleInput) conversationTitleInput.value = newName;
+                    try {
+                        await apiReq('PATCH', `/api/chat-histories/${activeConvId}`, { conversationName: newName });
+                    } catch (err) {
+                        console.error('Failed to rename conversation:', err);
+                        conv.conversationName = original;
+                        nameSpan.textContent = original;
+                    }
+                };
+
+                nameSpan.addEventListener('blur', saveRename, { once: true });
+                nameSpan.addEventListener('keydown', (ke) => {
+                    if (ke.key === 'Enter') { ke.preventDefault(); nameSpan.blur(); }
+                    else if (ke.key === 'Escape') {
+                        nameSpan.removeEventListener('blur', saveRename);
+                        nameSpan.textContent = original;
+                        nameSpan.contentEditable = 'false';
+                    }
+                }, { once: true });
+            });
+
             if (conv._id === activeConvId) li.classList.add('active');
             conversationList.appendChild(li);
         });
@@ -384,7 +429,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (selectedLi) selectedLi.classList.add('active');
         renderChatWindow(conv.messages.map(serverMsgToFrontend));
         if (conversationTitleInput) conversationTitleInput.value = conv.conversationName;
-        conversationListPanel.style.display = 'none';
     }
 
     // ── Resume a pending job if the user navigated away mid-computation ────────
@@ -415,20 +459,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Event listeners for conversation picker
-    toggleConversationBtn.addEventListener('click', () => {
-        conversationListPanel.style.display = conversationListPanel.style.display === 'none' ? 'block' : 'none';
+    // ── Conversation panel open/close helpers ────────────────────────────────
+    function openConvPanel() {
+        if (navConvListItem) navConvListItem.classList.add('open');
+        if (toggleConversationBtn) {
+            toggleConversationBtn.setAttribute('aria-expanded', 'true');
+            const icon = toggleConversationBtn.querySelector('.toggle-icon');
+            if (icon) icon.textContent = '⮝';
+        }
+    }
+
+    function closeConvPanel() {
+        if (navConvListItem) navConvListItem.classList.remove('open');
+        if (toggleConversationBtn) {
+            toggleConversationBtn.setAttribute('aria-expanded', 'false');
+            const icon = toggleConversationBtn.querySelector('.toggle-icon');
+            if (icon) icon.textContent = '⮟';
+        }
+    }
+
+    // Toggle conversation history panel in nav
+    toggleConversationBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navConvListItem.classList.contains('open') ? closeConvPanel() : openConvPanel();
     });
 
-    // Close dropdown when clicking outside
+    // Close panel when clicking outside the nav chat tab area
     document.addEventListener('click', (e) => {
-        const container = document.querySelector('.conversation-picker-container');
-        if (!container.contains(e.target)) {
-            conversationListPanel.style.display = 'none';
+        const chatNavTab = document.getElementById('chatNavTab');
+        const convListItem = document.getElementById('navConvListItem');
+        if (!chatNavTab?.contains(e.target) && !convListItem?.contains(e.target)) {
+            closeConvPanel();
         }
     });
 
-    // Inline rename: click the title input to edit the current conversation name
+    // conversationTitleInput is now a hidden element; rename is via double-click on nav items
     if (conversationTitleInput) {
         let renameOriginal = '';
 
@@ -437,7 +502,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             renameOriginal = conversationTitleInput.value;
             conversationTitleInput.removeAttribute('readonly');
             conversationTitleInput.select();
-            conversationListPanel.style.display = 'none';
         });
 
         conversationTitleInput.addEventListener('blur', async () => {
