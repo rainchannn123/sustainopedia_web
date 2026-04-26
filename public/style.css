@@ -242,7 +242,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 
 .new-chat-btn {
     white-space: nowrap;
-    padding: 5px 5px;
+    padding: 4px 4px;
     aspect-ratio: 1 / 1;
     height:100%;
     background-color: #ffffff;
@@ -256,8 +256,8 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 }
 
 .new-chat-btn img {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
 }
 
 .new-chat-btn:hover {
@@ -310,7 +310,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 12px;
     background: #ffffff;
     border: none;
     border-radius: 12px;
@@ -332,7 +331,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     width: 0;
     flex: 1;
     min-width: 0;
-    padding: 1px 3px;
+    padding: 8px 12px;
     border-radius: 3px;
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s;
@@ -383,20 +382,30 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 }
 
 #toggleConversationList{
-    width: 20px;
-    height: 20px;
     border: none;
     border-radius: 50%;
+    height: 100%;
+    width: 35px;
+    padding: 0;
 }
 
 #toggleConversationList span {
     font-size: 1rem;
+    width: 20px;
+    height: 20px;
 }
 
 .conversation-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    scrollbar-width: none;    /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.conversation-list::-webkit-scrollbar {
+  display: none;            /* Chrome, Safari */
 }
 
 .conversation-list li {
