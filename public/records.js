@@ -3,7 +3,7 @@
 // Global registry of Chart.js instances so they can be properly destroyed
 const charts = {};
 
-// â”€â”€ Page initialisation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Page initialisation 
 
 async function loadRecordsPage() {
     const recordsContainer = document.getElementById('recordsContainer');
@@ -72,7 +72,7 @@ function filterAndRenderRecords(records) {
     filtered.forEach(record => recordsContainer.appendChild(createRecordCard(record)));
 }
 
-// â”€â”€ Dashboard record card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Dashboard record card â”€
 
 function createRecordCard(record) {
     const card = document.createElement('div');
@@ -83,7 +83,7 @@ function createRecordCard(record) {
     const dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
-    // â”€â”€ Top: product info â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Top: product info â”€
     const info = document.createElement('div');
     info.className = 'record-info';
     info.innerHTML = `
@@ -94,14 +94,14 @@ function createRecordCard(record) {
         </div>`;
     card.appendChild(info);
 
-    // â”€â”€ Middle: preview histogram â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Middle: preview histogram 
     const chartContainer = document.createElement('div');
     chartContainer.className = 'record-chart-container';
     const chartId = `chart-${record.id}`;
     chartContainer.innerHTML = `<canvas id="${chartId}"></canvas>`;
     card.appendChild(chartContainer);
 
-    // â”€â”€ Bottom: action buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Bottom: action buttons â”€
     const actions = document.createElement('div');
     actions.className = 'record-actions';
 
@@ -135,7 +135,7 @@ function createRecordCard(record) {
     return card;
 }
 
-// â”€â”€ Preview histogram (compact, up to 8 bars) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Preview histogram (compact, up to 8 bars) â”€
 
 function renderPreviewChart(canvasId, record) {
     const canvas = document.getElementById(canvasId);
@@ -212,7 +212,7 @@ function renderPreviewChart(canvasId, record) {
     });
 }
 
-// â”€â”€ Full-screen detail overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Full-screen detail overlay â”€
 
 function openRecordDetail(record) {
     // Remove any existing overlay
@@ -229,7 +229,7 @@ function openRecordDetail(record) {
     overlay.id        = 'record-detail-overlay';
     overlay.className = 'record-detail-overlay';
 
-    // â”€â”€ Fixed header bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Fixed header bar 
     const header = document.createElement('div');
     header.className = 'detail-header';
     header.innerHTML = `
@@ -242,7 +242,7 @@ function openRecordDetail(record) {
         </button>`;
     overlay.appendChild(header);
 
-    // â”€â”€ Scrollable content body â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //  Scrollable content body 
     const body = document.createElement('div');
     body.className = 'detail-body';
 
@@ -320,7 +320,7 @@ function openRecordDetail(record) {
     requestAnimationFrame(() => renderDetailChart(detailChartId, record));
 }
 
-// â”€â”€ Full-resolution detail histogram (all processes, staggered animation) â”€â”€â”€â”€â”€
+//  Full-resolution detail histogram (all processes, staggered animation) 
 
 function renderDetailChart(canvasId, record) {
     const canvas = document.getElementById(canvasId);
@@ -369,13 +369,13 @@ function renderDetailChart(canvasId, record) {
             plugins: {
                 legend: {
                     display: true,
-                    labels: { color: '#1b4332', font: { size: 13, weight: '600' } }
+                    labels: { color: '#35795c', font: { size: 13, weight: '600' } }
                 },
                 tooltip: {
                     backgroundColor: 'rgba(27, 67, 50, 0.95)',
                     titleColor: '#fff',
                     bodyColor: '#d8f3dc',
-                    borderColor: '#40916c',
+                    borderColor: '#367a5b',
                     borderWidth: 1,
                     padding: 12,
                     callbacks: {
@@ -391,16 +391,16 @@ function renderDetailChart(canvasId, record) {
                     title: {
                         display: true,
                         text: 'Carbon Emission (kg CO\u2082-eq)',
-                        color: '#1b4332',
+                        color: '#35795c',
                         font: { size: 13, weight: '600' }
                     },
                     grid:  { color: 'rgba(183, 228, 199, 0.30)' },
-                    ticks: { color: '#1b4332', font: { size: 11 }, callback: v => Math.round(v) }
+                    ticks: { color: '#35795c', font: { size: 11 }, callback: v => Math.round(v) }
                 },
                 x: {
                     grid: { display: false },
                     ticks: {
-                        color: '#1b4332',
+                        color: '#35795c',
                         font: { size: 11 }
                     }
                 }
@@ -409,7 +409,7 @@ function renderDetailChart(canvasId, record) {
     });
 }
 
-// â”€â”€ LCIA data table for the detail view â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  LCIA data table for the detail view 
 
 function buildLciaDetailTable(record) {
     const wrapper = document.createElement('div');
@@ -469,7 +469,7 @@ function buildLciaDetailTable(record) {
     return wrapper;
 }
 
-// â”€â”€ CSV export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  CSV export 
 
 function downloadRecordCSV(record) {
     const headers = [
@@ -511,7 +511,7 @@ function downloadRecordCSV(record) {
     document.body.removeChild(link);
 }
 
-// â”€â”€ Delete record â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Delete record â”€
 
 async function deleteRecord(recordId) {
     if (!confirm('Are you sure you want to delete this record?')) return;
@@ -529,7 +529,7 @@ async function deleteRecord(recordId) {
     loadRecordsPage();
 }
 
-// â”€â”€ Boot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Boot 
 
 // Boot: load records when the page is ready
 document.addEventListener('DOMContentLoaded', () => {
