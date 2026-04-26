@@ -718,12 +718,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         messageDiv.className = `message ${type}`;
 
         // ── Bot avatar (bot messages only) ───────────────────────────────────
-        if (type === 'bot-message') {
-            const avatarDiv = document.createElement('div');
-            avatarDiv.className = 'bot-avatar';
-            avatarDiv.innerHTML = `<img src="static/img/logo.png" alt="Sustainopedia Bot"><span class="bot-avatar-label">Bot</span>`;
-            messageDiv.appendChild(avatarDiv);
-        }
+        // if (type === 'bot-message') {
+        //     const avatarDiv = document.createElement('div');
+        //     avatarDiv.className = 'bot-avatar';
+        //     avatarDiv.innerHTML = `<img src="static/img/logo.png" alt="Sustainopedia Bot"><span class="bot-avatar-label">Bot</span>`;
+        //     messageDiv.appendChild(avatarDiv);
+        // }
 
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
@@ -865,10 +865,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         messageDiv.className = 'message bot-typing';
 
         // Avatar (same structure as bot messages)
-        const avatarDiv = document.createElement('div');
-        avatarDiv.className = 'bot-avatar';
-        avatarDiv.innerHTML = `<img src="static/img/logo.png" alt="Sustainopedia Bot"><span class="bot-avatar-label">Bot</span>`;
-        messageDiv.appendChild(avatarDiv);
+        // const avatarDiv = document.createElement('div');
+        // avatarDiv.className = 'bot-avatar';
+        // avatarDiv.innerHTML = `<img src="static/img/logo.png" alt="Sustainopedia Bot"><span class="bot-avatar-label">Bot</span>`;
+        // messageDiv.appendChild(avatarDiv);
 
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
