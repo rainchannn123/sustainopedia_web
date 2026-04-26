@@ -877,7 +877,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <span></span><span></span><span></span>
             </div>
             <div class="typing-extra">
-                Extracting Life Cycle Inventory sources&hellip;
+                Extracting Life Cycle Inventory sources&hellip;<br>
                 <span class="typing-eta">Estimated response time: ${currentMode === 'fast' ? '30 s' : '10-15 mins'}</span>
             </div>
         `;
