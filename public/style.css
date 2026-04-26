@@ -1,9 +1,9 @@
 :root {
     --bg-primary: #ffffff;
-    --bg-secondary: #2d6a4f;
+    --bg-secondary: #446656;
     --bg-tertiary: #8ecaaf;
     --text-primary: #1b4332;
-    --text-secondary: #048e4e;
+    --text-secondary: #005e32;
     --text-tertiary: #f6fff8;
     --border-color: #789f86;
     --user-msg-bg: #40916c;
@@ -41,8 +41,8 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 
 .left-nav {
     width: 240px;
-    background: var(--bg-primary);
-    border-right: 1px solid var(--border-color);
+    background: #f8f8f8;
+    /* border-right: 1px solid var(--border-color); */
     display: flex;
     flex-direction: column;
 }
@@ -229,11 +229,11 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 .chat-header {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     padding: 16px 24px;
     border-bottom: 1px solid var(--border-color);
     background: var(--bg-secondary);
-    height: 70px;
+    height: 67px;
 }
 
 .chat-header .mobile-menu-btn {
@@ -243,11 +243,11 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 .new-chat-btn {
     white-space: nowrap;
     padding: 5px 5px;
+    aspect-ratio: 1 / 1;
     height:100%;
-    width: 40px;
-    background-color: var(--btn-bg);
+    background-color: #ffffff;
     border: none;
-    border-radius: 50%;
+    border-radius: 12px;
     font-family: inherit;
     color: var(--text-primary);
     font-weight: 600;
@@ -303,7 +303,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     min-width: 200px;
     max-width: 200px;
     position: relative;
-    height: 40px;
+    height: 35px;
 }
 
 .conversation-picker-header {
@@ -311,9 +311,9 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
-    background: #eef6f1;
+    background: #ffffff;
     border: none;
-    border-radius: 20px;
+    border-radius: 12px;
     cursor: pointer;
     user-select: none;
     width: 100%;
@@ -400,8 +400,8 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 }
 
 .conversation-list li {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border-color);
+    padding: 12px 10px;
+    border-bottom: none;
     cursor: pointer;
     transition: var(--transition);
     white-space: nowrap;
@@ -932,8 +932,8 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 
 #userInput {
     width: 100%;
-    min-height: 60px;
-    max-height: 180px;
+    min-height: 45px;
+    max-height: 150px;
     padding: 4px 4px 10px;
     border: none;
     background: transparent;
@@ -1071,7 +1071,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     min-width: 0;
     padding: 14px 18px;
     border-radius: 4px 18px 18px 18px;
-    background: #f5fdf8;
+    background: #fafffc;
     border: 1px solid #d4eddb;
     line-height: 1.7;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
