@@ -2532,6 +2532,12 @@ html.dark-mode .bot-message-prose h2 {
     border-bottom-color: #2b3f33;
 }
 
+html.dark-mode .bot-message .message-content table tr td{
+    background: transparent;
+    color: var(--text-primary);
+}
+
+
 /* Buttons (records page) */
 html.dark-mode .btn-small {
     background: #1d2e26;
