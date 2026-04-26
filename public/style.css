@@ -86,10 +86,15 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 }
 
 .left-nav .logo-tab {
-    padding: 20px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-primary);
     font-size: 1.4rem;
     font-weight: 600;
-    border-bottom: 1px solid var(--border-color);
+    border: none;
+    height: 90px;
 }
 
 .logo-img {
