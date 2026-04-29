@@ -80,9 +80,9 @@ app.use(helmet({
 app.use(cors({ origin: 'https://agreeable-ground-09e2ba800.4.azurestaticapps.net' }));
 app.use(express.json({ limit: '10mb' }));
 
-// Root route: always serve login page first.
-// login.js will immediately redirect to /index.html if the user already has a valid token.
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
+// Root route: always serve welcome page first.
+// welcome.js will immediately redirect to /index.html if the user already has a valid token.
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'welcome.html')));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -352,7 +352,7 @@ app.get('/api/health', (req, res) => {
 // ============ Static Routes ============
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+    res.sendFile(path.join(__dirname, 'public', 'welcome.html'));
 });
 
 app.get('/records.html', (req, res) => {
@@ -369,6 +369,10 @@ app.get('/index.html', (req, res) => {
 
 app.get('/login.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+app.get('/welcome.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'welcome.html'));
 });
 
 // Error handling middleware
