@@ -15,12 +15,12 @@ function _jwtExpired(token) {
 function checkAuth() {
     const token = localStorage.getItem('token');
     if (!token || !localStorage.getItem('username')) {
-        window.location.href = '/login.html';
+        window.location.href = '/welcome.html';
         return false;
     }
     if (_jwtExpired(token)) {
         ['token', 'userId', 'username', 'email'].forEach(k => localStorage.removeItem(k));
-        window.location.href = '/login.html';
+        window.location.href = '/welcome.html';
         return false;
     }
     return true;
