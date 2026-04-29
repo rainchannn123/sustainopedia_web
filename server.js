@@ -77,7 +77,7 @@ app.use(helmet({
     }
 }));
 
-app.use(cors({ origin: 'https://agreeable-ground-09e2ba800.4.azurestaticapps.net' }));
+app.use(cors({ origin: 'https://www.sustainopedia.net' }));
 app.use(express.json({ limit: '10mb' }));
 
 // Root route: always serve welcome page first.
