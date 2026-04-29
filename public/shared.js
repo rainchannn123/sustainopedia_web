@@ -34,7 +34,7 @@ async function apiReq(method, url, body) {
     };
     if (body !== undefined) opts.body = JSON.stringify(body);
     const res = await fetch(url, opts);
-    if (res.status === 401) { window.location.href = '/login.html'; throw new Error('Unauthorized'); }
+    if (res.status === 401) { window.location.href = '/welcome.html'; throw new Error('Unauthorized'); }
     return res.json();
 }
 
