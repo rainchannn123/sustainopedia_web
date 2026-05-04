@@ -114,7 +114,7 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            connectSrc: ["'self'", 'http://localhost:5051', 'http://localhost:5052', 'ws://localhost:42877/', 'https://teamsustainopedia-backend-hbcvdcbvcsb4fmaf.eastasia-01.azurewebsites.net', 'https://www.sustainopedia.net'],
+            connectSrc: ["'self'", 'http://localhost:5051', 'http://localhost:5052', 'ws://localhost:42877/', 'https://teamsustainopedia-backend-hbcvdcbvcsb4fmaf.eastasia-01.azurewebsites.net'],
             scriptSrc: ["'self'"], 
             styleSrc: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', 'https://cdn.jsdelivr.net'],
             imgSrc: ["'self'", 'data:'],
