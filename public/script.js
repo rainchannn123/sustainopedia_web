@@ -1,6 +1,5 @@
-// Chat page logic — requires shared.js (checkAuth, apiReq globals)
-// const FLASK_BASE = "http://localhost:5052";
-const FLASK_BASE = "https://www.sustainopedia.net";
+
+const FLASK_BASE = process.env.BACKEND_URI;
 const POLL_INTERVAL_MS = 2500;
 
 let chatting = false;

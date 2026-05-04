@@ -10,8 +10,8 @@ const CHART_PALETTE = [
     '#ffb3c1', '#a0c4ff', '#fdffb6', '#caffbf', '#ffd6a5',
     '#bde0fe', '#ffc8dd', '#d0f4de', '#e2cfea', '#fde8d0'
 ];
-// const FLASK_BASE = "http://localhost:5052";
-const FLASK_BASE = "https://www.sustainopedia.net"; 
+
+const FLASK_BASE = process.env.BACKEND_URI;
 const POLL_INTERVAL_MS = 3000;
 
 // ── Job polling state ────────────────────────────────────────────────────────
