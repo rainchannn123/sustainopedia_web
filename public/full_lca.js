@@ -11,7 +11,7 @@ const CHART_PALETTE = [
     '#bde0fe', '#ffc8dd', '#d0f4de', '#e2cfea', '#fde8d0'
 ];
 
-const FLASK_BASE = process.env.BACKEND_URI;
+const FLASK_BASE = window.FLASK_BASE || 'http://localhost:5052';
 const POLL_INTERVAL_MS = 3000;
 
 // ── Job polling state ────────────────────────────────────────────────────────

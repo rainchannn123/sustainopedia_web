@@ -1,5 +1,5 @@
 
-const FLASK_BASE = process.env.BACKEND_URI;
+const FLASK_BASE = window.FLASK_BASE || 'http://localhost:5052';
 const POLL_INTERVAL_MS = 2500;
 
 let chatting = false;

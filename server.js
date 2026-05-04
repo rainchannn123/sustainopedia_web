@@ -130,6 +130,12 @@ app.use(express.json({ limit: '10mb' }));
 // welcome.js will immediately redirect to /index.html if the user already has a valid token.
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'welcome.html')));
 
+// Inject server-side env vars as browser globals so client scripts don't use process.env
+app.get('/config.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send(`window.FLASK_BASE = ${JSON.stringify(process.env.BACKEND_URI || 'http://localhost:5052')};`);
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware to verify JWT token
