@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SustainOpedia - Full LCA Report</title>
+  <link rel="icon" type="image/x-icon" href="/static/img/logo.ico">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="full_lca.css" />
+  <script src="light-dark-mode.js"></script>
+  <script src="js lib/chart.umd.js"></script>
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- Left Navigation -->
+    <nav class="left-nav">
+      <ul>
+        <li class="logo-tab">
+          <img src="static/img/logo.png" alt="Sustainopedia Logo" class="logo-img">
+          <span>SustainOpedia</span>
+        </li>
+        <li class="tab"><a href="/index.html">Chat</a></li>
+        <li class="tab active"><a href="/full_lca.html">Full LCA Report</a></li>
+        <li class="tab"><a href="/settings.html">Settings</a></li>
+      </ul>
+      <div class="nav-user">
+        <span id="navUsername" class="nav-username"></span>
+        <!-- DARK MODE TEMPORARILY DISABLED
+        <button id="darkModeBtn" class="dark-mode-btn" title="Toggle dark / light mode" aria-label="Toggle dark mode">
+          <img src="static/img/dark-mode.png" alt="" class="dark-mode-icon" />
+        </button>
+        -->
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <div class="content-wrapper">
+
+        <!-- View 1: History list -->
+        <div id="lcaHistoryView" class="page active">
+          <div class="records-header">
+            <div class="records-header-top">
+              <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open navigation">&#9776;</button>
+              <h2>Full LCA Report</h2>
+            </div>
+            <div class="records-filters">
+              <input type="text" id="lcaSearch" class="search-input" placeholder="Search by product name...">
+              <select id="lcaSort" class="sort-select">
+                <option value="recent">Most Recent</option>
+                <option value="oldest">Oldest First</option>
+                <option value="product">Product Name</option>
+                <option value="emissions">Highest Emissions</option>
+              </select>
+            <button id="newLcaBtn" class="lca-new-btn">+ New Assessment</button>
+            </div>
+          </div>
+
+          <div id="lcaHistoryContainer" class="records-container">
+            <div class="empty-state">
+              <p>No assessments yet. Click <strong>+ New Assessment</strong> to get started.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- View 2: Record workspace (Form + Results tabs) -->
+        <div id="lcaWorkspaceView" class="page">
+          <div class="records-header lca-form-topbar">
+            <div class="records-header-top">
+              <button id="mobileMenuBtn2" class="mobile-menu-btn" aria-label="Open navigation">&#9776;</button>
+              <button id="backToHistoryBtn" class="lca-back-btn">&#8592; Back</button>
+              <h2 id="workspaceTitle"></h2>
+            </div>
+            <div class="lca-work-subtitle">
+                <p class="lca-form-subtitle" id="workspaceSubtitle"></p>
+            </div>
+          </div>
+
+          <!-- Form panel — shown while drafting / before results arrive -->
+          <div id="workspaceFormPanel" class="lca-work-panel active">
+            <div class="lca-form-scroll">
+              <div class="lca-form-grid">
+                <form id="assessmentForm" class="lca-form-container">
+
+                  <!-- <div class="lca-how-it-works">
+                    <strong>How it works:</strong> Fill in as much or as little as you know. Every skipped field uses documented defaults and is flagged in the final report.
+                  </div> -->
+
+                  <div class="question-card">
+                    <div class="question-header">
+                      <span class="q-number">1.</span>
+                      <label for="q1">What product are you assessing? (name + short description)</label>
+                      <label class="lca-checkbox-label">
+                        <input type="checkbox" id="q1-unknown"> I do not know
+                      </label>
+                    </div>
+                    <p class="lca-hint">Example: "Aluminum beverage can, 330 ml, single-use"</p>
+                    <textarea id="q1" rows="2"></textarea>
+                  </div>
+
+                  <div class="question-card">
+                    <div class="question-header">
+                      <span class="q-number">2.</span>
+                      <label for="q2-amount">How much product should this assessment represent? (functional unit)</label>
+                      <label class="lca-checkbox-label">
+                        <input type="checkbox" id="q2-unknown"> I do not know
+                      </label>
+                    </div>
+                    <p class="lca-hint">If unsure, keep the default: 1 tonne.</p>
+                    <div class="lca-usage-row">
+                      <div>
+                        <label for="q2-amount">Amount</label>
+                        <input type="text" id="q2-amount" placeholder="e.g. 1" />
+                      </div>
+                      <div>
+                        <label for="q2-unit">Unit</label>
+                        <select id="q2-unit">
+                          <option value="tonne">tonne</option>
+                          <option value="kilogram">kilogram</option>
+                          <option value="gram">gram</option>
+                          <option value="unit">unit</option>
+                          <option value="kWh">kWh</option>
+                          <option value="liter">liter</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="question-card">
+                    <div class="question-header">
+                      <span class="q-number">3.</span>
+                      <label for="q3">What is it made of? (main materials and rough percentages if known)</label>
+                      <label class="lca-checkbox-label">
+                        <input type="checkbox" id="q3-unknown"> I do not know
+                      </label>
+                    </div>
+                    <p class="lca-hint">Example: "80% steel, 15% plastic, 5% copper"</p>
+                    <textarea id="q3" rows="3"></textarea>
+                  </div>
+
+                  <div class="question-card">
+                    <div class="question-header">
+                      <span class="q-number">4.</span>
+                      <label for="q4">Where is it mainly manufactured?</label>
+                      <label class="lca-checkbox-label">
+                        <input type="checkbox" id="q4-unknown"> I do not know
+                      </label>
+                    </div>
+                    <!-- <div class="lca-option-group" id="regionModeGroup">
+                      <button type="button" class="lca-option-btn" data-value="country">Specific country</button>
+                      <button type="button" class="lca-option-btn active" data-value="region">Region only</button>
+                    </div> -->
+                    <p class="lca-hint">Example: "China" or "Europe", Enter "Global" if no specific location</p>
+                    <input type="text" id="q4" />
+                  </div>
+
+                  <div class="question-card">
+                    <div class="question-header">
+                      <span class="q-number">5.</span>
+                      <label for="q5">How is it distributed to users/customers?</label>
+                      <label class="lca-checkbox-label">
+                        <input type="checkbox" id="q5-unknown"> I do not know
+                      </label>
+                    </div>
+                    <p class="lca-hint">Example: truck 500 km + ship 2000 km</p>
+                    <textarea id="q5" rows="2"></textarea>
+                  </div>
+
+                  <div class="question-card">
+                    <div class="question-header">
+                      <span class="q-number">6.</span>
+                      <label for="q6-lifespan">What is the normal lifespan of this product?</label>
+                      <label class="lca-checkbox-label">
+                        <input type="checkbox" id="q6-unknown"> I do not know
+                      </label>
+                    </div>
+                    <div class="lca-usage-row">
+                      <div>
+                        <label for="q6-lifespan">Lifespan (years)</label>
+                        <input type="text" id="q6-lifespan" placeholder="e.g. 5" />
+                      </div>
+                      <div>
+                        <label for="q6-rough">Or a rough sense</label>
+                        <select id="q6-rough">
+                          <option value="">Select</option>
+                          <option value="short">Short (&lt; 2 years)</option>
+                          <option value="medium">Medium (2-10 years)</option>
+                          <option value="long">Long (&gt; 10 years)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="question-card">
+                    <div class="question-header">
+                      <span class="q-number">7.</span>
+                      <label for="q7">What usually happens at end-of-life? (recycle, landfill, incineration, etc.)</label>
+                      <label class="lca-checkbox-label">
+                        <input type="checkbox" id="q7-unknown"> I do not know
+                      </label>
+                    </div>
+                    <textarea id="q7" rows="2"></textarea>
+                  </div>
+
+                  <div class="question-card">
+                    <div class="question-header">
+                      <span class="q-number">8.</span>
+                      <label>Which life-cycle boundary should this assessment use?</label>
+                      <label class="lca-checkbox-label">
+                        <input type="checkbox" id="q8-unknown"> I do not know
+                      </label>
+                    </div>
+                    <p class="lca-hint">Tip: cradle-to-gate is best if you only want production impacts.</p>
+                    <div class="lca-option-group" id="systemBoundaryGroup">
+                      <button type="button" class="lca-option-btn active" data-value="cradle-to-gate">Cradle-to-gate</button>
+                      <button type="button" class="lca-option-btn" data-value="cradle-to-grave">Cradle-to-grave</button>
+                      <button type="button" class="lca-option-btn" data-value="gate-to-gate">Gate-to-gate</button>
+                      <button type="button" class="lca-option-btn" data-value="cradle-to-cradle">Cradle-to-cradle</button>
+                    </div>
+                  </div>
+
+                  <div class="question-card">
+                    <div class="question-header">
+                      <span class="q-number">9.</span>
+                      <label for="q9">Which environmental impact categories should this assessment emphasize?</label>
+                      <label class="lca-checkbox-label">
+                        <input type="checkbox" id="q9-unknown"> I do not know
+                      </label>
+                    </div>
+                    <p class="lca-hint">Examples: climate change, water use, resource depletion, toxicity.</p>
+                    <input type="text" id="q9" placeholder="Leave this blank if no specific categories" />
+                  </div>
+
+                  <div class="question-card">
+                    <div class="question-header">
+                      <span class="q-number">10.</span>
+                      <label>Do you want uncertainty analysis (Monte Carlo)?</label>
+                      <label class="lca-checkbox-label">
+                        <input type="checkbox" id="q10-unknown"> I do not know
+                      </label>
+                    </div>
+                    <div class="lca-option-group" id="monteCarloGroup">
+                      <button type="button" class="lca-option-btn active" data-value="false">No</button>
+                      <button type="button" class="lca-option-btn" data-value="true">Yes</button>
+                    </div>
+                    <p class="lca-hint">If yes, how many simulations?</p>
+                    <input type="text" id="q10-sims" placeholder="Default 25, max 500" />
+                  </div>
+
+                  <div class="question-card">
+                    <div class="question-header">
+                      <span class="q-number">11.</span>
+                      <label for="q11">Any additional notes or constraints?</label>
+                      <label class="lca-checkbox-label">
+                        <input type="checkbox" id="q11-unknown"> I do not know
+                      </label>
+                    </div>
+                    <textarea id="q11" rows="2"></textarea>
+                  </div>
+                
+
+                  <div class="lca-form-actions">
+                    <button type="button" id="saveDraftBtn" class="lca-secondary-btn">Save Draft</button>
+                    <button type="submit" id="generateBtn" class="lca-generate-btn">Generate Result</button>
+                  </div>
+                </form>
+
+                <aside class="lca-console-panel" aria-label="Generation console">
+                  <div class="lca-console-header">
+                    <h3>Generation Console Board</h3>
+                    <button id="clearConsoleBtn" type="button" class="lca-console-clear">Clear</button>
+                  </div>
+                  <div id="lcaConsoleBody" class="lca-console-body">
+                    <p class="lca-console-empty">Waiting for generation task...</p>
+                  </div>
+                </aside>
+              </div>
+            </div>
+          </div><!-- /#workspaceFormPanel -->
+
+          <!-- Results panel — shown after results arrive, split: results left + chat right -->
+          <div id="workspaceResultsPanel" class="lca-work-panel">
+            <div class="lca-results-with-chat">
+
+              <!-- Left: LCA results (≈62%) -->
+              <div class="lca-results-pane">
+                <div class="lca-results-scroll">
+                  <div id="backendResultsContainer">
+                    <div class="empty-state">
+                      <p>Generate a new assessment or select a record from the list to view results here.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: contextual chat window (≈38%) -->
+              <div class="lca-results-chat-pane">
+                <div class="results-chat-header">
+                  <span>SustainOpedia Assistant</span>
+                </div>
+                <div id="resultsChatWindow" class="results-chat-window"></div>
+                <form id="resultsChatForm" class="results-chat-form">
+                  <textarea id="resultsChatInput" class="results-chat-input" rows="1"
+                    placeholder="Ask about the results…"></textarea>
+                  <button type="submit" class="results-chat-send-btn" title="Send">
+                    <img src="./static/img/send-button.png" alt="Send" />
+                  </button>
+                </form>
+              </div>
+
+            </div>
+          </div><!-- /#workspaceResultsPanel -->
+        </div>
+
+      </div><!-- /.content-wrapper -->
+    </main>
+  </div><!-- /.app-container -->
+
+  <script src="js lib/markdown-it.min.js"></script>
+  <script src="shared.js"></script>
+  <script src="functions/lcia-utils.js"></script>
+  <script src="full_lca.js"></script>
+</body>
+</html>

@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── Dark mode toggle ─────────────────────────────────────────────────────
+    /* DARK MODE TEMPORARILY DISABLED
     const darkModeBtn = document.getElementById('darkModeBtn');
     if (darkModeBtn) {
         darkModeBtn.addEventListener('click', () => {
@@ -96,4 +97,5 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('darkMode', isDark);
         });
     }
+    */
 });

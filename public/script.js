@@ -1,6 +1,6 @@
 // Chat page logic — requires shared.js (checkAuth, apiReq globals)
 // const FLASK_BASE = "http://localhost:5052";
-const FLASK_BASE = "https://teamsustainopedia-backend-hbcvdcbvcsb4fmaf.eastasia-01.azurewebsites.net"; // for local development
+const FLASK_BASE = "https://www.sustainopedia.net";
 const POLL_INTERVAL_MS = 2500;
 
 let chatting = false;
@@ -11,7 +11,7 @@ let activeConvId = null; // _id of the active conversation
 // ── Job polling state ──────────────────────────────────────────────────────────
 let _pollTimer      = null;  // setInterval handle
 let _activeJobId    = null;  // currently tracked job UUID
-let currentMode     = 'thinking'; // 'thinking' | 'fast' — default to full LCIA pipeline
+let currentMode     = 'fast'; // 'thinking' | 'fast' — default to full LCIA pipeline
 
 function _stopPolling() {
     if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
@@ -478,20 +478,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Toggle conversation history panel in nav
+    // Conversation panel is always open — toggle button just keeps it open
     toggleConversationBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        navConvListItem.classList.contains('open') ? closeConvPanel() : openConvPanel();
+        openConvPanel();
     });
 
-    // Close panel when clicking outside the nav chat tab area
-    document.addEventListener('click', (e) => {
-        const chatNavTab = document.getElementById('chatNavTab');
-        const convListItem = document.getElementById('navConvListItem');
-        if (!chatNavTab?.contains(e.target) && !convListItem?.contains(e.target)) {
-            closeConvPanel();
-        }
-    });
+    // Open on init
+    openConvPanel();
 
     // conversationTitleInput is now a hidden element; rename is via double-click on nav items
     if (conversationTitleInput) {
@@ -763,10 +757,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (intentParams.intent === 'computation') {
             parts.push('Computation');
             if (intentParams.product && intentParams.product !== 'Not Specified') parts.push(intentParams.product);
-            parts.push(`${intentParams.amount} ${intentParams.unit}`);
-            parts.push(intentParams.system_boundary);
-            if (intentParams.region) parts.push(intentParams.region);
-            if (intentParams.run_mc) parts.push(`Monte Carlo \u00d7${intentParams.n_simulations}`);
+            // parts.push(`${intentParams.amount} ${intentParams.unit}`);
+            // parts.push(intentParams.system_boundary);
+            // if (intentParams.region) parts.push(intentParams.region);
+            // if (intentParams.run_mc) parts.push(`Monte Carlo \u00d7${intentParams.n_simulations}`);
         } else if (intentParams.intent === 'literature') {
             parts.push('Literature Retrieval');
             if (intentParams.product && intentParams.product !== 'Not Specified') parts.push(intentParams.product);

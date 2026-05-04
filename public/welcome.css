@@ -1,12 +1,24 @@
 /* Sustainopedia Welcome Page Styles */
 :root {
-    --primary: #1b4332;
-    --secondary: #40916c;
-    --accent: #8ecaaf;
-    --bg: #f6fff8;
-    --white: #fff;
-    --header: #78a892;
-    --gray: #e9ecef;
+    /* ── Old color palette ───────────────────────────────────────────────── */
+    /* --primary: #1b4332; */
+    /* --secondary: #40916c; */
+    /* --accent: #8ecaaf; */
+    /* --bg: #f6fff8; */
+    /* --white: #fff; */
+    /* --header: #78a892; */
+    /* --gray: #e9ecef; */
+
+    /* ── New color palette ───────────────────────────────────────────────── */
+    --primary: #072E1B;             /* primary text */
+    --secondary: #305C42;           /* icons, buttons, accents */
+    --tertiary: #3c4b41;            /* highlights, secondary accents */
+    --accent: #8AAD9A;              /* highlight / active */
+    --bg: #E8E6DD;                  /* page background */
+    --white: #F3F1E9;               /* card / surface */
+    --header: #305C42;              /* header bar */
+    --gray: #D4D1C6;                /* dividers */
+
     --shadow: 0 4px 24px rgba(64,145,108,0.08);
     --radius: 16px;
     --transition: all 0.18s cubic-bezier(.4,1,.4,1);
@@ -66,7 +78,7 @@ a {
 .welcome-title {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--primary);
+    color: var(--bg);
     letter-spacing: 0.01em;
 }
 .welcome-nav {
@@ -74,12 +86,12 @@ a {
     gap: 32px;
 }
 .nav-link {
-    color: var(--primary);
+    color: var(--bg);
     text-decoration: none;
     font-weight: 500;
     font-size: 1.08rem;
-    transition: color 0.15s;
     position: relative;
+    transition: transform 0.4s ease-out;
 }
 .nav-link::after {
     content: '';
@@ -91,9 +103,10 @@ a {
     position: absolute;
     left: 0; bottom: -4px;
 }
-.nav-link:hover,
-.nav-link:focus {
-    color: var(--bg);
+
+.nav-link:hover
+ {
+    transform: translateY(-6px);
 }
 .nav-link:hover::after,
 .nav-link:focus::after {
@@ -114,11 +127,11 @@ a {
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(64,145,108,0.10);
-    transition: background 0.15s;
+    transition: transform 0.4s ease-out;
     text-decoration: none;
 }
 .login-btn:hover {
-    background: var(--primary);
+    transform: translateY(-6px);
 }
 
 .welcome-main {
@@ -141,11 +154,13 @@ a {
 }
 .hero-sub {
     font-size: 1.25rem;
-    color: #406c5c;
+    /* color: #406c5c; */
+    color: #305C42;
     margin-bottom: 32px;
 }
 .get-started-btn {
-    background: linear-gradient(90deg, var(--secondary), var(--accent));
+    /* background: linear-gradient(90deg, var(--secondary), var(--accent)); */
+    background: linear-gradient(90deg, #305C42, #4A7A5A);
     color: var(--white);
     border: none;
     border-radius: 24px;
@@ -155,11 +170,10 @@ a {
     cursor: pointer;
     box-shadow: 0 2px 12px rgba(64,145,108,0.13);
     text-decoration: none;
-    transition: background 0.15s, transform 0.13s;
+    transition: transform 0.4s ease-out;
 }
 .get-started-btn:hover {
-    background: var(--primary);
-    transform: translateY(-2px) scale(1.03);
+    transform: translateY(-10px);
 }
 .features {
     margin: 0 auto 48px auto;
@@ -202,7 +216,8 @@ a {
     color: var(--primary);
 }
 .feature-item p {
-    color: #406c5c;
+    /* color: #406c5c; */
+    color: #305C42;
     font-size: 1.01rem;
 }
 .about, .product, .contact {
@@ -226,7 +241,8 @@ section:nth-child(even) {
   background-color: var(--white); 
 } */
 .about p, .product p, .contact p {
-    color: #406c5c;
+    /* color: #406c5c; */
+    color: #305C42;
     font-size: 1.08rem;
     text-align: justify;
 }
@@ -234,7 +250,8 @@ section:nth-child(even) {
 
 .welcome-footer {
     background: var(--white);
-    color: #789f86;
+    /* color: #789f86; */
+    color: #305C42;
     text-align: center;
     padding: 18px 0 12px 0;
     font-size: 1rem;

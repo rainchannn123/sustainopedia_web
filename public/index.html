@@ -40,14 +40,17 @@
                         <ul id="conversationList" class="conversation-list"></ul>
                     </div>
                 </li>
-                <li class="tab"><a href="/records.html">LCA Records</a></li>
+                <!-- <li class="tab"><a href="/full_lca.html">LCA Records</a></li> -->
+                <li class="tab"><a href="/full_lca.html">Full LCA Report</a></li>
                 <li class="tab"><a href="/settings.html">Settings</a></li>
             </ul>
             <div class="nav-user">
                 <span id="navUsername" class="nav-username"></span>
+                <!-- DARK MODE TEMPORARILY DISABLED
                 <button id="darkModeBtn" class="dark-mode-btn" title="Toggle dark / light mode" aria-label="Toggle dark mode">
                     <img src="static/img/dark-mode.png" alt="" class="dark-mode-icon" />
                 </button>
+                -->
             </div>
         </nav>
 
@@ -109,17 +112,17 @@
                             <div class="input-bottom-right">
                                 <!-- Mode button + popup -->
                                 <div class="mode-btn-wrapper">
-                                    <button type="button" id="modeMenuBtn" class="mode-btn" aria-expanded="false">
-                                        <span id="modeBtnLabel">Thinking ⮝</span>
+                                    <button type="button" id="modeMenuBtn" data-mode="fast" class="mode-btn" aria-expanded="false">
+                                        <span id="modeBtnLabel">General ⮝</span>
                                     </button>
                                     <div id="modeMenu" class="mode-menu" hidden>
-                                        <button class="mode-menu-item active" data-mode="thinking" type="button">
+                                        <button class="mode-menu-item" data-mode="thinking" type="button" disabled>
                                             <div class="mode-item-text">
                                                 <strong>Thinking</strong>
-                                                <span>Full LCIA calculation with a detailed results table</span>
+                                                <span>This mode has been moved to "Full LCA Report" tab on the left option bar</span>
                                             </div>
                                         </button>
-                                        <button class="mode-menu-item" data-mode="fast" type="button">
+                                        <button class="mode-menu-item active" data-mode="fast" type="button">
                                             <div class="mode-item-text">
                                                 <strong>General</strong>
                                                 <span>Quick AI response using LCA knowledge base</span>
