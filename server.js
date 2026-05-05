@@ -119,7 +119,7 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             connectSrc: ["'self'", _backendUri, 'ws://localhost:42877/'],
-            scriptSrc: ["'self'"], 
+            scriptSrc: ["'self'", 'https://static.cloudflareinsights.com'], 
             styleSrc: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', 'https://cdn.jsdelivr.net'],
             imgSrc: ["'self'", 'data:'],
             fontSrc: ["'self'", 'https://fonts.gstatic.com'],
