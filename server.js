@@ -109,13 +109,16 @@ const lcaResultsChatSchema = new mongoose.Schema({
 
 const LcaResultsChat = mongoose.model('LcaResultsChat', lcaResultsChatSchema);
 
+// Derive backend origin from env var — used in both CSP and /config.js
+const _backendUri = process.env.BACKEND_URI || 'http://localhost:5052';
+
 // Security headers
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            connectSrc: ["'self'", 'http://localhost:5052', 'ws://localhost:42877/', 'https://teamsustainopedia-backend-hbcvdcbvcsb4fmaf.eastasia-01.azurewebsites.net'],
-            scriptSrc: ["'self'", 'https://static.cloudflareinsights.com'], 
+            connectSrc: ["'self'", _backendUri, 'ws://localhost:42877/'],
+            scriptSrc: ["'self'", 'https://static.cloudflareinsights.com'],
             styleSrc: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', 'https://cdn.jsdelivr.net'],
             imgSrc: ["'self'", 'data:'],
             fontSrc: ["'self'", 'https://fonts.gstatic.com'],
@@ -125,6 +128,12 @@ app.use(helmet({
 
 app.use(cors({ origin: 'https://www.sustainopedia.net' }));
 app.use(express.json({ limit: '10mb' }));
+
+// Serve backend URL as a browser-safe config script (must be before express.static)
+app.get('/config.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send(`window.FLASK_BASE = ${JSON.stringify(_backendUri)};`);
+});
 
 // Root route: always serve welcome page first.
 // welcome.js will immediately redirect to /index.html if the user already has a valid token.
