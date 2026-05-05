@@ -1392,6 +1392,7 @@ async function generateResult(e) {
     appendLog('Payload assembled from form data ✔');
     appendLog('Form Input Summary:\n' + question.split('\n').map(line => '- ' + line).join('\n'));
     appendLog('Submitting generation request to backend...');
+    appendLog('Average response time is around 15 mins, it will take longer if the no. of Monte Carlo simulations is high. You can safely leave this page and come back later.');
 
 
     let resp;
