@@ -306,6 +306,36 @@ function addNewRecord() {
     openRecord(record.id);
 }
 
+function createLocalDraftCard(record) {
+    const card = document.createElement('div');
+    card.className = 'record-card';
+    card.title = 'Click to open';
+
+    const ts      = record.updatedAt || record.createdAt || Date.now();
+    const date    = new Date(ts);
+    const dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+    const isRunning = record.status === STATUS.RUNNING;
+    const badgeClass = isRunning ? 'running' : 'draft';
+    const badgeText  = isRunning ? '⏳ Generating...' : 'Draft';
+
+    const info = document.createElement('div');
+    info.className = 'record-info';
+    info.innerHTML = `
+        <div class="record-product">${window.LciaUtils.escapeHtml(record.form?.productDescription || 'Untitled Assessment')}</div>
+        <div class="record-date">${dateStr} at ${timeStr}</div>
+        <div class="record-status-badge ${badgeClass}">${badgeText}</div>`;
+    card.appendChild(info);
+
+    const actions = document.createElement('div');
+    actions.className = 'record-actions';
+    card.appendChild(actions);
+
+    card.addEventListener('click', () => openRecord(record.id));
+    return card;
+}
+
 // ─── Backend history list ─────────────────────────────────────────────────────
 
 async function loadBackendHistory() {
@@ -365,14 +395,20 @@ function filterAndRenderHistory(records) {
         default:          filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     }
 
+    // Local draft / running records pinned above completed MongoDB records.
+    const localRecords = state.records
+        .filter(r => r.status === STATUS.RUNNING || (r.savedByUser && r.status === STATUS.DRAFT))
+        .filter(r => !term || (r.form?.productDescription || '').toLowerCase().includes(term));
+
     container.innerHTML = '';
-    if (filtered.length === 0) {
+    if (localRecords.length === 0 && filtered.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <p>No LCA records yet. Click <strong>+ New Assessment</strong> to generate your first one.</p>
             </div>`;
         return;
     }
+    localRecords.forEach(r => container.appendChild(createLocalDraftCard(r)));
     filtered.forEach(record => container.appendChild(createHistoryCard(record)));
 }
 
@@ -1476,6 +1512,8 @@ function collectAndSaveForm() {
 }
 
 async function saveDraft() {
+    const record = getActiveRecord();
+    if (record) { record.savedByUser = true; }
     collectAndSaveForm();
     appendLog('Draft saved.', 'success');
 }
@@ -1495,7 +1533,8 @@ async function generateResult(e) {
     }
 
     collectAndSaveForm();
-    record.status = STATUS.RUNNING;
+    record.status    = STATUS.RUNNING;
+    record.savedByUser = true;
     saveActiveRecord();
 
     const btn = document.getElementById('generateBtn');
@@ -1709,7 +1748,7 @@ function bindUI() {
         loadBackendHistory();
     });
 
-    // document.getElementById('saveDraftBtn')?.addEventListener('click', saveDraft);
+    document.getElementById('saveDraftBtn')?.addEventListener('click', saveDraft);
     document.getElementById('assessmentForm')?.addEventListener('submit', generateResult);
 
     document.getElementById('clearConsoleBtn')?.addEventListener('click', () => {
@@ -1743,6 +1782,13 @@ function initializePage() {
         appendLog('Welcome back. Please wait a second for updating you the latest progress...');
         const f = normalizeForm(runningRecord.form);
         const question = buildStructuredLcaQuery(f);
+        // Restore the Stop Generation button before polling starts so the user
+        // can cancel even if the first poll tick hasn't fired yet.
+        const btn = document.getElementById('generateBtn');
+        const cancelHandler = () => _cancelCurrentJob(runningRecord.jobId);
+        _cancelClickHandler = cancelHandler;
+        if (btn) btn.addEventListener('click', cancelHandler);
+        _setBtnState(btn, 'running');
         _startLcaPolling(runningRecord.jobId, runningRecord, f, question);
     } else {
         switchMainView('history');

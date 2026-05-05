@@ -1287,7 +1287,6 @@
 
 .record-emissions-badge {
     display: inline-block;
-    /* background: linear-gradient(135deg, var(--bg-secondary) 0%, #40916c 100%); */
     background: linear-gradient(135deg, #305C42 0%, #4A7A5A 100%);
     color: white;
     padding: 5px 10px;
@@ -1296,6 +1295,26 @@
     font-weight: 600;
     margin-top: 4px;
     align-self: flex-start;
+}
+
+.record-status-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 4px;
+    align-self: flex-start;
+}
+
+.record-status-badge.running {
+    background: linear-gradient(135deg, #e76f51 0%, #f4a261 100%);
+    color: white;
+}
+
+.record-status-badge.draft {
+    background: #e2e8f0;
+    color: #475569;
 }
 
 
