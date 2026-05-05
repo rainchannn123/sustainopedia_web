@@ -1,5 +1,5 @@
 
-const FLASK_BASE = window.FLASK_BASE || 'http://localhost:5052';
+const FLASK_BASE = 'https://teamsustainopedia-backend-hbcvdcbvcsb4fmaf.eastasia-01.azurewebsites.net';
 const POLL_INTERVAL_MS = 2500;
 
 let chatting = false;

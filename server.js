@@ -110,15 +110,11 @@ const lcaResultsChatSchema = new mongoose.Schema({
 const LcaResultsChat = mongoose.model('LcaResultsChat', lcaResultsChatSchema);
 
 // Security headers
-// Derive the Flask backend origin from the same env var served to the browser
-// so the CSP connectSrc and window.FLASK_BASE always stay in sync.
-const _backendUri = process.env.BACKEND_URI || 'http://localhost:5052';
-
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            connectSrc: ["'self'", _backendUri, 'ws://localhost:42877/'],
+            connectSrc: ["'self'", 'http://localhost:5052', 'ws://localhost:42877/', 'https://teamsustainopedia-backend-hbcvdcbvcsb4fmaf.eastasia-01.azurewebsites.net'],
             scriptSrc: ["'self'", 'https://static.cloudflareinsights.com'], 
             styleSrc: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', 'https://cdn.jsdelivr.net'],
             imgSrc: ["'self'", 'data:'],
@@ -133,12 +129,6 @@ app.use(express.json({ limit: '10mb' }));
 // Root route: always serve welcome page first.
 // welcome.js will immediately redirect to /index.html if the user already has a valid token.
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'welcome.html')));
-
-// Inject server-side env vars as browser globals so client scripts don't use process.env
-app.get('/config.js', (req, res) => {
-    res.setHeader('Content-Type', 'application/javascript');
-    res.send(`window.FLASK_BASE = ${JSON.stringify(_backendUri)};`);
-});
 
 app.use(express.static(path.join(__dirname, 'public')));
 
