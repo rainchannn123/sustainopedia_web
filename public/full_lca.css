@@ -226,6 +226,18 @@
   box-shadow: 0 0 0 3px rgba(4, 142, 78, 0.1);
 }
 
+.question-card.lca-field-error {
+  border: 1.5px solid #e63946;
+  background: #fff5f5;
+}
+
+.lca-error-msg {
+  color: #e63946;
+  font-size: 0.82rem;
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
 .lca-option-group {
   display: flex;
   flex-wrap: wrap;
@@ -350,6 +362,11 @@
 
 .lca-generate-btn:hover {
   background: var(--btn-primary-hover);
+}
+
+.lca-generate-btn.lca-cancel-mode {
+  background: #c1121f;
+  color: #fff;
 }
 
 .lca-generate-btn.small {

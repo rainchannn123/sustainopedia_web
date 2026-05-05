@@ -15,8 +15,9 @@ const FLASK_BASE = window.FLASK_BASE || 'http://localhost:5052';
 const POLL_INTERVAL_MS = 3000;
 
 // ── Job polling state ────────────────────────────────────────────────────────
-let _lcaPollTimer   = null;
-let _lcaActiveJobId = null;
+let _lcaPollTimer        = null;
+let _lcaActiveJobId      = null;
+let _cancelClickHandler  = null; // stored reference so _setBtnState('idle') can remove it
 const STORAGE_KEY = 'lca_assessments_v2';
 const STATUS = {
     DRAFT: 'draft',
@@ -1358,6 +1359,111 @@ function syncMonteCarloInputState() {
     }
 }
 
+// ─── Form validation ─────────────────────────────────────────────────────────
+
+const _REQUIRED_QUESTIONS = [
+    { q: 1,  check: () => !!document.getElementById('q1')?.value.trim(),           unknownId: 'q1-unknown'  },
+    { q: 2,  check: () => !!document.getElementById('q2-amount')?.value.trim(),    unknownId: 'q2-unknown'  },
+    { q: 3,  check: () => !!document.getElementById('q3')?.value.trim(),           unknownId: 'q3-unknown'  },
+    { q: 4,  check: () => !!document.getElementById('q4')?.value.trim(),           unknownId: 'q4-unknown'  },
+    { q: 5,  check: () => !!document.getElementById('q5')?.value.trim(),           unknownId: 'q5-unknown'  },
+    { q: 6,  check: () => !!document.getElementById('q6-lifespan')?.value.trim()
+                       || !!document.getElementById('q6-rough')?.value,            unknownId: 'q6-unknown'  },
+    { q: 7,  check: () => !!document.getElementById('q7')?.value.trim(),           unknownId: 'q7-unknown'  },
+    { q: 10, check: () => !!getGroupActiveValue('monteCarloGroup'),                 unknownId: 'q10-unknown' },
+];
+
+function validateForm() {
+    return _REQUIRED_QUESTIONS
+        .filter(({ check, unknownId }) => !check() && !document.getElementById(unknownId)?.checked)
+        .map(({ q }) => q);
+}
+
+function _getQuestionCard(qNum) {
+    for (const card of document.querySelectorAll('.question-card')) {
+        const numEl = card.querySelector('.q-number');
+        if (numEl && numEl.textContent.trim() === `${qNum}.`) return card;
+    }
+    return null;
+}
+
+function _markValidationErrors(failingQs) {
+    // Clear stale errors first
+    document.querySelectorAll('.question-card.lca-field-error').forEach(card => {
+        card.classList.remove('lca-field-error');
+        card.querySelector('.lca-error-msg')?.remove();
+    });
+    for (const qNum of failingQs) {
+        const card = _getQuestionCard(qNum);
+        if (!card) continue;
+        card.classList.add('lca-field-error');
+        const msg = document.createElement('p');
+        msg.className = 'lca-error-msg';
+        msg.textContent = 'Please provide an answer or check “I do not know”.';
+        card.appendChild(msg);
+    }
+}
+
+// Called on every form change — clears error state from cards that now pass.
+function _refreshValidationErrors() {
+    if (!document.querySelector('.question-card.lca-field-error')) return;
+    const failing = new Set(validateForm());
+    document.querySelectorAll('.question-card.lca-field-error').forEach(card => {
+        const qNum = parseInt(card.querySelector('.q-number')?.textContent);
+        if (qNum && !failing.has(qNum)) {
+            card.classList.remove('lca-field-error');
+            card.querySelector('.lca-error-msg')?.remove();
+        }
+    });
+}
+
+// ─── Generate / Stop button helpers ──────────────────────────────────────────────
+
+// Switch the Generate button between idle (green submit) and running (red cancel).
+function _setBtnState(btn, mode) {
+    if (!btn) btn = document.getElementById('generateBtn');
+    if (!btn) return;
+    if (mode === 'running') {
+        btn.type = 'button'; // prevent accidental form re-submit
+        btn.classList.add('lca-cancel-mode');
+        btn.textContent = 'Stop Generation';
+        btn.disabled = false;
+    } else {
+        if (_cancelClickHandler) {
+            btn.removeEventListener('click', _cancelClickHandler);
+            _cancelClickHandler = null;
+        }
+        btn.type = 'submit';
+        btn.classList.remove('lca-cancel-mode');
+        btn.textContent = 'Generate Result';
+        btn.disabled = false;
+    }
+}
+
+// Send a DELETE request to the backend to abort the job, then reset the UI.
+async function _cancelCurrentJob(jobId) {
+    const btn = document.getElementById('generateBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Stopping…'; }
+
+    _stopLcaPolling();
+
+    const record = getActiveRecord();
+    if (record) {
+        record.status = STATUS.DRAFT;
+        record.jobId  = null;
+        saveActiveRecord();
+    }
+
+    try {
+        await fetch(`${FLASK_BASE}/api/jobs/${jobId}`, { method: 'DELETE' });
+    } catch (err) {
+        console.warn('[LCA] Cancel request failed (network):', err.message);
+    }
+
+    appendLog('Generation cancelled by user.', 'warning');
+    _setBtnState(btn, 'idle');
+}
+
 function collectAndSaveForm() {
     const record = getActiveRecord();
     if (!record) return;
@@ -1366,6 +1472,7 @@ function collectAndSaveForm() {
     saveActiveRecord();
     setWorkspaceTitle(record);
     updateDataQualityUI(record.form);
+    _refreshValidationErrors();
 }
 
 async function saveDraft() {
@@ -1378,6 +1485,14 @@ async function generateResult(e) {
 
     const record = getActiveRecord();
     if (!record) return;
+
+    // Validate required questions before submitting
+    const failingQs = validateForm();
+    if (failingQs.length > 0) {
+        _markValidationErrors(failingQs);
+        _getQuestionCard(failingQs[0])?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
 
     collectAndSaveForm();
     record.status = STATUS.RUNNING;
@@ -1411,7 +1526,7 @@ async function generateResult(e) {
         record.status = STATUS.DRAFT;
         saveActiveRecord();
         appendLog(`Failed to reach backend: ${err.message}`, 'error');
-        if (btn) { btn.disabled = false; btn.textContent = 'Generate Result'; }
+        _setBtnState(btn, 'idle');
         return;
     }
 
@@ -1421,7 +1536,7 @@ async function generateResult(e) {
         record.status = STATUS.DRAFT;
         saveActiveRecord();
         appendLog(`Generation failed: ${errText}`, 'error');
-        if (btn) { btn.disabled = false; btn.textContent = 'Generate Result'; }
+        _setBtnState(btn, 'idle');
         return;
     }
 
@@ -1430,6 +1545,12 @@ async function generateResult(e) {
     record.backendLogOffset = 0;
     saveActiveRecord();
     appendLog(`Backend job accepted (jobId: ${jobId}). Polling for result...`);
+
+    // Arm the Stop Generation button
+    const cancelHandler = () => _cancelCurrentJob(jobId);
+    _cancelClickHandler = cancelHandler;
+    if (btn) btn.addEventListener('click', cancelHandler);
+    _setBtnState(btn, 'running');
 
     _startLcaPolling(jobId, record, f, question);
 }
@@ -1469,8 +1590,7 @@ function _startLcaPolling(jobId, record, f, question) {
                 record.status = STATUS.DRAFT;
                 saveActiveRecord();
                 appendLog('The computation session was reset. Please re-submit your query.', 'error');
-                const btn = document.getElementById('generateBtn');
-                if (btn) { btn.disabled = false; btn.textContent = 'Generate Result'; }
+                _setBtnState(null, 'idle');
                 return;
             }
 
@@ -1487,8 +1607,7 @@ function _startLcaPolling(jobId, record, f, question) {
                 record.status = STATUS.DRAFT;
                 saveActiveRecord();
                 appendLog(`Generation failed: ${data.error || 'Backend job failed.'}`, 'error');
-                const btn = document.getElementById('generateBtn');
-                if (btn) { btn.disabled = false; btn.textContent = 'Generate Result'; }
+                _setBtnState(null, 'idle');
             }
             // else: still pending/running — backend logs already flushed above
 
@@ -1501,8 +1620,7 @@ function _startLcaPolling(jobId, record, f, question) {
                     record.status = STATUS.DRAFT;
                     saveActiveRecord();
                     appendLog('The server is currently unreachable. Please try again later.', 'error');
-                    const btn = document.getElementById('generateBtn');
-                    if (btn) { btn.disabled = false; btn.textContent = 'Generate Result'; }
+                    _setBtnState(null, 'idle');
                 }
             } else {
                 console.error('[LCA Polling] Unexpected error:', err);
@@ -1558,8 +1676,7 @@ async function _onLcaJobDone(answerPack, record, f, question) {
     await loadBackendHistory();
     if (displayRecord) openBackendResultsInTab(displayRecord);
 
-    const btn = document.getElementById('generateBtn');
-    if (btn) { btn.disabled = false; btn.textContent = 'Generate Result'; }
+    _setBtnState(null, 'idle');
 }
 
 function bindOptionGroups() {
@@ -1592,7 +1709,7 @@ function bindUI() {
         loadBackendHistory();
     });
 
-    document.getElementById('saveDraftBtn')?.addEventListener('click', saveDraft);
+    // document.getElementById('saveDraftBtn')?.addEventListener('click', saveDraft);
     document.getElementById('assessmentForm')?.addEventListener('submit', generateResult);
 
     document.getElementById('clearConsoleBtn')?.addEventListener('click', () => {
