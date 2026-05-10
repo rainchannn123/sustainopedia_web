@@ -3,139 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SustainOpedia - Desktop Only</title>
+    <title>SustainOpedia</title>
     <link rel="icon" type="image/x-icon" href="/static/img/logo.ico">
-    <style>
-        :root {
-            --primary:   #072E1B;
-            --secondary: #305C42;
-            --accent:    #8AAD9A;
-            --bg:        #E8E6DD;
-            --white:     #F3F1E9;
-            --gray:      #D4D1C6;
-            --shadow:    0 4px 24px rgba(64, 145, 108, 0.12);
-            --radius:    16px;
-        }
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        html, body {
-            height: 100%;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--primary);
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 2rem 1.5rem;
-        }
-
-        .card {
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            max-width: 440px;
-            width: 100%;
-            padding: 2.5rem 2rem;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.25rem;
-        }
-
-        .logo {
-            width: 80px;
-            height: auto;
-        }
-
-        .brand-name {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--secondary);
-            letter-spacing: 0.04em;
-        }
-
-        .icon-wrap {
-            background: #dff0e8;
-            border-radius: 50%;
-            width: 72px;
-            height: 72px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Simple desktop monitor SVG icon - no external dependencies */
-        .icon-wrap svg {
-            width: 40px;
-            height: 40px;
-            fill: var(--secondary);
-        }
-
-        h1 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--primary);
-            line-height: 1.35;
-        }
-
-        p {
-            font-size: 0.95rem;
-            color: #4a5e54;
-            line-height: 1.6;
-        }
-
-        .divider {
-            width: 48px;
-            height: 3px;
-            background: var(--accent);
-            border-radius: 2px;
-        }
-
-        .tip {
-            background: #eef5f1;
-            border-radius: 10px;
-            padding: 0.9rem 1rem;
-            font-size: 0.875rem;
-            color: var(--secondary);
-            line-height: 1.55;
-        }
-
-        .tip strong { font-weight: 600; }
-    </style>
+    <link rel="stylesheet" href="mobile-ns.css">
 </head>
 <body>
     <div class="card" role="main">
-        <img src="/static/img/logo.png" alt="SustainOpedia Logo" class="logo">
-        <span class="brand-name">SustainOpedia</span>
 
         <div class="icon-wrap" aria-hidden="true">
-            <!-- Desktop monitor icon -->
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 2H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7v2H8a1 1 0 0 0 0 2h8a1 1 0 0 0 0-2h-2v-2h7a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm0 14H3V4h18v12z"/>
-            </svg>
+            <img src="/static/img/logo.png" alt="SustainOpedia Logo" class="logo">
         </div>
-
-        <h1>Desktop Browser Required</h1>
 
         <div class="divider"></div>
 
         <p>
-            SustainOpedia is a professional Life Cycle Assessment &amp; ESG reporting
-            platform designed for desktop use. The interface requires a larger screen
-            to display data tables, charts, and analysis tools correctly.
+            Dear User,<br><br>Thank you very much for visiting our platform.<br><br>However, SustainOpedia is currently not supported on mobile devices. Please visit our platform on a desktop or laptop computer for the best experience. We apologize for any inconvenience and appreciate your understanding.<br><br>Best regards,<br>The SustainOpedia Team</p>
         </p>
-
-        <div class="tip">
-            <strong>Please open this platform on a desktop or laptop computer</strong>
-            with a screen width of at least 1024&nbsp;px for the best experience.
-        </div>
     </div>
 </body>
 </html>
