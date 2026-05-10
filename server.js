@@ -117,7 +117,7 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            connectSrc: ["'self'", _backendUri, 'ws://localhost:42877/'],
+            connectSrc: ["'self'", _backendUri],
             scriptSrc: ["'self'", 'https://static.cloudflareinsights.com'],
             styleSrc: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', 'https://cdn.jsdelivr.net'],
             imgSrc: ["'self'", 'data:'],
