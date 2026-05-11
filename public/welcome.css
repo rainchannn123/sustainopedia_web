@@ -143,6 +143,9 @@ a {
 }
 
 .top-temp-banner {
+    position: sticky;
+    top: 90px;
+    z-index: 9;
     background: #eaefba;
     padding: 12px 24px;
     border-radius: 8px;
@@ -151,6 +154,7 @@ a {
     width: 100%;
     margin-top: 0;
     text-align: center;
+    box-sizing: border-box;
 }
 
 
