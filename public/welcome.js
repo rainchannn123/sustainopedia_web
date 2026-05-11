@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Optionally, highlight nav on scroll (simple version)
-    const sections = ['about', 'features', 'how', 'contact'];
+    const sections = ['about', 'features', 'product', 'contact'];
     const navLinks = Array.from(document.querySelectorAll('.nav-link'));
     window.addEventListener('scroll', () => {
         let found = false;

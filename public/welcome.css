@@ -141,6 +141,19 @@ a {
     align-items: center;
     padding: 0 0 40px 0;
 }
+
+.top-temp-banner {
+    background: #eaefba;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    margin-bottom: 32px;
+    width: 100%;
+    margin-top: 0;
+    text-align: center;
+}
+
+
 .hero {
     text-align: center;
     margin: 60px 0 48px 0;
