@@ -1,21 +1,20 @@
 // welcome.js — minimal interactivity for Sustainopedia welcome page
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Smooth scroll for nav links
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            const href = this.getAttribute('href');
-            if (href && href.startsWith('#')) {
-                e.preventDefault();
-                const target = document.querySelector(href);
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }
-        });
-    });
 
-    // Optionally, highlight nav on scroll (simple version)
+    // document.querySelectorAll('.nav-link').forEach(link => {
+    //     link.addEventListener('click', function(e) {
+    //         const href = this.getAttribute('href');
+    //         if (href && href.startsWith('#')) {
+    //             e.preventDefault();
+    //             const target = document.querySelector(href);
+    //             if (target) {
+    //                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    //             }
+    //         }
+    //     });
+    // });
+
     const sections = ['about', 'features', 'product', 'contact'];
     const navLinks = Array.from(document.querySelectorAll('.nav-link'));
     window.addEventListener('scroll', () => {
