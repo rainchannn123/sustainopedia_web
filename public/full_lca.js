@@ -399,7 +399,9 @@ function createHistoryCard(record) {
     const chartId = `chart-${record.id}`;
     const chartContainer = document.createElement('div');
     chartContainer.className = 'record-chart-container';
-    chartContainer.innerHTML = `<canvas id="${chartId}"></canvas>`;
+    const chartCanvas = document.createElement('canvas');
+    chartCanvas.id = chartId;
+    chartContainer.appendChild(chartCanvas);
     canvas_container.appendChild(chartContainer);
 
     // ── Pie chart (separate div, only if streamSummary present) ──────────────
@@ -408,7 +410,9 @@ function createHistoryCard(record) {
     if (streamSummary) {
         const pieContainer = document.createElement('div');
         pieContainer.className = 'record-pie-container';
-        pieContainer.innerHTML = `<canvas id="${pieId}"></canvas>`;
+        const pieCanvas = document.createElement('canvas');
+        pieCanvas.id = pieId;
+        pieContainer.appendChild(pieCanvas);
         canvas_container.appendChild(pieContainer);
     }
 
@@ -643,15 +647,30 @@ function openBackendResultsInTab(record) {
     if (record.answerText) {
         const answerSection = document.createElement('div');
         answerSection.className = 'detail-section';
-        answerSection.innerHTML = `
-            <h3 class="detail-section-title">Sustainopedia's Response</h3>
-            <div class="detail-answer-text"></div>`;
-        const answerEl = answerSection.querySelector('.detail-answer-text');
+        const answerTitle = document.createElement('h3');
+        answerTitle.className = 'detail-section-title';
+        answerTitle.textContent = "Sustainopedia's Response";
+        answerSection.appendChild(answerTitle);
+        const answerEl = document.createElement('div');
+        answerSection.appendChild(answerEl);
         if (window.markdownit) {
             const md = window.markdownit({ html: false, breaks: true, linkify: true });
+            md.core.ruler.push('sanitize_links', state => {
+                state.tokens.forEach(tok => {
+                    if (tok.type === 'inline' && tok.children) {
+                        tok.children.forEach(child => {
+                            if (child.type === 'link_open') {
+                                const href = child.attrGet('href') || '';
+                                if (/^javascript:|^data:/i.test(href.trim())) child.attrSet('href', '#');
+                            }
+                        });
+                    }
+                });
+            });
             answerEl.className = 'detail-answer-text bot-message-prose';
             answerEl.innerHTML = md.render(record.answerText);
         } else {
+            answerEl.className = 'detail-answer-text';
             answerEl.textContent = record.answerText;
         }
         body.appendChild(answerSection);
@@ -857,6 +876,20 @@ function initResultsChat(record) {
     const md = window.markdownit
         ? window.markdownit({ html: false, breaks: true, linkify: true })
         : null;
+    if (md) {
+        md.core.ruler.push('sanitize_links', state => {
+            state.tokens.forEach(tok => {
+                if (tok.type === 'inline' && tok.children) {
+                    tok.children.forEach(child => {
+                        if (child.type === 'link_open') {
+                            const href = child.attrGet('href') || '';
+                            if (/^javascript:|^data:/i.test(href.trim())) child.attrSet('href', '#');
+                        }
+                    });
+                }
+            });
+        });
+    }
 
     function renderText(text) {
         return md ? md.render(text || '') : (text || '');

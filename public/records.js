@@ -98,7 +98,9 @@ function createRecordCard(record) {
     const chartContainer = document.createElement('div');
     chartContainer.className = 'record-chart-container';
     const chartId = `chart-${record.id}`;
-    chartContainer.innerHTML = `<canvas id="${chartId}"></canvas>`;
+    const chartCanvas = document.createElement('canvas');
+    chartCanvas.id = chartId;
+    chartContainer.appendChild(chartCanvas);
     card.appendChild(chartContainer);
 
     //  Bottom: action buttons â”€

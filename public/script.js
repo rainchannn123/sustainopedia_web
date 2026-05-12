@@ -121,6 +121,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Initialize markdown renderer here so processMarkdown works during loadConversations
     md = window.markdownit({ html: false, breaks: true, linkify: true });
+    // Block javascript: / data: URIs that linkify can generate from plain-text URLs
+    md.core.ruler.push('sanitize_links', state => {
+        state.tokens.forEach(tok => {
+            if (tok.type === 'inline' && tok.children) {
+                tok.children.forEach(child => {
+                    if (child.type === 'link_open') {
+                        const href = child.attrGet('href') || '';
+                        if (/^javascript:|^data:/i.test(href.trim())) child.attrSet('href', '#');
+                    }
+                });
+            }
+        });
+    });
 
     // ── Load conversations from MongoDB on startup ─────────────────────────
     async function loadConversations() {
@@ -260,11 +273,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     function showWelcomeScreen() {
         document.getElementById('chatbot').classList.add('welcome-mode');
         const displayName = localStorage.getItem('username') || 'there';
-        chatWindow.innerHTML = `
-            <div class="welcome-core">
-                <h1 class="welcome-core-greeting">Hello, <span>${displayName}</span></h1>
-                <p class="welcome-core-sub">Your AI assistant for Life Cycle Assessment &amp; environmental impact analysis.</p>
-            </div>`;
+
+        const core = document.createElement('div');
+        core.className = 'welcome-core';
+
+        const h1 = document.createElement('h1');
+        h1.className = 'welcome-core-greeting';
+        h1.append('Hello, ');
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = displayName;
+        h1.appendChild(nameSpan);
+
+        const p = document.createElement('p');
+        p.className = 'welcome-core-sub';
+        p.textContent = 'Your AI assistant for Life Cycle Assessment & environmental impact analysis.';
+
+        core.appendChild(h1);
+        core.appendChild(p);
+        chatWindow.innerHTML = '';
+        chatWindow.appendChild(core);
         // Move input form inside the chatWindow so greeting + form center together
         chatWindow.appendChild(chatForm);
     }
@@ -570,7 +597,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'sample-query-card';
-            btn.innerHTML = `<span class="sample-query-label">${q.label}</span>${q.text}`;
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'sample-query-label';
+            labelSpan.textContent = q.label;
+            btn.appendChild(labelSpan);
+            btn.appendChild(document.createTextNode(q.text));
             btn.addEventListener('click', () => {
                 userInput.value = q.text;
                 userInput.dispatchEvent(new Event('input'));  // trigger auto-resize
