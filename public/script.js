@@ -29,6 +29,11 @@ function _startPolling(jobId, typingEl, extractionTimer, onMessage) {
     let _consecutiveNetworkErrors = 0;
     const MAX_NETWORK_ERRORS = 3; // ~7.5 s of consecutive failures before giving up
 
+    function _removeTypingEl() {
+        if (typingEl?._labelTimers) typingEl._labelTimers.forEach(clearTimeout);
+        if (typingEl?.parentNode) typingEl.parentNode.removeChild(typingEl);
+    }
+
     _pollTimer = setInterval(async () => {
         try {
             const resp = await fetch(`${FLASK_BASE}/api/jobs/${jobId}`);
@@ -38,7 +43,7 @@ function _startPolling(jobId, typingEl, extractionTimer, onMessage) {
             if (resp.status === 404) {
                 _stopPolling();
                 clearTimeout(extractionTimer);
-                if (typingEl?.parentNode) typingEl.parentNode.removeChild(typingEl);
+                _removeTypingEl();
                 onMessage('bot-message', 'The computation session was reset. Please re-send your query.');
                 document.querySelector('.send-btn').disabled = false;
                 return;
@@ -49,7 +54,7 @@ function _startPolling(jobId, typingEl, extractionTimer, onMessage) {
             if (data.status === 'done') {
                 _stopPolling();
                 clearTimeout(extractionTimer);
-                if (typingEl?.parentNode) typingEl.parentNode.removeChild(typingEl);
+                _removeTypingEl();
                 // Parse the structured LCIA object so renderLCIAResultsTable (with column
                 // visibility control) is used instead of the raw-markdown fallback.
                 const lciaObj = data.answer_pack['processed_json']
@@ -62,7 +67,7 @@ function _startPolling(jobId, typingEl, extractionTimer, onMessage) {
             } else if (data.status === 'error') {
                 _stopPolling();
                 clearTimeout(extractionTimer);
-                if (typingEl?.parentNode) typingEl.parentNode.removeChild(typingEl);
+                _removeTypingEl();
                 onMessage('bot-message', 'Error: ' + (data.error || 'Computation failed. Please try again.'));
                 document.querySelector('.send-btn').disabled = false;
             }
@@ -75,7 +80,7 @@ function _startPolling(jobId, typingEl, extractionTimer, onMessage) {
                 if (_consecutiveNetworkErrors >= MAX_NETWORK_ERRORS) {
                     _stopPolling();
                     clearTimeout(extractionTimer);
-                    if (typingEl?.parentNode) typingEl.parentNode.removeChild(typingEl);
+                    _removeTypingEl();
                     onMessage('bot-message', 'The server is currently shut down. Please try again later.');
                     document.querySelector('.send-btn').disabled = false;
                 }
@@ -106,36 +111,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userInput = document.getElementById('userInput');
     const chatWindow = document.getElementById('chatWindow');
     const newChatBtn = document.getElementById('newChatBtn');
-    const toggleConversationBtn = document.getElementById('toggleConversationList');
+    const toggleConversationBtn = null; // removed — panel auto-expands based on Chat tab focus
     const navConvListItem = document.getElementById('navConvListItem');
     const conversationListPanel = document.getElementById('conversationListPanel'); // null with new layout; kept for compat
     const conversationList = document.getElementById('conversationList');
     const conversationTitleInput = document.getElementById('conversationTitleInput');
 
-    // New Chat modal elements
-    const newChatModal = document.getElementById('newChatModal');
-    const newChatNameInput = document.getElementById('newChatNameInput');
-    const createChatBtn = document.getElementById('createChatBtn');
-    const cancelCreateBtn = document.getElementById('cancelCreateBtn');
-    newChatModal.style.display = 'none';
+    // New Chat modal elements removed — new conversation goes directly to welcome screen
 
     // Initialize markdown renderer here so processMarkdown works during loadConversations
     md = window.markdownit({ html: false, breaks: true, linkify: true });
 
     // ── Load conversations from MongoDB on startup ─────────────────────────
     async function loadConversations() {
+        const freshLogin = sessionStorage.getItem('justLoggedIn') === '1';
+        if (freshLogin) sessionStorage.removeItem('justLoggedIn');
+
         try {
             conversations = await apiReq('GET', '/api/chat-histories');
             renderConversationList();
-            if (conversations.length > 0) {
+            if (freshLogin || conversations.length === 0) {
+                // Always greet the user on a fresh login, regardless of history
+                if (conversationTitleInput) conversationTitleInput.value = 'Conversation';
+                showWelcomeScreen();
+            } else {
                 const latest = conversations[0]; // server returns newest-first
                 activeConvId = latest._id;
                 renderChatWindow(latest.messages.map(serverMsgToFrontend));
                 if (conversationTitleInput) conversationTitleInput.value = latest.conversationName;
                 renderConversationList(); // re-render to apply active highlight after activeConvId is set
-            } else {
-                if (conversationTitleInput) conversationTitleInput.value = 'Conversation';
-                showWelcomeScreen();
             }
         } catch (err) {
             console.error('Failed to load conversations:', err);
@@ -229,17 +233,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Export all data — now fetches from the server
     // (exported via the exportDataBtn handler above)
 
-    function openNewChatModal() {
-        if (!newChatModal) return;
-        newChatNameInput.value = '';
-        newChatModal.style.display = 'flex';
-        setTimeout(() => newChatNameInput.focus(), 50);
-    }
-
-    function closeNewChatModal() {
-        if (!newChatModal) return;
-        newChatModal.style.display = 'none';
-    }
+    // openNewChatModal / closeNewChatModal removed — new conversation goes directly to welcome screen
 
     // ── Sample queries per feature ─────────────────────────────────────────
     const SAMPLE_QUERIES = {
@@ -458,32 +452,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // ── Conversation panel open/close helpers ────────────────────────────────
+    // ── Conversation panel: auto-open when Chat tab is active ──────────────
     function openConvPanel() {
         if (navConvListItem) navConvListItem.classList.add('open');
-        if (toggleConversationBtn) {
-            toggleConversationBtn.setAttribute('aria-expanded', 'true');
-            const icon = toggleConversationBtn.querySelector('.toggle-icon');
-            if (icon) icon.textContent = '⮝';
-        }
     }
 
     function closeConvPanel() {
         if (navConvListItem) navConvListItem.classList.remove('open');
-        if (toggleConversationBtn) {
-            toggleConversationBtn.setAttribute('aria-expanded', 'false');
-            const icon = toggleConversationBtn.querySelector('.toggle-icon');
-            if (icon) icon.textContent = '⮟';
-        }
     }
 
-    // Conversation panel is always open — toggle button just keeps it open
-    toggleConversationBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openConvPanel();
+    // Open panel whenever the user is on the Chat page; close when on other tabs.
+    // Attach listeners to every non-Chat nav <a> link to collapse the panel.
+    document.querySelectorAll('.left-nav .tab:not(.nav-chat-tab) a').forEach(link => {
+        link.addEventListener('click', () => closeConvPanel());
     });
 
-    // Open on init
+    // Open on init (we are on the Chat tab)
     openConvPanel();
 
     // conversationTitleInput is now a hidden element; rename is via double-click on nav items
@@ -535,31 +519,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         userInput.style.height = Math.min(userInput.scrollHeight, 160) + 'px';
     });
 
-    // New chat: open modal to collect a name
+    // New chat: go directly to welcome screen
     newChatBtn.addEventListener('click', () => {
-        openNewChatModal();
+        activeConvId = null;
+        showWelcomeScreen();
     });
-
-    // Modal action handlers
-    if (createChatBtn) {
-        createChatBtn.addEventListener('click', () => {
-            const name = sanitizeInput(newChatNameInput.value.trim()) || ('Chat ' + formatTime(new Date()));
-            createConversation(name);
-            closeNewChatModal();
-        });
-    }
-    if (cancelCreateBtn) {
-        cancelCreateBtn.addEventListener('click', () => {
-            closeNewChatModal();
-        });
-    }
-
-    // close modal when clicking outside modal box
-    if (newChatModal) {
-        newChatModal.addEventListener('click', (e) => {
-            if (e.target === newChatModal) closeNewChatModal();
-        });
-    }
 
     // ── Feature menu toggle ──────────────────────────────────────────────────
     const featureMenuBtn = document.getElementById('featureMenuBtn');
@@ -690,7 +654,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Auto-create a conversation on the user's very first message so all
         // subsequent appendMessage calls have a valid activeConvId to persist to.
         if (!activeConvId) {
-            await _createConvDoc(productName || 'Welcome');
+            // Use the first sentence of the query as the conversation title
+            const firstSentence = query.split(/(?<=[.?!])\s+/)[0].trim();
+            const convTitle = firstSentence || productName || 'Unknown Title';
+            await _createConvDoc(convTitle);
         }
 
         const now = formatTime(new Date().toISOString());
@@ -699,16 +666,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const typingEl = showTypingIndicator('Sustainopedia Bot');
 
-        // After 10 s show the "Extracting…" extra line
-        const extractionTimer = setTimeout(() => {
-            if (typingEl?.parentNode) {
-                const extra = typingEl.querySelector('.typing-extra');
-                if (extra) {
-                    extra.style.display = 'block';
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                }
-            }
-        }, 10000);
+        const extractionTimer = null;
 
         try {
             // POST the job — Flask responds immediately with a jobId
@@ -787,8 +745,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (type === 'bot-message') {
             // Show intent classification badge if available
-            const badge = buildIntentBadge(intentParams);
-            if (badge) contentDiv.appendChild(badge);
+            // const badge = buildIntentBadge(intentParams);
+            // if (badge) contentDiv.appendChild(badge);
 
             // Render full markdown once, then animate each top-level block in sequence
             const rendered = processMarkdown(text || '');
@@ -930,18 +888,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
         contentDiv.innerHTML = `
-            <div class="typing-dots" aria-label="Bot is typing">
-                <span></span><span></span><span></span>
-            </div>
-            <div class="typing-extra">
-                Extracting Life Cycle Inventory sources&hellip;<br>
-                <span class="typing-eta">Estimated response time: ${currentMode === 'fast' ? '30 s' : '10-15 mins'}</span>
+            <div class="typing-spinner-wrap">
+                <div class="typing-spinner" aria-label="Generating response" role="status"></div>
+                <span class="typing-spinner-label">Understanding User's Query</span>
             </div>
         `;
         messageDiv.appendChild(contentDiv);
 
         chatWindow.appendChild(messageDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        // Cycle label text as processing progresses
+        const label = contentDiv.querySelector('.typing-spinner-label');
+        function _setLabel(text) {
+            if (!label?.isConnected) return;
+            label.style.opacity = '0';
+            setTimeout(() => {
+                if (label.isConnected) {
+                    label.textContent = text;
+                    label.style.opacity = '1';
+                }
+            }, 300);
+        }
+        const t1 = setTimeout(() => _setLabel('Fetching Relevant Sources from Database'), 4000);
+        const t2 = setTimeout(() => _setLabel('Generating Response Based on User\'s Query'), 14000);
+        messageDiv._labelTimers = [t1, t2];
 
         return messageDiv;
     }

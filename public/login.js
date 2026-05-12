@@ -102,6 +102,8 @@ loginForm.addEventListener('submit', async (e) => {
         localStorage.setItem('userId', data.userId);
         localStorage.setItem('username', data.username);
         
+        // Signal to index.html that the user just logged in
+        sessionStorage.setItem('justLoggedIn', '1');
         // Redirect to main app
         window.location.href = '/index.html';
     } catch (error) {
@@ -174,6 +176,8 @@ registerForm.addEventListener('submit', async (e) => {
         localStorage.setItem('userId', data.userId);
         localStorage.setItem('username', data.username);
 
+        // Signal to index.html that the user just registered
+        sessionStorage.setItem('justLoggedIn', '1');
         // Redirect to main app
         window.location.href = '/index.html';
     } catch (error) {

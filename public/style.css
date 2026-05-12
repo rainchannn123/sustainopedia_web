@@ -83,9 +83,8 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 }
 
 .left-nav .tab.active {
-    background: var(--bg-tertiary);
+    background: #d2d1c9;
     font-weight: 600;
-    color: var(--text-secondary);
 }
 
 /* Nav tabs use <a> links — make the anchor fill the tab and strip link styling */
@@ -179,7 +178,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     overflow-y: auto;
     transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     scrollbar-width: none;
-    background: rgba(142, 202, 175, 0.14);
+    /* background: rgba(142, 202, 175, 0.14); */
 }
 
 .nav-conv-panel::-webkit-scrollbar { display: none; }
@@ -197,11 +196,12 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.nav-conv-panel .conversation-list li:hover {
+    cursor: pointer;
+}
 
 .nav-conv-panel .conversation-list li.active {
-    background: var(--bg-tertiary);
-    font-weight: 600;
-    color: var(--text-secondary);
+    background: #d5d4cb;
 }
 
 /* Inline rename span inside nav conversation items */
@@ -270,11 +270,11 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 }
 
 #logoutBtn {
-    background-color: var(--btn-bg);
+    background-color: #e0ddd4;
     border: none;
     border-radius: 20px;
     min-width:90px;
-    min-height:30px;
+    min-height:40px;
     color: var(--text-primary);
     font-family: inherit;
     font-size: 0.85rem;
@@ -510,20 +510,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     }
 }
 
-#toggleConversationList{
-    aspect-ratio: 1 / 1;
-    border: none;
-    border-radius: 50%;
-    height: 100%;
-    padding-bottom: 3px;
-}
-
-#toggleConversationList span {
-    font-size: 1rem;
-    width: 20px;
-    height: 20px;
-}
-
 .conversation-list {
     list-style: none;
     padding: 0;
@@ -537,29 +523,10 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
   display: none;            /* Chrome, Safari */
 }
 
-.conversation-list li {
-    padding: 12px 10px;
-    border-bottom: none;
-    cursor: pointer;
-    transition: var(--transition);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 .conversation-list li:last-child {
     border-bottom: none;
 }
 
-.conversation-list li:hover {
-    background: var(--btn-hover);
-}
-
-.conversation-list li.active {
-    background: var(--bg-tertiary);
-    font-weight: 600;
-    color: var(--text-secondary);
-}
 
 .current-conversation-title {
     padding: 8px 12px;
@@ -573,39 +540,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 /* Chat window */
 
 /* Modal for new chat */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-}
-
-.modal-box {
-    /* background: #fff; */
-    background: #F3F1E9;
-    padding: 20px 18px;
-    border-radius: 10px;
-    width: 360px;
-    max-width: calc(100% - 40px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-    text-align: left;
-}
-
-.modal-box h3 { margin-bottom: 8px; }
-.modal-box p { margin-bottom: 12px; color: #444; }
-.modal-box input[type="text"] {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    margin-bottom: 12px;
-}
-.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
-.modal-actions .btn { min-width: 80px; }
+/* New Chat Modal styles removed — modal replaced by direct welcome screen navigation */
 .chat-window {
     flex: 1;
     overflow-y: auto;
@@ -714,11 +649,11 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 .toolbar-btn {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 7px;
     padding: 5px 12px;
     min-height:38px;
     border: none;
-    /* background: #eef6f1; */
+    box-shadow: #d7d5cd 0px 1px 3px;   
     background: #F3F1E9;
     border-radius: 20px;
     color: var(--text-primary);
@@ -730,15 +665,9 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     user-select: none;
 }
 
-.toolbar-btn:hover {
-    background: var(--btn-hover);
-}
-
-.toolbar-btn-plus {
-    font-size: 1rem;
-    line-height: 1;
-    font-weight: 500;
-    color: var(--text-primary);
+.toolbar-btn-img {
+    width: 15px;
+    height: 15px;
 }
 
 /* Feature menu popup */
@@ -843,9 +772,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     user-select: none;
 }
 
-.mode-btn:hover {
-    background: var(--btn-hover);
-}
 
 /* Relative wrapper so .mode-menu pops up correctly */
 .mode-btn-wrapper {
@@ -1053,11 +979,11 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     display: flex;
     align-items: center;
     gap: 5px;
-    /* background: #eef6f1; */
-    background: #e7e5dd;
+    box-shadow: #d7d5cd 0px 2px 3px;   
     border-radius: 20px;
     padding: 5px 12px;
     min-height:38px;
+    opacity: 0.9;
 }
 
 .product-label {
@@ -1240,62 +1166,43 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     flex-direction: row;
     align-items: flex-start;
     gap: 10px;
-    max-width: 340px;
+    max-width: 380px;
 }
 
 .bot-typing .message-content {
-    /* background: #f5fdf8; */
-    background: #F3F1E9;
-    /* border: 1px solid #d4eddb; */
-    border: 1px solid #C8C5BA;
-    padding: 14px 18px;
-    border-radius: 4px 18px 18px 18px;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.typing-dots {
+.typing-spinner-wrap {
     display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 2px 0;
+    gap: 10px;
+    padding: 14px 18px;
+    line-height: 1.7;
 }
 
-.typing-dots span {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
+.typing-spinner {
+    flex-shrink: 0;
+    width: 19px;
+    height: 19px;
     border-radius: 50%;
-    background: var(--text-secondary);
-    animation: typingBounce 1.3s infinite ease-in-out;
+    border: 2px solid rgba(13, 63, 32, 0.25);
+    border-top-color: #1c3425;
+    animation: typingSpin 1.4s linear infinite;
 }
 
-.typing-dots span:nth-child(2) { animation-delay: 0.18s; }
-.typing-dots span:nth-child(3) { animation-delay: 0.36s; }
-
-@keyframes typingBounce {
-    0%, 60%, 100% { transform: translateY(0);   opacity: 0.5; }
-    30%           { transform: translateY(-7px); opacity: 1;   }
+@keyframes typingSpin {
+    to { transform: rotate(360deg); }
 }
 
-.typing-extra {
-    display: none;
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-    opacity: 0.8;
-    animation: fadeIn 0.4s ease;
-}
-
-/* Estimated time badge shown alongside the extracting message */
-.typing-eta {
-    opacity: 0.8;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 0.8; }
+.typing-spinner-label {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
 }
 
 /* Markdown table styles (same as before) */

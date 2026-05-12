@@ -26,13 +26,10 @@
                     <span>SustainOpedia</span>
                 </li>
                 <li class="tab active nav-chat-tab" id="chatNavTab">
-                    <a href="/index.html" class="nav-chat-link">Chat</a>
+                    <a href="/index.html" class="nav-chat-link">Conversation</a>
                     <div class="nav-chat-actions">
                         <button id="newChatBtn" class="nav-icon-btn" title="New conversation">
                             <span class="nav-icon">+</span>
-                        </button>
-                        <button id="toggleConversationList" class="nav-icon-btn" title="Conversation history" aria-expanded="false">
-                            <span class="toggle-icon">⮟</span>
                         </button>
                     </div>
                 </li>
@@ -80,12 +77,12 @@
                                 <!-- Product pill -->
                                 <div class="product-input-wrapper">
                                     <label for="productInput" class="product-label">Product</label>
-                                    <input id="productInput" class="product-input" type="text" placeholder="e.g. Crude Steel" />
+                                    <input id="productInput" class="product-input" type="text" placeholder="e.g. Copper" />
                                 </div>
                                 <!-- Explore button + feature menu -->
                                 <div class="input-toolbar">
                                     <button type="button" id="featureMenuBtn" class="toolbar-btn" aria-expanded="false">
-                                        <span class="toolbar-btn-plus">+</span> Toolbar
+                                        <img class="toolbar-btn-img" src="./static/img/wrench.png"/> Tools
                                     </button>
                                     <div id="featureMenu" class="feature-menu" hidden>
                                         <button class="feature-menu-item" data-feature="lcia" type="button">
@@ -153,18 +150,7 @@
     <script src="script.js"></script>
 </body>
 
-<!-- New Chat Modal -->
-<div id="newChatModal" class="modal-overlay">
-    <div class="modal-box">
-        <h3>New Conversation</h3>
-        <p>Enter a name for your new chat:</p>
-        <input id="newChatNameInput" type="text" />
-        <div class="modal-actions">
-            <button id="createChatBtn" class="btn btn-primary">Create</button>
-            <button id="cancelCreateBtn" class="btn btn-secondary">Cancel</button>
-        </div>
-    </div>
-</div>
+<!-- New Chat Modal removed — new conversation goes directly to welcome screen -->
 </html>
 </body>
 </html>

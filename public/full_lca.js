@@ -52,19 +52,7 @@ function createBlankRecord() {
             runMc: false,
             nSimulations: '',
             furtherNotes: '',
-            unknowns: {
-                q1: false,
-                q2: false,
-                q3: false,
-                q4: false,
-                q5: false,
-                q6: false,
-                q7: false,
-                q8: false,
-                q9: false,
-                q10: false,
-                q11: false
-            },
+            unknowns: {},
             options: {
                 regionMode: 'region'
             }
@@ -83,10 +71,7 @@ function normalizeForm(form) {
     const merged = {
         ...defaults,
         ...(form || {}),
-        unknowns: {
-            ...defaults.unknowns,
-            ...(form?.unknowns || {})
-        },
+        unknowns: {},
         options: {
             ...defaults.options,
             ...(form?.options || {})
@@ -131,7 +116,7 @@ function readForm() {
         functionalUnitAmount: document.getElementById('q2-amount')?.value.trim() || '',
         functionalUnitUnit: document.getElementById('q2-unit')?.value || 'tonne',
         materials: document.getElementById('q3')?.value.trim() || '',
-        manufacturingLocation: document.getElementById('q4')?.value.trim() || '',
+        manufacturingLocation: getGroupActiveValue('manufacturingLocationGroup') || 'GLO',
         distribution: document.getElementById('q5')?.value.trim() || '',
         lifespan: document.getElementById('q6-lifespan')?.value.trim() || '',
         usageRough: document.getElementById('q6-rough')?.value || '',
@@ -141,19 +126,6 @@ function readForm() {
         runMc: getGroupActiveValue('monteCarloGroup') === 'true',
         nSimulations: document.getElementById('q10-sims')?.value.trim() || '',
         furtherNotes: document.getElementById('q11')?.value.trim() || '',
-        unknowns: {
-            q1: !!document.getElementById('q1-unknown')?.checked,
-            q2: !!document.getElementById('q2-unknown')?.checked,
-            q3: !!document.getElementById('q3-unknown')?.checked,
-            q4: !!document.getElementById('q4-unknown')?.checked,
-            q5: !!document.getElementById('q5-unknown')?.checked,
-            q6: !!document.getElementById('q6-unknown')?.checked,
-            q7: !!document.getElementById('q7-unknown')?.checked,
-            q8: !!document.getElementById('q8-unknown')?.checked,
-            q9: !!document.getElementById('q9-unknown')?.checked,
-            q10: !!document.getElementById('q10-unknown')?.checked,
-            q11: !!document.getElementById('q11-unknown')?.checked
-        },
         options: {
             regionMode: getGroupActiveValue('regionModeGroup')
         }
@@ -166,7 +138,7 @@ function fillForm(form) {
     setValue('q2-amount', data.functionalUnitAmount);
     setValue('q2-unit', data.functionalUnitUnit || 'tonne');
     setValue('q3', data.materials);
-    setValue('q4', data.manufacturingLocation);
+    setGroupActiveValue('manufacturingLocationGroup', data.manufacturingLocation || 'GLO');
     setValue('q5', data.distribution);
     setValue('q6-lifespan', data.lifespan);
     setValue('q6-rough', data.usageRough);
@@ -174,18 +146,6 @@ function fillForm(form) {
     setValue('q9', data.impactCategories);
     setValue('q10-sims', data.nSimulations);
     setValue('q11', data.furtherNotes);
-
-    setChecked('q1-unknown', !!data.unknowns?.q1);
-    setChecked('q2-unknown', !!data.unknowns?.q2);
-    setChecked('q3-unknown', !!data.unknowns?.q3);
-    setChecked('q4-unknown', !!data.unknowns?.q4);
-    setChecked('q5-unknown', !!data.unknowns?.q5);
-    setChecked('q6-unknown', !!data.unknowns?.q6);
-    setChecked('q7-unknown', !!data.unknowns?.q7);
-    setChecked('q8-unknown', !!data.unknowns?.q8);
-    setChecked('q9-unknown', !!data.unknowns?.q9);
-    setChecked('q10-unknown', !!data.unknowns?.q10);
-    setChecked('q11-unknown', !!data.unknowns?.q11);
 
     setGroupActiveValue('regionModeGroup', data.options?.regionMode || 'region');
     setGroupActiveValue('systemBoundaryGroup', data.systemBoundary || 'cradle-to-gate');
@@ -232,17 +192,17 @@ function formatDateTime(ts) {
 function computeFillCount(form) {
     const data = normalizeForm(form);
     return [
-        data.productDescription || (data.unknowns?.q1 ? 'Unknown' : ''),
-        data.functionalUnitAmount || (data.unknowns?.q2 ? 'Unknown' : ''),
-        data.materials || (data.unknowns?.q3 ? 'Unknown' : ''),
-        data.manufacturingLocation || (data.unknowns?.q4 ? 'Unknown' : ''),
-        data.distribution || (data.unknowns?.q5 ? 'Unknown' : ''),
-        data.lifespan || data.usageRough || (data.unknowns?.q6 ? 'Unknown' : ''),
-        data.endOfLife || (data.unknowns?.q7 ? 'Unknown' : ''),
-        data.systemBoundary || (data.unknowns?.q8 ? 'Unknown' : ''),
-        data.impactCategories || (data.unknowns?.q9 ? 'No specific categories' : ''),
+        data.productDescription,
+        data.functionalUnitAmount,
+        data.materials,
+        data.manufacturingLocation,
+        data.distribution,
+        data.lifespan || data.usageRough,
+        data.endOfLife,
+        data.systemBoundary,
+        data.impactCategories,
         data.runMc ? (data.nSimulations || '25') : 'No Monte Carlo',
-        data.furtherNotes || (data.unknowns?.q11 ? 'Unknown' : '')
+        data.furtherNotes
     ].filter(Boolean).length;
 }
 
@@ -1048,6 +1008,23 @@ function buildFormInputsSection(form) {
         'gate-to-grave':    'Gate-to-Grave'
     };
 
+    const REGION_LABELS = {
+        'GLO': 'Global (GLO)',
+        'RER': 'Europe (RER)',
+        'WEU': 'Western Europe (WEU)',
+        'EEU': 'Eastern Europe (EEU)',
+        'MEA': 'Middle East & Africa (MEA)',
+        'ASI': 'Asia (ASI)',
+        'NAM': 'North America (NAM)',
+        'SAM': 'South America (SAM)',
+        'CN':  'China (CN)',
+        'US':  'United States (US)',
+        'CH':  'Switzerland (CH)',
+        'BR':  'Brazil (BR)',
+        'IN':  'India (IN)',
+        'RoW': 'Rest of World (RoW)'
+    };
+
     // Resolve values using the same logic as buildStructuredLcaQuery
     const f = normalizeForm(form);
     const amount = toSafeNumber(f.functionalUnitAmount, 1);
@@ -1070,7 +1047,7 @@ function buildFormInputsSection(form) {
             icon: '🏭', label: 'Materials & Manufacturing',
             fields: [
                 { label: 'Materials',              value: formatStructuredValue(f.materials, f.unknowns?.q3), wide: true },
-                { label: 'Manufacturing Location', value: formatStructuredValue(f.manufacturingLocation, f.unknowns?.q4) }
+                { label: 'Manufacturing Location', value: REGION_LABELS[f.manufacturingLocation] || formatStructuredValue(f.manufacturingLocation) }
             ]
         },
         {
@@ -1285,10 +1262,10 @@ function clampInt(value, fallback, min, max) {
     return Math.max(min, Math.min(max, parsed));
 }
 
-function formatStructuredValue(raw, unknownChecked, fallback = 'Not Specified') {
+function formatStructuredValue(raw, fallback = 'Not Specified') {
     const text = String(raw || '').trim();
     if (text) return text;
-    return unknownChecked ? 'Not Specified' : fallback;
+    return fallback;
 }
 
 function inferProcessStream(processName) {
@@ -1366,22 +1343,22 @@ function buildStructuredLcaQuery(form) {
     const nSimulations = f.runMc ? clampInt(f.nSimulations, 25, 1, 500) : 1;
     const usePhase = f.lifespan
         ? `${f.lifespan} years`
-        : formatStructuredValue(f.usageRough, f.unknowns?.q6);
+        : formatStructuredValue(f.usageRough);
 
     return [
         'intent: Computation',
-        `product: ${formatStructuredValue(f.productDescription, f.unknowns?.q1)}`,
+        `product: ${formatStructuredValue(f.productDescription)}`,
         `amount: ${amount} ${f.functionalUnitUnit || 'tonne'}`,
-        `system_boundary: ${formatStructuredValue(f.systemBoundary, f.unknowns?.q8, 'cradle-to-gate')}`,
+        `system_boundary: ${formatStructuredValue(f.systemBoundary, 'cradle-to-gate')}`,
         `n_simulations: ${nSimulations}`,
-        `region: ${formatStructuredValue(f.manufacturingLocation, f.unknowns?.q4)}`,
-        `environmental_impact_categories: ${formatStructuredValue(f.impactCategories, f.unknowns?.q9, 'null')}`,
-        `materials: ${formatStructuredValue(f.materials, f.unknowns?.q3)}`,
-        `manufacturing_location: ${formatStructuredValue(f.manufacturingLocation, f.unknowns?.q4)}`,
-        `distribution: ${formatStructuredValue(f.distribution, f.unknowns?.q5)}`,
+        `region: ${formatStructuredValue(f.manufacturingLocation)}`,
+        `environmental_impact_categories: ${formatStructuredValue(f.impactCategories, 'null')}`,
+        `materials: ${formatStructuredValue(f.materials)}`,
+        `manufacturing_location: ${formatStructuredValue(f.manufacturingLocation)}`,
+        `distribution: ${formatStructuredValue(f.distribution)}`,
         `use_phase: ${usePhase}`,
-        `end_of_life: ${formatStructuredValue(f.endOfLife, f.unknowns?.q7)}`,
-        `additional_notes: ${formatStructuredValue(f.furtherNotes, f.unknowns?.q11, 'null')}`
+        `end_of_life: ${formatStructuredValue(f.endOfLife)}`,
+        `additional_notes: ${formatStructuredValue(f.furtherNotes, 'null')}`
     ].join('\n');
 }
 
@@ -1398,20 +1375,18 @@ function syncMonteCarloInputState() {
 // ─── Form validation ─────────────────────────────────────────────────────────
 
 const _REQUIRED_QUESTIONS = [
-    { q: 1,  check: () => !!document.getElementById('q1')?.value.trim(),           unknownId: 'q1-unknown'  },
-    { q: 2,  check: () => !!document.getElementById('q2-amount')?.value.trim(),    unknownId: 'q2-unknown'  },
-    { q: 3,  check: () => !!document.getElementById('q3')?.value.trim(),           unknownId: 'q3-unknown'  },
-    { q: 4,  check: () => !!document.getElementById('q4')?.value.trim(),           unknownId: 'q4-unknown'  },
-    { q: 5,  check: () => !!document.getElementById('q5')?.value.trim(),           unknownId: 'q5-unknown'  },
+    { q: 1,  check: () => !!document.getElementById('q1')?.value.trim()           },
+    { q: 2,  check: () => !!document.getElementById('q2-amount')?.value.trim()    },
+    { q: 4,  check: () => !!getGroupActiveValue('manufacturingLocationGroup')       },
+    { q: 5,  check: () => !!document.getElementById('q5')?.value.trim()           },
     { q: 6,  check: () => !!document.getElementById('q6-lifespan')?.value.trim()
-                       || !!document.getElementById('q6-rough')?.value,            unknownId: 'q6-unknown'  },
-    { q: 7,  check: () => !!document.getElementById('q7')?.value.trim(),           unknownId: 'q7-unknown'  },
-    { q: 10, check: () => !!getGroupActiveValue('monteCarloGroup'),                 unknownId: 'q10-unknown' },
+                       || !!document.getElementById('q6-rough')?.value            },
+    { q: 10, check: () => !!getGroupActiveValue('monteCarloGroup')                 },
 ];
 
 function validateForm() {
     return _REQUIRED_QUESTIONS
-        .filter(({ check, unknownId }) => !check() && !document.getElementById(unknownId)?.checked)
+        .filter(({ check }) => !check())
         .map(({ q }) => q);
 }
 
@@ -1435,7 +1410,7 @@ function _markValidationErrors(failingQs) {
         card.classList.add('lca-field-error');
         const msg = document.createElement('p');
         msg.className = 'lca-error-msg';
-        msg.textContent = 'Please provide an answer or check “I do not know”.';
+        msg.textContent = 'You are required to provide information for this question.';
         card.appendChild(msg);
     }
 }
