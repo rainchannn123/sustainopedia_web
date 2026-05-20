@@ -1340,7 +1340,7 @@ margin-top: 0.5em !important;
 }
 
 .bot-message .message-content h1, .bot-message-prose h1 { font-size: 1.3rem; }
-.bot-message .message-content h2, .bot-message-prose h2 { font-size: 1.15rem; border-bottom: 1px solid #d4eddb; padding-bottom: 4px; }
+.bot-message .message-content h2, .bot-message-prose h2 { font-size: 1.15rem; border-bottom: 1px solid #2c41335d; padding-bottom: 4px; }
 .bot-message .message-content h3, .bot-message-prose h3 { font-size: 1.02rem; }
 .bot-message .message-content h4, .bot-message-prose h4 { font-size: 0.95rem; color: var(--text-secondary); }
 
