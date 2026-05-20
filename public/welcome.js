@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const sections = ['about', 'features', 'product', 'contact'];
+    const sections = ['features', 'about', 'product', 'contact'];
     const navLinks = Array.from(document.querySelectorAll('.nav-link'));
     window.addEventListener('scroll', () => {
         let found = false;
