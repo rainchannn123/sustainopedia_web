@@ -6,6 +6,7 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
@@ -109,6 +110,23 @@ const lcaResultsChatSchema = new mongoose.Schema({
 
 const LcaResultsChat = mongoose.model('LcaResultsChat', lcaResultsChatSchema);
 
+// ── Security / visitor event log ─────────────────────────────────────────────
+const securityEventSchema = new mongoose.Schema({
+    type:       { type: String, required: true },   // page_visit | login_success | login_failure | register_success | register_failure | auth_failure | rate_limited
+    ip:         { type: String, default: '' },
+    userAgent:  { type: String, default: '' },
+    method:     { type: String, default: '' },
+    path:       { type: String, default: '' },
+    statusCode: { type: Number, default: 0 },
+    userId:     { type: String, default: null },
+    username:   { type: String, default: null },
+    detail:     { type: String, default: '' },
+    timestamp:  { type: Date, default: Date.now },
+});
+// Auto-purge events older than 90 days so the collection never grows unbounded
+securityEventSchema.index({ timestamp: 1 }, { expireAfterSeconds: 7_776_000 });
+const SecurityEvent = mongoose.model('SecurityEvent', securityEventSchema);
+
 // Derive backend origin from env var — used in both CSP and /config.js
 const _backendUri = process.env.BACKEND_URI || 'http://localhost:5052';
 
@@ -126,8 +144,59 @@ app.use(helmet({
     }
 }));
 
+// Trust the first reverse-proxy (Azure App Service / nginx) so req.ip returns the real client IP
+app.set('trust proxy', 1);
+
 app.use(cors({ origin: 'https://www.sustainopedia.net' }));
 app.use(express.json({ limit: '10mb' }));
+
+// ── Security helpers ─────────────────────────────────────────────────────────
+function _clientIp(req) {
+    const fwd = req.headers['x-forwarded-for'];
+    if (fwd) return fwd.split(',')[0].trim();
+    return req.socket?.remoteAddress || req.ip || '';
+}
+
+function logSecurityEvent(type, req, extra = {}) {
+    const doc = new SecurityEvent({
+        type,
+        ip:         _clientIp(req),
+        userAgent:  (req.headers['user-agent'] || '').slice(0, 512),
+        method:     req.method || '',
+        path:       req.path  || '',
+        statusCode: extra.statusCode || 0,
+        userId:     extra.userId   || null,
+        username:   extra.username || null,
+        detail:     (extra.detail  || '').slice(0, 512),
+    });
+    doc.save().catch(() => {}); // fire-and-forget — never blocks the response
+}
+
+// ── Rate limiter — auth endpoints (20 attempts / 15 min per IP) ───────────────
+const authRateLimiter = rateLimit({
+    windowMs:        15 * 60 * 1000,
+    max:             20,
+    standardHeaders: true,
+    legacyHeaders:   false,
+    handler: (req, res) => {
+        logSecurityEvent('rate_limited', req, {
+            statusCode: 429,
+            detail: `Rate limit exceeded on ${req.path}`,
+        });
+        res.status(429).json({ message: 'Too many requests — please try again in 15 minutes.' });
+    },
+});
+app.use('/api/auth', authRateLimiter);
+
+// ── Visitor logger — HTML page requests only ──────────────────────────────────
+app.use((req, res, next) => {
+    if (req.method === 'GET' && (req.path === '/' || req.path.endsWith('.html'))) {
+        res.on('finish', () => {
+            logSecurityEvent('page_visit', req, { statusCode: res.statusCode });
+        });
+    }
+    next();
+});
 
 // Serve backend URL as a browser-safe config script (must be before express.static)
 app.get('/config.js', (req, res) => {
@@ -145,6 +214,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 function verifyToken(req, res, next) {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
+        logSecurityEvent('auth_failure', req, { statusCode: 401, detail: 'No token provided' });
         return res.status(401).json({ message: 'No token provided' });
     }
 
@@ -153,6 +223,7 @@ function verifyToken(req, res, next) {
         req.userId = decoded.userId;
         next();
     } catch (error) {
+        logSecurityEvent('auth_failure', req, { statusCode: 401, detail: `Invalid token: ${error.message}` });
         res.status(401).json({ message: 'Invalid token' });
     }
 }
@@ -172,6 +243,7 @@ app.post('/api/auth/register', async (req, res) => {
         // Check if user exists
         const existingUser = await User.findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
+            logSecurityEvent('register_failure', req, { statusCode: 400, username, detail: 'Username or email already exists' });
             return res.status(400).json({ message: 'Username or email already exists' });
         }
 
@@ -190,6 +262,7 @@ app.post('/api/auth/register', async (req, res) => {
         // Generate token
         const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: '30d' });
 
+        logSecurityEvent('register_success', req, { statusCode: 201, userId: String(user._id), username: user.username });
         res.status(201).json({
             message: 'User registered successfully',
             token,
@@ -216,18 +289,21 @@ app.post('/api/auth/login', async (req, res) => {
         // Find user
         const user = await User.findOne({ username });
         if (!user) {
+            logSecurityEvent('login_failure', req, { statusCode: 401, username, detail: 'User not found' });
             return res.status(401).json({ message: 'Invalid username or password' });
         }
 
         // Check password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
+            logSecurityEvent('login_failure', req, { statusCode: 401, username: user.username, detail: 'Wrong password' });
             return res.status(401).json({ message: 'Invalid username or password' });
         }
 
         // Generate token
         const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: '30d' });
 
+        logSecurityEvent('login_success', req, { statusCode: 200, userId: String(user._id), username: user.username });
         res.json({
             message: 'Login successful',
             token,
