@@ -23,6 +23,8 @@
         <li class="tab"><a href="/index.html">Chat</a></li>
         <li class="tab"><a href="/full_lca.html">Full LCA Report</a></li>
         <li class="tab active"><a href="/workbench.html">Workbench</a></li>
+        <li class="tab"><a href="/past_lca_results.html">Past LCA Results</a></li>
+
         <li class="tab"><a href="/settings.html">Settings</a></li>
       </ul>
       <div class="nav-user">
@@ -41,10 +43,10 @@
             <h2 class="wb-title">Workbench</h2>
           </div>
           <!-- Sub-tab switcher -->
-          <div class="wb-subtabs" role="tablist">
+                    <div class="wb-subtabs" role="tablist">
             <button class="wb-subtab active" data-tab="warehouse" role="tab" aria-selected="true">Process Warehouse</button>
             <button class="wb-subtab" data-tab="construction" role="tab" aria-selected="false">Construction</button>
-            <button class="wb-subtab" data-tab="history" role="tab" aria-selected="false">History</button>
+            <button class="wb-subtab wb-subtab--disabled" data-tab="future" role="tab" aria-selected="false" aria-disabled="true" disabled>Coming Soon</button>
           </div>
         </div>
 
@@ -113,9 +115,20 @@
                   <input type="text" id="conProductName" placeholder="e.g. Crude Steel">
                 </div>
 
-                <div class="con-field">
-                  <label for="conFunctionalUnit">Functional Unit</label>
-                  <input type="text" id="conFunctionalUnit" placeholder="e.g. 1 tonne of product">
+                                <div class="con-field-row">
+                  <div class="con-field">
+                    <label for="conFunctionalUnitAmount">Functional Unit Amount</label>
+                    <input type="text" id="conFunctionalUnitAmount" placeholder="e.g. 1">
+                  </div>
+                  <div class="con-field">
+                    <label for="conFunctionalUnitUnit">Functional Unit Unit</label>
+                    <select id="conFunctionalUnitUnit">
+                      <option value="tonne">tonne</option>
+                      <option value="kilogram">kilogram</option>
+                      <option value="gram">gram</option>
+                      <option value="unit">unit</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div class="con-field">
@@ -128,36 +141,43 @@
                   </select>
                 </div>
 
+                <div class="con-field-row">
+                  <div class="con-field">
+                    <label for="conRunMc">Run Monte Carlo</label>
+                    <select id="conRunMc">
+                      <option value="false">No</option>
+                      <option value="true">Yes</option>
+                    </select>
+                  </div>
+                  <div class="con-field">
+                    <label for="conNSimulations">N Simulations</label>
+                    <input type="text" id="conNSimulations" placeholder="e.g. 25">
+                  </div>
+                </div>
+
                 <div class="con-field">
                   <label for="conNotes">Additional Notes</label>
                   <textarea id="conNotes" rows="3" placeholder="Any assumptions, data sources, or remarks…"></textarea>
+                </div>
+
+                <div class="con-console" id="conConsole" aria-live="polite">
+                  <div class="con-console-title">Progress Console</div>
+                  <div id="conConsoleLog" class="con-console-log">
+                    <p class="con-console-empty">No run started yet.</p>
+                  </div>
                 </div>
 
                 <div class="con-form-actions">
                   <button type="button" id="conClearBtn" class="wb-secondary-btn">Clear</button>
                   <button type="submit" id="conSubmitBtn" class="wb-primary-btn">Run LCA</button>
                 </div>
+
               </form>
             </section>
           </div>
         </div>
 
-        <!-- ════════════════════════════════════════════════════════════
-             TAB 3: HISTORY
-        ════════════════════════════════════════════════════════════ -->
-        <div id="tab-history" class="wb-tab-panel">
-
-          <div class="hist-toolbar">
-            <h3 class="hist-title">Run History</h3>
-            <button id="histRefreshBtn" class="wb-secondary-btn">&#8635; Refresh</button>
-          </div>
-
-          <div id="histList" class="hist-list">
-            <div class="wh-empty-state">
-              <p>No runs yet. Use the Construction tab to run your first value chain.</p>
-            </div>
-          </div>
-        </div>
+        
 
       </div><!-- /.content-wrapper -->
     </main>
@@ -245,22 +265,14 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════════════════
-       MODAL: History Detail
-  ══════════════════════════════════════════════════════════════ -->
-  <div id="histDetailModal" class="wb-modal-overlay" hidden aria-modal="true" role="dialog" aria-labelledby="histDetailTitle">
-    <div class="wb-modal wb-modal--wide">
-      <div class="wb-modal-header">
-        <h3 id="histDetailTitle">Run Detail</h3>
-        <button class="wb-modal-close" id="histDetailClose" aria-label="Close">&#10005;</button>
-      </div>
-      <div class="wb-modal-body" id="histDetailBody">
-        <!-- populated by JS -->
-      </div>
-    </div>
-  </div>
+  
 
+    <script src="js lib/markdown-it.min.js"></script>
+  <script src="js lib/chart.umd.js"></script>
   <script src="shared.js"></script>
+  <script src="functions/lcia-utils.js"></script>
+  <script src="/config.js"></script>
   <script src="workbench.js"></script>
+
 </body>
 </html>

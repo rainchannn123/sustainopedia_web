@@ -234,13 +234,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Save LCA record to MongoDB
     function storeLCARecord(product, lciData, timestamp, query, answerText) {
-        apiReq('POST', '/api/lca-records', {
+            apiReq('POST', '/api/lca-records', {
             product,
+            source: 'chat',
             data: lciData,
             carbonEmission: lciData.totalMeanImpact,
             query:      query      || '',
             answerText: answerText || ''
         }).catch(err => console.error('Failed to save LCA record:', err));
+
     }
 
     // Export all data — now fetches from the server
@@ -540,11 +542,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Auto-resize textarea
+                // Auto-resize textarea
     userInput.addEventListener('input', () => {
         userInput.style.height = 'auto';
         userInput.style.height = Math.min(userInput.scrollHeight, 160) + 'px';
     });
+
+
+    // Submit on Enter (Shift+Enter keeps a newline)
+    userInput.addEventListener('keydown', (e) => {
+        // Ignore IME composition and modified Enter shortcuts
+        if (e.key !== 'Enter' || e.shiftKey || e.isComposing) return;
+
+        const hasText = userInput.value.trim().length > 0;
+        if (!hasText) return;
+
+        e.preventDefault();
+        chatForm.requestSubmit();
+    });
+
 
     // New chat: go directly to welcome screen
     newChatBtn.addEventListener('click', () => {
@@ -808,7 +824,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             contentDiv.textContent = text || '';
         }
 
-        // ── LCIA table ───────────────────────────────────────────────────────
+                // ── LCIA table ───────────────────────────────────────────────────────
         if (lcia_table) {
             const br1 = document.createElement('br');
             const br2 = document.createElement('br');
@@ -825,9 +841,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (typeof lcia_table === 'object' && lcia_table !== null) {
                 renderLCIAResultsTable(lcia_table, contentDiv);
-                if (type === 'bot-message' && lcia_table.totalMeanImpact) {
-                    addCSVDownloadButton(contentDiv, lcia_table);
-                }
+                // if (type === 'bot-message' && lcia_table.totalMeanImpact) {
+                //     addCSVDownloadButton(contentDiv, lcia_table);
+                // }
             } else {
                 const cleanTable = window.LciaUtils.extractMarkdownTable(lcia_table);
                 const parsedTable = window.LciaUtils.parseMarkdownTable(cleanTable);
@@ -847,10 +863,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         messageDiv.appendChild(contentDiv);
         chatWindow.appendChild(messageDiv);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        // Keep viewport stable when bot responses are appended (especially long outputs)
+        if (type !== 'bot-message') {
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
 
         if (chatting) {
             // ── Persist message to MongoDB ────────────────────────────────────
+
+
             const activeConv = conversations.find(c => c._id === activeConvId);
             if (activeConv && activeConvId) {
                 const serverMsg = {

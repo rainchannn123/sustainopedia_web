@@ -1114,13 +1114,14 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     align-items: flex-start;
     gap: 10px;
     max-width: 90%;
-    animation: botMsgIn 0.28s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+    animation: botMsgIn 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes botMsgIn {
-    from { opacity: 0; transform: translateX(-16px) scale(0.97); }
-    to   { opacity: 1; transform: translateX(0)     scale(1);    }
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0);   }
 }
+
 
 /* .bot-avatar {
     flex-shrink: 0;
@@ -1446,13 +1447,25 @@ margin-top: 0.5em !important;
 }
 .bot-block {
     opacity: 0;
-    animation: botBlockIn 0.32s ease forwards;
+    transform: translateY(8px);
+    filter: blur(2px);
+    will-change: opacity, transform, filter;
+    animation: botBlockIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes botBlockIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0);   }
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+        filter: blur(2px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
 }
+
 
 /* ── Cursor blink at end of bot typing stream ───────────────────────────── */
 .bot-cursor {

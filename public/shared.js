@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('userId');
             localStorage.removeItem('username');
             localStorage.removeItem('email');
-            window.location.href = '/login.html';
+            window.location.href = '/welcome.html';
         });
     }
 

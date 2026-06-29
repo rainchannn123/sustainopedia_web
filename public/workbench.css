@@ -106,6 +106,14 @@
   background: rgba(255,255,255,0.12);
 }
 
+.wb-subtab.wb-subtab--disabled,
+.wb-subtab:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+
 /* ── Tab panels ──────────────────────────────────────────── */
 .wb-tab-panel {
   display: none;
@@ -607,6 +615,42 @@
   margin-top: 4px;
 }
 
+.con-console {
+  margin-top: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+.con-console-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.con-console-log {
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 10px 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: #405;
+}
+
+.con-console-log p { margin: 0 0 6px; }
+.con-console-log p:last-child { margin-bottom: 0; }
+.con-console-empty { color: #889; }
+.con-console-level-error { color: #c0392b; }
+.con-console-level-warning { color: #d68910; }
+.con-console-level-success { color: #1e8449; }
+
+
 .con-form-error {
   color: #e63946;
   font-size: 0.82rem;
@@ -691,6 +735,21 @@
   margin-bottom: 4px;
 }
 
+.hist-source-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  padding: 2px 8px;
+  margin-left: 8px;
+  background: rgba(48,92,66,0.13);
+  color: var(--text-secondary);
+}
+
+
 .hist-card-meta {
   font-size: 0.78rem;
   color: #667;
@@ -751,8 +810,9 @@
 }
 
 .wb-modal--wide {
-  max-width: 680px;
+  max-width: min(1080px, 96vw);
 }
+
 
 .wb-modal-header {
   display: flex;
@@ -1110,6 +1170,123 @@
   color: #556;
 }
 
+.hist-detail-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 16px;
+}
+
+.hist-detail-main,
+.hist-detail-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.hist-detail-chart-wrap {
+  height: 280px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.lcia-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin-top: 8px;
+}
+
+.lcia-detail-table th,
+.lcia-detail-table td {
+  border-bottom: 1px solid var(--border-color);
+  padding: 7px 8px;
+  text-align: left;
+}
+
+.lcia-detail-table th {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+
+.hist-chat-panel {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  min-height: 460px;
+}
+
+.hist-chat-window {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hist-chat-window .message {
+  max-width: 92%;
+}
+
+.hist-chat-window .message.user-message {
+  align-self: flex-end;
+}
+
+.hist-chat-window .message .message-content {
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.hist-chat-window .user-message .message-content {
+  background: var(--text-secondary);
+  color: #fff;
+}
+
+.hist-chat-window .bot-message .message-content {
+  background: var(--btn-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.hist-chat-form {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--border-color);
+}
+
+.hist-chat-input {
+  flex: 1;
+  min-height: 38px;
+  max-height: 120px;
+  resize: none;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.hist-chat-send {
+  border: none;
+  border-radius: 8px;
+  background: var(--accent, #305c42);
+  color: #fff;
+  font-weight: 700;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+
 /* ── Mobile adjustments ──────────────────────────────────── */
 @media (max-width: 700px) {
   .wb-topbar { flex-wrap: wrap; padding: 10px 14px; gap: 8px; }
@@ -1117,5 +1294,8 @@
   .wb-subtab { flex: 1; text-align: center; padding: 7px 6px; font-size: 0.8rem; }
   .wb-tab-panel { padding: 14px; }
   .con-field-row { grid-template-columns: 1fr; }
-  .hist-detail-grid { grid-template-columns: 1fr; }
+    .hist-detail-grid { grid-template-columns: 1fr; }
+  .hist-detail-layout { grid-template-columns: 1fr; }
+  .hist-chat-panel { min-height: 360px; }
 }
+

@@ -24,6 +24,8 @@
         <li class="tab"><a href="/index.html">Chat</a></li>
         <li class="tab active"><a href="/full_lca.html">Full LCA Report</a></li>
         <li class="tab"><a href="/workbench.html">Workbench</a></li>
+        <li class="tab"><a href="/past_lca_results.html">Past LCA Results</a></li>
+
         <li class="tab"><a href="/settings.html">Settings</a></li>
       </ul>
       <div class="nav-user">
@@ -40,39 +42,13 @@
     <main class="main-content">
       <div class="content-wrapper">
 
-        <!-- View 1: History list -->
-        <div id="lcaHistoryView" class="page active">
-          <div class="records-header">
-            <div class="records-header-top">
-              <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open navigation">&#9776;</button>
-              <h2>Full LCA Generation</h2>
-            </div>
-            <div class="records-filters">
-              <input type="text" id="lcaSearch" class="search-input" placeholder="Search by product name...">
-              <select id="lcaSort" class="sort-select">
-                <option value="recent">Most Recent</option>
-                <option value="oldest">Oldest First</option>
-                <option value="product">Product Name</option>
-                <option value="emissions">Highest Emissions</option>
-              </select>
-            <button id="newLcaBtn" class="lca-new-btn">+ New Assessment</button>
-            </div>
-          </div>
-
-          <div id="lcaHistoryContainer" class="records-container">
-            <div class="empty-state">
-              <p>No assessments yet. Click <strong>+ New Assessment</strong> to get started.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- View 2: Record workspace (Form + Results tabs) -->
-        <div id="lcaWorkspaceView" class="page">
+                <!-- Full LCA workspace (input form + current result) -->
+        <div id="lcaWorkspaceView" class="page active">
           <div class="records-header lca-form-topbar">
             <div class="records-header-top">
-              <button id="mobileMenuBtn2" class="mobile-menu-btn" aria-label="Open navigation">&#9776;</button>
-              <button id="backToHistoryBtn" class="lca-back-btn">&#8592; Back</button>
-              <h2 id="workspaceTitle"></h2>
+                <button id="mobileMenuBtn2" class="mobile-menu-btn" aria-label="Open navigation">&#9776;</button>
+              
+              <h2 id="workspaceTitle">Full LCA Form Input</h2>
             </div>
             <div class="lca-work-subtitle">
                 <p class="lca-form-subtitle" id="workspaceSubtitle"></p>
@@ -144,17 +120,24 @@
                   <div class="question-card">
                     <div class="question-header">
                       <span class="q-number">4.</span>
-                      <label for="q4">Where is it mainly manufactured?</label>
-                      <label class="lca-checkbox-label">
-                        <input type="checkbox" id="q4-unknown"> I do not know
-                      </label>
+                      <label>Where is it mainly manufactured?</label>
                     </div>
-                    <!-- <div class="lca-option-group" id="regionModeGroup">
-                      <button type="button" class="lca-option-btn" data-value="country">Specific country</button>
-                      <button type="button" class="lca-option-btn active" data-value="region">Region only</button>
-                    </div> -->
-                    <p class="lca-hint">Example: "China" or "Europe", Enter "Global" if no specific location</p>
-                    <input type="text" id="q4" />
+                    <div class="lca-option-group" id="manufacturingLocationGroup">
+                      <button type="button" class="lca-option-btn active" data-value="GLO">Global (GLO)</button>
+                      <button type="button" class="lca-option-btn" data-value="RER">Europe (RER)</button>
+                      <button type="button" class="lca-option-btn" data-value="WEU">Western Europe (WEU)</button>
+                      <button type="button" class="lca-option-btn" data-value="EEU">Eastern Europe (EEU)</button>
+                      <button type="button" class="lca-option-btn" data-value="MEA">Middle East &amp; Africa (MEA)</button>
+                      <button type="button" class="lca-option-btn" data-value="ASI">Asia (ASI)</button>
+                      <button type="button" class="lca-option-btn" data-value="NAM">North America (NAM)</button>
+                      <button type="button" class="lca-option-btn" data-value="SAM">South America (SAM)</button>
+                      <button type="button" class="lca-option-btn" data-value="CN">China (CN)</button>
+                      <button type="button" class="lca-option-btn" data-value="US">United States (US)</button>
+                      <button type="button" class="lca-option-btn" data-value="CH">Switzerland (CH)</button>
+                      <button type="button" class="lca-option-btn" data-value="BR">Brazil (BR)</button>
+                      <button type="button" class="lca-option-btn" data-value="IN">India (IN)</button>
+                      <button type="button" class="lca-option-btn" data-value="RoW">Rest of World (RoW)</button>
+                    </div>
                   </div>
 
                   <div class="question-card">
@@ -270,11 +253,11 @@
 
                 <aside class="lca-console-panel" aria-label="Generation console">
                   <div class="lca-console-header">
-                    <h3>Generation Console Board</h3>
+                    <h3>Progress Console</h3>
                     <button id="clearConsoleBtn" type="button" class="lca-console-clear">Clear</button>
                   </div>
                   <div id="lcaConsoleBody" class="lca-console-body">
-                    <p class="lca-console-empty">Waiting for generation task...</p>
+                    <p class="lca-console-empty">No run started yet.</p>
                   </div>
                 </aside>
               </div>
@@ -321,8 +304,9 @@
 
   <script src="js lib/markdown-it.min.js"></script>
   <script src="shared.js"></script>
-  <script src="functions/lcia-utils.js"></script>
+    <script src="functions/lcia-utils.js"></script>
   <script src="/config.js"></script>
   <script src="full_lca.js"></script>
+  <script src="full_lca_mode.js"></script>
 </body>
 </html>

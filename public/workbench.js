@@ -1,4 +1,5 @@
-// workbench.js — Workbench feature: Process Warehouse, Construction, History
+// workbench.js — Workbench feature: Process Warehouse + Construction
+
 // Requires shared.js to be loaded first (provides checkAuth() and apiReq()).
 
 'use strict';
@@ -9,13 +10,19 @@
 const WB = {
     activeTab: 'warehouse',
     warehouse: {
-        processes: [],      // full list fetched from server
-        filtered: []        // after search
+        processes: [],
+        filtered: []
     },
     construction: {
-        nodes: []           // [{ id, processId, processName, region, providerName }]
+        nodes: []
     }
 };
+
+let _workbenchPollTimer = null;
+let _workbenchActiveJob = null;
+
+
+
 
 let _nodeCounter = 0;
 function nextNodeId() { return ++_nodeCounter; }
@@ -127,10 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!checkAuth()) return;
 
     _initSubtabs();
-    _initWarehouse();
+        _initWarehouse();
     _initConstruction();
-    _initHistory();
     _initModals();
+
 });
 
 /* ══════════════════════════════════════════════════════════════
@@ -138,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ══════════════════════════════════════════════════════════════ */
 function _initSubtabs() {
     document.querySelectorAll('.wb-subtab').forEach(btn => {
+        if (btn.disabled || btn.getAttribute('aria-disabled') === 'true') return;
         btn.addEventListener('click', () => {
             const tab = btn.dataset.tab;
             _switchTab(tab);
@@ -145,17 +153,19 @@ function _initSubtabs() {
     });
 }
 
+
 function _switchTab(tab) {
     WB.activeTab = tab;
     document.querySelectorAll('.wb-subtab').forEach(b => {
+        if (b.disabled || b.getAttribute('aria-disabled') === 'true') return;
         b.classList.toggle('active', b.dataset.tab === tab);
         b.setAttribute('aria-selected', b.dataset.tab === tab ? 'true' : 'false');
     });
     document.querySelectorAll('.wb-tab-panel').forEach(p => {
         p.classList.toggle('active', p.id === `tab-${tab}`);
     });
-    if (tab === 'history') _loadHistory();
 }
+
 
 /* ══════════════════════════════════════════════════════════════
    PROCESS WAREHOUSE
@@ -336,22 +346,29 @@ function _initConstruction() {
     const clearBtn   = document.getElementById('conClearBtn');
     const form       = document.getElementById('conForm');
 
-    // Start with 1 default node
+        // Start with 1 default node
     _addNode();
+    _clearConConsole();
+
 
     addBtn.addEventListener('click', _addNode);
 
-    clearBtn.addEventListener('click', () => {
+        clearBtn.addEventListener('click', () => {
         if (!confirm('Clear all nodes and form fields?')) return;
         WB.construction.nodes = [];
         _nodeCounter = 0;
         _renderChain();
-        document.getElementById('conChainName').value    = '';
-        document.getElementById('conProductName').value  = '';
-        document.getElementById('conFunctionalUnit').value = '';
+        document.getElementById('conChainName').value = '';
+        document.getElementById('conProductName').value = '';
+        document.getElementById('conFunctionalUnitAmount').value = '';
+        document.getElementById('conFunctionalUnitUnit').value = 'tonne';
+        document.getElementById('conRunMc').value = 'false';
+        document.getElementById('conNSimulations').value = '';
         document.getElementById('conSystemBoundary').value = 'cradle-to-gate';
-        document.getElementById('conNotes').value        = '';
+        document.getElementById('conNotes').value = '';
+        _clearConConsole();
     });
+
 
     form.addEventListener('submit', _handleConSubmit);
 }
@@ -398,7 +415,8 @@ function _renderChain() {
                 </div>
                 ${ filled ? `
                     <div class="con-node-process">
-                        <div class="con-node-process-name">${_esc(node.processName)}</div>
+                        <div class="con-node-process-name">${_esc(_toTitleCaseActivityName(node.processName))}</div>
+
                         <span class="con-node-region-badge" data-rgroup="${_regionGroup(node.region)}">${_esc(_regionName(node.region))}</span>
                     </div>
                     <button class="con-node-change">Remove Process</button>
@@ -465,7 +483,8 @@ async function _searchForNode(query, dropdown, node, inputEl) {
             const item = document.createElement('div');
             item.className = 'con-dd-item';
             item.innerHTML = `
-                <div class="con-dd-name">${_esc(proc.processName)}</div>
+                <div class="con-dd-name">${_esc(_toTitleCaseActivityName(proc.processName))}</div>
+
                 <div class="con-dd-meta">
                     <span class="con-dd-region" data-rgroup="${_regionGroup(proc.region)}">${_esc(_regionName(proc.region))}</span>
                     <span class="con-dd-category">${_esc(proc.category || '')}</span>
@@ -498,11 +517,16 @@ function _positionDropdown(inputEl, dropdown) {
 async function _handleConSubmit(e) {
     e.preventDefault();
 
-    const chainName     = document.getElementById('conChainName').value.trim();
-    const productName   = document.getElementById('conProductName').value.trim();
-    const functionalUnit= document.getElementById('conFunctionalUnit').value.trim();
-    const systemBoundary= document.getElementById('conSystemBoundary').value;
-    const notes         = document.getElementById('conNotes').value.trim();
+    const chainName = document.getElementById('conChainName').value.trim();
+    const productName = document.getElementById('conProductName').value.trim();
+    const functionalUnitAmount = document.getElementById('conFunctionalUnitAmount').value.trim() || '1';
+    const functionalUnitUnit = document.getElementById('conFunctionalUnitUnit').value;
+        const runMc = document.getElementById('conRunMc').value === 'true';
+    const nSimulationsInput = document.getElementById('conNSimulations').value.trim();
+    const nSimulations = runMc ? (nSimulationsInput || '25') : '0';
+
+    const systemBoundary = document.getElementById('conSystemBoundary').value;
+    const notes = document.getElementById('conNotes').value.trim();
 
     if (!chainName) {
         alert('Please enter a Value Chain Name.');
@@ -512,7 +536,7 @@ async function _handleConSubmit(e) {
 
     const filledNodes = WB.construction.nodes.filter(n => n.processId);
     if (!filledNodes.length) {
-        alert('Please enter at least one Process ID in the value chain.');
+        alert('Please add at least one process to the value chain.');
         return;
     }
 
@@ -520,67 +544,220 @@ async function _handleConSubmit(e) {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Running…';
 
+    _clearConConsole();
+    _appendConLog('Preparing payload from workbench form...', 'info');
+
+    const payload = {
+        chainName,
+        productName,
+        product: productName,
+        functionalUnitAmount,
+        functionalUnitUnit,
+        runMc,
+        nSimulations,
+        systemBoundary,
+        notes,
+        nodes: filledNodes.map((n, idx) => ({
+            order: idx,
+            processId: n.processId,
+            processName: n.processName,
+            region: n.region,
+            providerName: n.providerName
+        }))
+    };
+
     try {
-        // ── Prepare payload ──────────────────────────────────────────────
-        const payload = {
-            chainName,
-            productName,
-            functionalUnit,
-            systemBoundary,
-            notes,
-            nodes: filledNodes.map((n, idx) => ({
-                order:       idx,
-                processId:   n.processId,
-                processName: n.processName,
-                region:      n.region,
-                providerName:n.providerName
-            }))
-        };
+        await apiReq('POST', '/api/workbench/chains', {
+            ...payload,
+            functionalUnit: `${functionalUnitAmount} ${functionalUnitUnit}`
+        });
+    } catch (err) {
+        console.warn('Failed to save chain draft:', err);
+    }
 
-        // ── STUB: LCA calculation placeholder ───────────────────────────
-        // Replace this function body with real calculation logic.
-        const results = await _lcaCalculationStub(payload);
+    try {
+        const jobId = await _startWorkbenchJob(payload);
+        _appendConLog(`Backend job accepted (jobId: ${jobId}). Polling for result...`, 'info');
+        const answerPack = await _pollWorkbenchJob(jobId);
+        _appendConLog('Result received. Persisting to history...', 'success');
 
-        // ── Save to history ──────────────────────────────────────────────
-        await apiReq('POST', '/api/workbench/history', { ...payload, results });
+                const persisted = await _persistWorkbenchRun(payload, answerPack);
+        _appendConLog('Run completed and saved successfully.', 'success');
 
-        alert(`LCA run complete for "${chainName}". Result saved to History.`);
-        _switchTab('history');
+        const recordId = _resolveLcaRecordId(persisted);
+        _appendConLog('Opening result page...', 'info');
+        _routeToPastResults(recordId);
+
     } catch (err) {
         console.error('Run failed:', err);
-        alert('Run failed. Please try again.');
+        _appendConLog(`Run failed: ${err.message || err}`, 'error');
+        alert('Run failed. Check Progress Console for details.');
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Run LCA';
     }
 }
 
-/**
- * _lcaCalculationStub — placeholder for the actual LCA computation.
- *
- * @param {Object} payload  The full value chain payload assembled in _handleConSubmit.
- *   payload.chainName      {string}
- *   payload.productName    {string}
- *   payload.functionalUnit {string}
- *   payload.systemBoundary {string}
- *   payload.notes          {string}
- *   payload.nodes          {Array<{order, processId, processName, region, providerName}>}
- *
- * @returns {Promise<Object>}  Resolved with a results object; shape is yours to define.
- */
-async function _lcaCalculationStub(payload) {
-    // TODO: Replace with real LCA calculation call (e.g. fetch to Flask backend).
-    console.log('[LCA STUB] Received payload:', payload);
-    return {
-        status: 'stub',
-        message: 'Calculation not yet implemented. Replace _lcaCalculationStub() in workbench.js.',
-        payload
-    };
+
+function _clearConConsole() {
+    const log = document.getElementById('conConsoleLog');
+    if (!log) return;
+    log.innerHTML = '<p class="con-console-empty">No run started yet.</p>';
 }
+
+function _appendConLog(message, level = 'info') {
+    const log = document.getElementById('conConsoleLog');
+    if (!log) return;
+    if (log.querySelector('.con-console-empty')) log.innerHTML = '';
+    const ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const p = document.createElement('p');
+    p.className = `con-console-level-${level}`;
+    p.textContent = `[${ts}] ${message}`;
+    log.appendChild(p);
+    log.scrollTop = log.scrollHeight;
+}
+
+async function _startWorkbenchJob(payload) {
+    _appendConLog('Submitting generation request to backend...', 'info');
+    const resp = await fetch(`${FLASK_BASE}/api/jobs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'workbench_lca', workbench_payload: payload })
+    });
+    if (!resp.ok) {
+        let errText = `Server error ${resp.status}`;
+        try { const errJson = await resp.json(); errText = errJson.error || errText; } catch {}
+        throw new Error(errText);
+    }
+    const data = await resp.json();
+    _workbenchActiveJob = data.jobId;
+    return data.jobId;
+}
+
+function _stopWorkbenchPolling() {
+    if (_workbenchPollTimer) {
+        clearInterval(_workbenchPollTimer);
+        _workbenchPollTimer = null;
+    }
+    _workbenchActiveJob = null;
+}
+
+function _pollWorkbenchJob(jobId) {
+    return new Promise((resolve, reject) => {
+        let logOffset = 0;
+        _workbenchPollTimer = setInterval(async () => {
+            try {
+                const resp = await fetch(`${FLASK_BASE}/api/jobs/${jobId}`);
+                if (resp.status === 404) {
+                    _stopWorkbenchPolling();
+                    reject(new Error('Computation session was reset. Please rerun.'));
+                    return;
+                }
+                const data = await resp.json();
+                if (Array.isArray(data.logs)) {
+                    for (let i = logOffset; i < data.logs.length; i++) {
+                        const l = data.logs[i] || {};
+                        _appendConLog(l.message || '', l.level || 'info');
+                    }
+                    logOffset = data.logs.length;
+                }
+
+                if (data.status === 'done') {
+                    _stopWorkbenchPolling();
+                    resolve(data.answer_pack || {});
+                } else if (data.status === 'error') {
+                    _stopWorkbenchPolling();
+                    reject(new Error(data.error || 'Backend job failed.'));
+                }
+            } catch (err) {
+                _appendConLog(`Polling error: ${err.message}`, 'warning');
+            }
+        }, 2500);
+    });
+}
+
+async function _persistWorkbenchRun(payload, answerPack) {
+    let processed = answerPack.processed_json || null;
+    if (typeof processed === 'string') {
+        try { processed = JSON.parse(processed); } catch { processed = null; }
+    }
+
+    const normalizedLcia = window.LciaUtils.normalizeLciaPayload(
+        processed || answerPack.lcia_table,
+        answerPack.answer || '',
+        payload.productName || 'Unknown Product'
+    );
+
+
+    const carbonEmission = window.LciaUtils.toNumber(
+        normalizedLcia?.totalMeanImpact || answerPack?.lcia_table?.totalMeanImpact || 0
+    );
+
+    const formPayload = {
+        productDescription: payload.productName || '',
+        functionalUnitAmount: payload.functionalUnitAmount,
+        functionalUnitUnit: payload.functionalUnitUnit,
+        systemBoundary: payload.systemBoundary,
+        runMc: payload.runMc,
+        nSimulations: payload.nSimulations,
+        furtherNotes: payload.notes || ''
+    };
+
+    const lcaSaved = await apiReq('POST', '/api/lca-records', {
+        product: payload.productName || 'Unknown Product',
+        source: 'workbench',
+        form: formPayload,
+        data: normalizedLcia,
+        carbonEmission,
+        query: `Workbench chain: ${payload.chainName}`,
+        answerText: answerPack.answer || ''
+    });
+
+    const historySaved = await apiReq('POST', '/api/workbench/history', {
+        chainName: payload.chainName,
+        productName: payload.productName,
+        functionalUnit: `${payload.functionalUnitAmount} ${payload.functionalUnitUnit}`,
+        functionalUnitAmount: payload.functionalUnitAmount,
+        functionalUnitUnit: payload.functionalUnitUnit,
+        runMc: payload.runMc,
+        nSimulations: payload.nSimulations,
+        systemBoundary: payload.systemBoundary,
+        notes: payload.notes,
+        nodes: payload.nodes,
+        source: 'workbench',
+        lcaRecordId: lcaSaved?.id || '',
+        results: {
+            answer_pack: answerPack,
+            normalized_lcia: normalizedLcia,
+            carbonEmission
+        }
+    });
+
+        return { lca: lcaSaved, history: historySaved };
+}
+
+function _resolveLcaRecordId(persisted) {
+    const lcaId = persisted?.lca?.id || persisted?.lca?._id;
+    if (lcaId) return String(lcaId);
+
+    const historyRecord = persisted?.history?.record || persisted?.history;
+    if (historyRecord?.lcaRecordId) return String(historyRecord.lcaRecordId);
+
+    return '';
+}
+
+function _routeToPastResults(recordId) {
+    const target = recordId
+        ? `/past_lca_results.html?recordId=${encodeURIComponent(recordId)}&from=workbench`
+        : '/past_lca_results.html?from=workbench';
+    window.location.assign(target);
+}
+
 
 /* ══════════════════════════════════════════════════════════════
    HISTORY
 ══════════════════════════════════════════════════════════════ */
+
 function _initHistory() {
     document.getElementById('histRefreshBtn').addEventListener('click', _loadHistory);
 }
@@ -617,13 +794,19 @@ function _renderHistory(records) {
             hour: '2-digit', minute: '2-digit'
         });
 
+                const source = (rec.source || 'workbench').toLowerCase();
+        const fuText = rec.functionalUnit || `${rec.functionalUnitAmount || ''} ${rec.functionalUnitUnit || ''}`.trim();
+
         card.innerHTML = `
             <div class="hist-card-info">
-                <div class="hist-card-name">${_esc(rec.chainName)}</div>
+                <div class="hist-card-name">
+                    ${_esc(rec.chainName)}
+                    <span class="hist-source-badge">${_esc(source)}</span>
+                </div>
                 <div class="hist-card-meta">
                     ${rec.productName ? 'Product: ' + _esc(rec.productName) + ' &nbsp;·&nbsp; ' : ''}
                     ${rec.nodes.length} step${rec.nodes.length !== 1 ? 's' : ''}
-                    ${rec.functionalUnit ? ' &nbsp;·&nbsp; FU: ' + _esc(rec.functionalUnit) : ''}
+                    ${fuText ? ' &nbsp;·&nbsp; FU: ' + _esc(fuText) : ''}
                 </div>
             </div>
             <div class="hist-card-actions">
@@ -631,6 +814,7 @@ function _renderHistory(records) {
                 <button class="hist-delete-btn" title="Delete record" aria-label="Delete record">&#10005;</button>
             </div>
         `;
+
 
         // Open detail modal
         const openDetail = () => _openHistDetail(rec);
@@ -671,12 +855,8 @@ function _initModals() {
     modal.addEventListener('click', (e) => { if (e.target === modal) _closeModal(modal); });
     processForm.addEventListener('submit', _handleProcessFormSubmit);
 
-    // History detail modal
-    const histModal    = document.getElementById('histDetailModal');
-    const histClose    = document.getElementById('histDetailClose');
+    
 
-    histClose.addEventListener('click',  () => _closeModal(histModal));
-    histModal.addEventListener('click', (e) => { if (e.target === histModal) _closeModal(histModal); });
 
     // Region select — show custom input when 'others' is chosen
     const regionSelect = document.getElementById('pfRegion');
@@ -687,14 +867,14 @@ function _initModals() {
         if (!isOther) regionCustom.value = '';
     });
 
-    // Close on Escape
+        // Close on Escape
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             _closeModal(modal);
-            _closeModal(histModal);
         }
     });
 }
+
 
 function _openProcessModal() {
     const modal = document.getElementById('processModal');
@@ -778,68 +958,290 @@ async function _handleProcessFormSubmit(e) {
 }
 
 function _openHistDetail(rec) {
-    const modal    = document.getElementById('histDetailModal');
-    const titleEl  = document.getElementById('histDetailTitle');
-    const bodyEl   = document.getElementById('histDetailBody');
+    const modal = document.getElementById('histDetailModal');
+    const titleEl = document.getElementById('histDetailTitle');
+    const bodyEl = document.getElementById('histDetailBody');
 
     titleEl.textContent = rec.chainName;
-
     const date = new Date(rec.runAt).toLocaleString();
 
-    // Build chain mini-view
     let chainHtml = '<div class="hist-detail-chain">';
-    rec.nodes.forEach((n, idx) => {
+    (rec.nodes || []).forEach((n, idx) => {
         if (idx > 0) chainHtml += '<div class="hist-detail-arrow"></div>';
         chainHtml += `
             <div class="hist-detail-node">
-                <div class="hist-detail-node-name">${_esc(n.processName || n.processId)}</div>
+                <div class="hist-detail-node-name">${_esc(n.processName || n.processId || '—')}</div>
                 <div class="hist-detail-node-sub">${_esc(n.region || '')}${n.processId ? ' · ' + _esc(n.processId) : ''}</div>
             </div>`;
     });
     chainHtml += '</div>';
 
-    // Results section
-    const resultsStr = rec.results
-        ? `<pre style="white-space:pre-wrap;word-break:break-all;font-size:0.8rem;">${_esc(JSON.stringify(rec.results, null, 2))}</pre>`
-        : '<p style="color:#889;font-size:0.85rem;">No results recorded (stub run).</p>';
+    const answerText = rec.results?.answer_pack?.answer || '';
 
     bodyEl.innerHTML = `
-        <div class="hist-detail-grid">
-            <div class="hist-detail-field">
-                <label>Product Name</label>
-                <p>${_esc(rec.productName || '—')}</p>
+        <div class="hist-detail-layout">
+            <div class="hist-detail-main">
+                <div class="hist-detail-grid">
+                    <div class="hist-detail-field"><label>Product Name</label><p>${_esc(rec.productName || '—')}</p></div>
+                    <div class="hist-detail-field"><label>Functional Unit</label><p>${_esc(rec.functionalUnit || `${rec.functionalUnitAmount || ''} ${rec.functionalUnitUnit || ''}`.trim() || '—')}</p></div>
+                    <div class="hist-detail-field"><label>System Boundary</label><p>${_esc(rec.systemBoundary || '—')}</p></div>
+                    <div class="hist-detail-field"><label>Run At</label><p>${_esc(date)}</p></div>
+                    <div class="hist-detail-field"><label>Source</label><p>${_esc(rec.source || 'workbench')}</p></div>
+                    <div class="hist-detail-field"><label>Monte Carlo</label><p>${rec.runMc ? `Yes (${_esc(rec.nSimulations || '25')} simulations)` : 'No'}</p></div>
+                    ${rec.notes ? `<div class="hist-detail-field" style="grid-column:1/-1;"><label>Notes</label><p>${_esc(rec.notes)}</p></div>` : ''}
+                </div>
+
+                <div class="hist-detail-chain-title">Value Chain (${(rec.nodes || []).length} step${(rec.nodes || []).length !== 1 ? 's' : ''})</div>
+                ${chainHtml}
+
+                <div class="hist-detail-results">
+                    <strong>Sustainopedia Response</strong>
+                    <div id="histDetailAnswer"></div>
+                </div>
+
+                <div class="hist-detail-results">
+                    <strong>LCIA Results Table</strong>
+                    <div id="histDetailTable"></div>
+                </div>
+
+                <div class="hist-detail-chart-wrap">
+                    <canvas id="histDetailChart"></canvas>
+                </div>
             </div>
-            <div class="hist-detail-field">
-                <label>Functional Unit</label>
-                <p>${_esc(rec.functionalUnit || '—')}</p>
+
+            <div class="hist-detail-side">
+                <div class="hist-chat-panel">
+                    <div class="results-chat-header" style="padding:10px 12px;border-bottom:1px solid var(--border-color);font-weight:700;">SustainOpedia Assistant</div>
+                    <div id="histChatWindow" class="hist-chat-window"></div>
+                    <form id="histChatForm" class="hist-chat-form">
+                        <textarea id="histChatInput" class="hist-chat-input" rows="1" placeholder="Ask about this result…"></textarea>
+                        <button type="submit" class="hist-chat-send">Send</button>
+                    </form>
+                </div>
             </div>
-            <div class="hist-detail-field">
-                <label>System Boundary</label>
-                <p>${_esc(rec.systemBoundary || '—')}</p>
-            </div>
-            <div class="hist-detail-field">
-                <label>Run At</label>
-                <p>${_esc(date)}</p>
-            </div>
-            ${rec.notes ? `<div class="hist-detail-field" style="grid-column:1/-1;">
-                <label>Notes</label>
-                <p>${_esc(rec.notes)}</p>
-            </div>` : ''}
-        </div>
-        <div class="hist-detail-chain-title">Value Chain (${rec.nodes.length} step${rec.nodes.length !== 1 ? 's' : ''})</div>
-        ${chainHtml}
-        <div class="hist-detail-results">
-            <strong>Results</strong><br>
-            ${resultsStr}
         </div>
     `;
 
+    if (window.markdownit) {
+        const md = window.markdownit({ html: false, breaks: true, linkify: true });
+        document.getElementById('histDetailAnswer').innerHTML = md.render(answerText || 'No response text available.');
+    } else {
+        document.getElementById('histDetailAnswer').textContent = answerText || 'No response text available.';
+    }
+
+    const lcia = rec.results?.normalized_lcia || rec.results?.answer_pack?.lcia_table || null;
+    _renderHistoryDetailTable(lcia);
+    _renderHistoryDetailChart(lcia);
+
+    const chatRecordId = rec.lcaRecordId || rec._id;
+    _initHistoryDetailChat(rec, chatRecordId);
+
     modal.hidden = false;
+}
+
+
+function _renderHistoryDetailTable(lcia) {
+    const container = document.getElementById('histDetailTable');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (!lcia) {
+        container.innerHTML = '<p style="color:#889;font-size:0.85rem;">No LCIA table available.</p>';
+        return;
+    }
+
+    if (typeof lcia === 'object' && Array.isArray(lcia.processes)) {
+        const table = document.createElement('table');
+        table.className = 'lcia-detail-table';
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Process</th>
+                    <th>Location</th>
+                    <th>Unit</th>
+                    <th>Mean Impact (kg CO₂-eq)</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${lcia.processes.map(p => `
+                    <tr>
+                        <td>${_esc(p.process || '—')}</td>
+                        <td>${_esc(p.location || p.unit_location || '—')}</td>
+                        <td>${_esc(p.unit || p.ref_product || '—')}</td>
+                        <td>${window.LciaUtils.toNumber(p.mean_impact).toFixed(3)}</td>
+                    </tr>`).join('')}
+                <tr class="lcia-total-row"><td colspan="3"><strong>Total</strong></td><td><strong>${window.LciaUtils.toNumber(lcia.totalMeanImpact).toFixed(3)}</strong></td></tr>
+            </tbody>`;
+        container.appendChild(table);
+        return;
+    }
+
+    const pre = document.createElement('pre');
+    pre.style.whiteSpace = 'pre-wrap';
+    pre.textContent = typeof lcia === 'string' ? lcia : JSON.stringify(lcia, null, 2);
+    container.appendChild(pre);
+}
+
+function _renderHistoryDetailChart(lcia) {
+    if (_detailChart) {
+        _detailChart.destroy();
+        _detailChart = null;
+    }
+    if (!window.Chart) return;
+
+    const canvas = document.getElementById('histDetailChart');
+    if (!canvas || !lcia || !Array.isArray(lcia.processes) || !lcia.processes.length) return;
+
+    const labels = lcia.processes.map(p => (p.process || '—').slice(0, 24));
+    const values = lcia.processes.map(p => window.LciaUtils.toNumber(p.mean_impact));
+    const ctx = canvas.getContext('2d');
+    _detailChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'kg CO₂-eq',
+                data: values,
+                backgroundColor: 'rgba(45, 106, 79, 0.72)',
+                borderColor: '#2d6a4f',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+
+function _buildLcaContextTextForHistory(rec) {
+    const total = window.LciaUtils.toNumber(rec.results?.normalized_lcia?.totalMeanImpact || rec.results?.carbonEmission || 0).toFixed(3);
+    const lines = [
+        '=== LCA Results Context ===',
+        `Product: ${rec.productName || 'Unknown'}`,
+        `Chain: ${rec.chainName || 'Workbench Chain'}`,
+        `Generated: ${new Date(rec.runAt).toLocaleString('en-US')}`,
+        `Total Carbon Emission: ${total} kg CO2-eq`,
+        ''
+    ];
+    const processes = rec.results?.normalized_lcia?.processes || [];
+    if (processes.length) {
+        lines.push('Processes:');
+        processes.forEach(p => lines.push(`- ${p.process}: ${window.LciaUtils.toNumber(p.mean_impact).toFixed(3)} kg CO2-eq`));
+    }
+    return lines.join('\n');
+}
+
+function _stopHistoryDetailChatPolling() {
+    if (_resultsChatPollTimer) {
+        clearInterval(_resultsChatPollTimer);
+        _resultsChatPollTimer = null;
+    }
+}
+
+async function _lcaResultsChatSave(recordId, role, content) {
+    try { await apiReq('POST', `/api/lca-results-chat/${recordId}`, { role, content }); } catch (err) { console.warn(err); }
+}
+
+async function _lcaResultsChatLoad(recordId) {
+    try { return await apiReq('GET', `/api/lca-results-chat/${recordId}`); } catch { return []; }
+}
+
+function _initHistoryDetailChat(rec, recordId) {
+    const chatWindow = document.getElementById('histChatWindow');
+    const chatForm = document.getElementById('histChatForm');
+    const chatInput = document.getElementById('histChatInput');
+    if (!chatWindow || !chatForm || !chatInput) return;
+
+    _stopHistoryDetailChatPolling();
+    chatWindow.innerHTML = '';
+
+    const appendMsg = (role, text) => {
+        const div = document.createElement('div');
+        div.className = `message ${role}`;
+        const c = document.createElement('div');
+        c.className = 'message-content';
+        if (role === 'bot-message' && window.markdownit) {
+            const md = window.markdownit({ html: false, breaks: true, linkify: true });
+            c.innerHTML = md.render(text || '');
+        } else {
+            c.textContent = text || '';
+        }
+        div.appendChild(c);
+        chatWindow.appendChild(div);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    };
+
+    _lcaResultsChatLoad(recordId).then(history => {
+        if (history.length) {
+            history.forEach(m => appendMsg(m.role === 'user' ? 'user-message' : 'bot-message', m.content));
+        } else {
+            appendMsg('bot-message', 'Ask any follow-up question about this workbench result.');
+        }
+    });
+
+    const fresh = chatForm.cloneNode(true);
+    chatForm.parentNode.replaceChild(fresh, chatForm);
+    const freshInput = fresh.querySelector('#histChatInput');
+    const context = _buildLcaContextTextForHistory(rec);
+
+    fresh.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = freshInput.value.trim();
+        if (!text) return;
+        freshInput.value = '';
+        appendMsg('user-message', text);
+        _lcaResultsChatSave(recordId, 'user', text);
+
+        const typing = document.createElement('div');
+        typing.className = 'message bot-message';
+        typing.innerHTML = '<div class="message-content">Thinking...</div>';
+        chatWindow.appendChild(typing);
+
+        try {
+            const resp = await fetch(`${FLASK_BASE}/api/jobs`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    mode: 'fast',
+                    product: rec.productName || '',
+                    question: `${context}\n\nUser follow-up: ${text}`
+                })
+            });
+            if (!resp.ok) throw new Error(`Server error ${resp.status}`);
+            const { jobId } = await resp.json();
+
+            _resultsChatPollTimer = setInterval(async () => {
+                try {
+                    const p = await fetch(`${FLASK_BASE}/api/jobs/${jobId}`);
+                    if (!p.ok) return;
+                    const data = await p.json();
+                    if (data.status === 'done') {
+                        _stopHistoryDetailChatPolling();
+                        typing.remove();
+                        const answer = data.answer_pack?.answer || 'No response received.';
+                        appendMsg('bot-message', answer);
+                        _lcaResultsChatSave(recordId, 'bot', answer);
+                    } else if (data.status === 'error') {
+                        _stopHistoryDetailChatPolling();
+                        typing.remove();
+                        appendMsg('bot-message', `Error: ${data.error || 'Computation failed.'}`);
+                    }
+                } catch {}
+            }, 2500);
+        } catch (err) {
+            typing.remove();
+            appendMsg('bot-message', `Error: ${err.message}`);
+        }
+    });
 }
 
 /* ══════════════════════════════════════════════════════════════
    ECOINVENT BULK IMPORT
 ══════════════════════════════════════════════════════════════ */
+
 async function _importEcoinvent() {
     const btn      = document.getElementById('whImportBtn');
     const progress = document.getElementById('whImportProgress');
@@ -929,6 +1331,13 @@ function _generateId() {
     return Date.now().toString(16) + '-' +
         Array.from({ length: 12 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 }
+function _toTitleCaseActivityName(str) {
+    if (str == null) return '';
+    return String(str)
+        .toLowerCase()
+        .replace(/\b([a-z])/g, (match, ch) => ch.toUpperCase());
+}
+
 function _esc(str) {
     if (str == null) return '';
     return String(str)
@@ -938,3 +1347,4 @@ function _esc(str) {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 }
+

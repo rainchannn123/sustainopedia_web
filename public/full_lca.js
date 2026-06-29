@@ -31,6 +31,10 @@ const state = {
     activeTab: 'form'
 };
 
+const SCOPE_KEYS = ['scope1', 'scope2', 'scope3'];
+const scopeReportStateByRecordId = new Map();
+
+
 function createBlankRecord() {
     return {
         id: createId(),
@@ -268,8 +272,8 @@ function addNewRecord() {
 
 function createLocalDraftCard(record) {
     const card = document.createElement('div');
-    card.className = 'record-card';
-    card.title = 'Click to open';
+    card.className = 'record-card record-card--row';
+    card.title = 'Click to open draft';
 
     const ts      = record.updatedAt || record.createdAt || Date.now();
     const date    = new Date(ts);
@@ -278,7 +282,7 @@ function createLocalDraftCard(record) {
 
     const isRunning = record.status === STATUS.RUNNING;
     const badgeClass = isRunning ? 'running' : 'draft';
-    const badgeText  = isRunning ? '⏳ Generating...' : 'Draft';
+    const badgeText  = isRunning ? 'LCA on Progress...' : 'Draft';
 
     const info = document.createElement('div');
     info.className = 'record-info';
@@ -289,7 +293,18 @@ function createLocalDraftCard(record) {
     card.appendChild(info);
 
     const actions = document.createElement('div');
-    actions.className = 'record-actions';
+    actions.className = 'record-actions record-actions--row';
+    actions.innerHTML = `<span class="record-date">${dateStr} at ${timeStr}</span>`;
+
+    const deleteBtn = document.createElement('button');
+
+    deleteBtn.className = 'btn-small delete';
+    deleteBtn.textContent = 'Delete';
+
+    deleteBtn.addEventListener('click',   e => { e.stopPropagation(); deleteDraftRecord(record.id); });
+
+    actions.appendChild(deleteBtn);
+
     card.appendChild(actions);
 
     card.addEventListener('click', () => openRecord(record.id));
@@ -364,7 +379,7 @@ function filterAndRenderHistory(records) {
     if (localRecords.length === 0 && filtered.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <p>No LCA records yet. Click <strong>+ New Assessment</strong> to generate your first one.</p>
+                <p>No LCA records yet.</p>
             </div>`;
         return;
     }
@@ -374,79 +389,64 @@ function filterAndRenderHistory(records) {
 
 function createHistoryCard(record) {
     const card = document.createElement('div');
-    card.className = 'record-card';
+    card.className = 'record-card record-card--row';
     card.title = 'Click to view full details';
+
 
     const date    = new Date(record.timestamp);
     const dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
+    const sourceKey = record.source ? String(record.source).toLowerCase() : 'chat';
+    const sourceLabel = sourceKey === 'workbench' ? 'WORKBENCH' : 'FULL LCA PROCESS';
+    const sourceBadgeClass = sourceKey === 'workbench'
+        ? 'hist-source-badge hist-source-badge--workbench'
+        : 'hist-source-badge hist-source-badge--full-lca';
+    const fuAmount = record.form?.functionalUnitAmount || '';
+
+    const fuUnit = record.form?.functionalUnitUnit || '';
+    const fuText = `${fuAmount} ${fuUnit}`.trim();
+    const boundary = record.form?.systemBoundary || '';
+    const processCount = Array.isArray(record.data?.processes) ? record.data.processes.length : 0;
+
+    const metaParts = [];
+    if (fuText) metaParts.push(`FU: ${window.LciaUtils.escapeHtml(fuText)}`);
+    if (boundary) metaParts.push(`Boundary: ${window.LciaUtils.escapeHtml(boundary)}`);
+    if (processCount > 0) metaParts.push(`${processCount} process${processCount !== 1 ? 'es' : ''}`);
+
     const info = document.createElement('div');
     info.className = 'record-info';
     info.innerHTML = `
-        <div class="record-product">${window.LciaUtils.escapeHtml(record.product)}</div>
-        <div class="record-date">${dateStr} at ${timeStr}</div>
-        <div class="record-emissions-badge">
-            Total: ${window.LciaUtils.toNumber(record.carbonEmission).toFixed(1)} kg CO<sub>2</sub>-eq
-        </div>`;
+        <div class="record-product">
+            ${window.LciaUtils.escapeHtml(record.product)}
+                <span class="${sourceBadgeClass}">${window.LciaUtils.escapeHtml(sourceLabel)}</span>
+
+        </div>
+        <div class="record-row-meta">${metaParts.join(' &nbsp;·&nbsp; ') || 'No metadata available'}</div>
+        <div class="record-row-impact">Total: ${window.LciaUtils.toNumber(record.carbonEmission).toFixed(1)} kg CO<sub>2</sub>-eq</div>`;
+
     card.appendChild(info);
 
-    const canvas_container = document.createElement('div');
-    canvas_container.className = 'record-canvas-container';
-    card.appendChild(canvas_container);
-
-    // ── Bar chart (separate div) ──────────────────────────────────────────────
-    const chartId = `chart-${record.id}`;
-    const chartContainer = document.createElement('div');
-    chartContainer.className = 'record-chart-container';
-    const chartCanvas = document.createElement('canvas');
-    chartCanvas.id = chartId;
-    chartContainer.appendChild(chartCanvas);
-    canvas_container.appendChild(chartContainer);
-
-    // ── Pie chart (separate div, only if streamSummary present) ──────────────
-    const streamSummary = record.data?.streamSummary;
-    const pieId = `pie-${record.id}`;
-    if (streamSummary) {
-        const pieContainer = document.createElement('div');
-        pieContainer.className = 'record-pie-container';
-        const pieCanvas = document.createElement('canvas');
-        pieCanvas.id = pieId;
-        pieContainer.appendChild(pieCanvas);
-        canvas_container.appendChild(pieContainer);
-    }
 
     const actions = document.createElement('div');
-    actions.className = 'record-actions';
+    actions.className = 'record-actions record-actions--row';
+    actions.innerHTML = `<span class="record-date">${dateStr} at ${timeStr}</span>`;
 
-    const viewBtn     = document.createElement('button');
-    viewBtn.className = 'btn-small view';
-    viewBtn.textContent = 'View Details';
+    const deleteBtn = document.createElement('button');
 
-    const downloadBtn     = document.createElement('button');
-    downloadBtn.className = 'btn-small download';
-    downloadBtn.textContent = 'Download CSV';
-
-    const deleteBtn     = document.createElement('button');
     deleteBtn.className = 'btn-small delete';
     deleteBtn.textContent = 'Delete';
 
-    viewBtn.addEventListener('click',     e => { e.stopPropagation(); openBackendResultsInTab(record); });
-    downloadBtn.addEventListener('click', e => { e.stopPropagation(); downloadRecordCSV(record); });
     deleteBtn.addEventListener('click',   e => { e.stopPropagation(); deleteBackendRecord(record.id); });
 
-    actions.appendChild(viewBtn);
-    actions.appendChild(downloadBtn);
     actions.appendChild(deleteBtn);
+
     card.appendChild(actions);
 
     card.addEventListener('click', () => openBackendResultsInTab(record));
-    setTimeout(() => {
-        renderPreviewChart(chartId, record);
-        if (record.data?.streamSummary) { renderStreamPieChart(pieId, record); }
-    }, 120);
     return card;
 }
+
 
 // ─── Preview chart (compact, up to 8 bars) ───────────────────────────────────
 
@@ -609,6 +609,8 @@ function openBackendResultsInTab(record) {
     const container = document.getElementById('backendResultsContainer');
     if (!container) return;
 
+    _seedScopeReportFromRecord(record);
+
     // Destroy any previous detail charts
     const prevDetailId = container.dataset.detailChartId;
     if (prevDetailId && charts[prevDetailId]) {
@@ -635,8 +637,13 @@ function openBackendResultsInTab(record) {
         subtitleEl.textContent = `${window.LciaUtils.escapeHtml(record.product)}  ·  Generated: ${dateStr}`;
     }
 
+    if (subtitleEl && record.source) {
+    subtitleEl.textContent += `  •  Source: ${window.LciaUtils.escapeHtml(String(record.source).toLowerCase())}`;
+    }
+
     const body = document.createElement('div');
     body.className = 'detail-body';
+
 
     // ── 1. Form inputs (always first — lets user review what was submitted) ────
     if (record.form && Object.keys(record.form).length > 0) {
@@ -714,13 +721,12 @@ function openBackendResultsInTab(record) {
 
     body.appendChild(chartsDetailRow);
 
+    const scopeSection = buildScopeClassificationSection(record);
+    if (scopeSection) body.appendChild(scopeSection);
+
     const footer = document.createElement('div');
+
     footer.className = 'detail-footer';
-    const dlBtn = document.createElement('button');
-    dlBtn.className = 'btn-small download';
-    dlBtn.textContent = 'Download CSV';
-    dlBtn.addEventListener('click', () => downloadRecordCSV(record));
-    footer.appendChild(dlBtn);
     body.appendChild(footer);
 
     container.appendChild(body);
@@ -1194,8 +1200,460 @@ function buildLciaDetailTable(record) {
     tbody.appendChild(totalRow);
 
     table.appendChild(tbody);
-    wrapper.appendChild(table);
+        wrapper.appendChild(table);
     return wrapper;
+}
+
+function _collectScopeActivities(record) {
+    const processes = Array.isArray(record?.data?.processes) ? record.data.processes : [];
+    return processes.map((p, idx) => {
+        const name = String(p.process || p.name || p.matched_activity || `Process ${idx + 1}`).trim();
+        return {
+            id: `${idx}::${name}`,
+            process: name,
+            mean_impact: window.LciaUtils.toNumber(p.mean_impact ?? p.impact),
+            amount_location: p.amount_location || '',
+            unit_location: p.unit_location || '',
+            ref_product: p.ref_product || '',
+            percentile: p.percentile || ''
+        };
+    }).filter(a => a.process);
+}
+
+function _initializeScopeState(recordId, activities, persistedReport = null) {
+    const prev = scopeReportStateByRecordId.get(recordId) || { assignments: {}, latestReport: null };
+    const assignments = {};
+    activities.forEach(a => {
+        const prior = prev.assignments?.[a.id];
+        assignments[a.id] = SCOPE_KEYS.includes(prior) ? prior : '';
+    });
+    const next = { assignments, latestReport: prev.latestReport || persistedReport || null };
+    scopeReportStateByRecordId.set(recordId, next);
+    return next;
+}
+
+async function _downloadScopePdf(report, record, triggerBtn = null) {
+    if (!report) return;
+
+    const originalText = triggerBtn?.textContent || '';
+    if (triggerBtn) {
+        triggerBtn.disabled = true;
+        triggerBtn.textContent = 'Generating PDF...';
+    }
+
+    try {
+        const resp = await fetch(`${FLASK_BASE}/api/esg/scope-report/pdf`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                report,
+                product: record?.product || report?.preview?.product || 'scope_report',
+                company_name: record?.company || report?.preview?.company_name || 'Reporting Entity',
+                system_boundary: record?.form?.systemBoundary || report?.preview?.system_boundary || 'N/A'
+            })
+        });
+
+        if (!resp.ok) {
+            const errorBody = await resp.json().catch(() => ({}));
+            throw new Error(errorBody?.error || 'Failed to generate PDF report');
+        }
+
+        const blob = await resp.blob();
+        const safeBase = String(record?.product || report?.preview?.product || 'scope_report')
+            .replace(/[^a-z0-9._-]+/gi, '_')
+            .replace(/^[_\.]+|[_\.]+$/g, '') || 'scope_report';
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${safeBase}_${record?.id || Date.now()}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+    } catch (err) {
+        console.error('Scope PDF download failed:', err);
+        alert(`Failed to download PDF report: ${err.message || 'Unknown error'}`);
+    } finally {
+        if (triggerBtn) {
+            triggerBtn.disabled = false;
+            triggerBtn.textContent = originalText || 'Download PDF';
+        }
+    }
+}
+
+
+function _seedScopeReportFromRecord(record) {
+    if (!record?.id) return;
+    const persisted = (record.scopeReport && typeof record.scopeReport === 'object') ? record.scopeReport : null;
+    if (!persisted?.latex) return;
+
+    const prev = scopeReportStateByRecordId.get(record.id) || { assignments: {}, latestReport: null };
+    if (!prev.latestReport) {
+        prev.latestReport = persisted;
+        scopeReportStateByRecordId.set(record.id, prev);
+    }
+}
+
+async function _persistScopeReportForRecord(recordId, scopeReport) {
+    if (!recordId || !scopeReport?.latex) return null;
+
+    const token = localStorage.getItem('token');
+    const resp = await fetch(`/api/lca-records/${encodeURIComponent(recordId)}/scope-report`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ scopeReport })
+    });
+
+    const body = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+        throw new Error(body?.message || 'Failed to save scope report');
+    }
+
+    return body?.scopeReport || scopeReport;
+}
+
+
+
+const SCOPE_LOCATION_DISPLAY_MAP = {
+    GLO: 'Global (GLO)',
+    RER: 'Europe (RER)',
+    WEU: 'Western Europe (WEU)',
+    EEU: 'Eastern Europe (EEU)',
+    MEA: 'Middle East & Africa (MEA)',
+    ASI: 'Asia (ASI)',
+    NAM: 'North America (NAM)',
+    SAM: 'South America (SAM)',
+    CN: 'China (CN)',
+    US: 'United States (US)',
+    CH: 'Switzerland (CH)',
+    BR: 'Brazil (BR)',
+    IN: 'India (IN)',
+    RoW: 'Rest of World (RoW)'
+};
+
+const SCOPE_LOCATION_CODES = Object.keys(SCOPE_LOCATION_DISPLAY_MAP).sort((a, b) => b.length - a.length);
+
+function _cleanScopeActivityName(value, fallback = 'Activity') {
+    const raw = String(value || fallback).trim();
+    const cleaned = raw.replace(/^\s*Process\s*\d+\s*:\s*/i, '').trim();
+    return cleaned || fallback;
+}
+
+function _extractScopeLocationCode(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+
+    for (const code of SCOPE_LOCATION_CODES) {
+        const escaped = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const rx = new RegExp(`(?:\\(\\s*${escaped}\\s*\\)|(?:[\\/|,]|\\s+-\\s+|\\s+)${escaped})\\s*$`, 'i');
+        if (rx.test(raw)) return code;
+        if (raw.toLowerCase() === code.toLowerCase()) return code;
+    }
+
+    return '';
+}
+
+function _expandScopeLocation(value) {
+    const code = _extractScopeLocationCode(value);
+    if (!code) return String(value || '').trim();
+    return SCOPE_LOCATION_DISPLAY_MAP[code] || code;
+}
+
+function _parseScopeAmountAndLocation(activity) {
+    const rawAmountLocation = String(activity?.amount_location || '').trim();
+    const rawUnitLocation = String(activity?.unit_location || '').trim();
+
+    const locationCode = _extractScopeLocationCode(rawAmountLocation) || _extractScopeLocationCode(rawUnitLocation);
+
+    let amount = rawAmountLocation;
+    if (locationCode && rawAmountLocation) {
+        const escaped = locationCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        amount = amount
+            .replace(new RegExp(`\\(\\s*${escaped}\\s*\\)\\s*$`, 'i'), '')
+            .replace(new RegExp(`(?:[\\/|,]|\\s+-\\s+)\\s*${escaped}\\s*$`, 'i'), '')
+            .trim();
+    }
+
+    const location = locationCode
+        ? (SCOPE_LOCATION_DISPLAY_MAP[locationCode] || locationCode)
+        : (_expandScopeLocation(rawUnitLocation) || '-');
+
+    return {
+        amount: amount || rawAmountLocation || '-',
+        location: location || '-'
+    };
+}
+
+function openScopeReportPreview(report, record) {
+    if (!report) return;
+    document.getElementById('scopeReportPreviewOverlay')?.remove();
+
+    const preview = report.preview || {};
+    const sections = Array.isArray(preview.sections) ? preview.sections : [];
+
+    const sectionHtml = sections.map(sec => {
+        const acts = Array.isArray(sec.activities) ? sec.activities : [];
+        const rows = acts.map(a => {
+            const parsed = _parseScopeAmountAndLocation(a);
+            return `
+            <tr>
+                <td>${window.LciaUtils.escapeHtml(_cleanScopeActivityName(a.process || a.name || 'Activity'))}</td>
+                <td>${window.LciaUtils.escapeHtml(parsed.amount)}</td>
+                <td>${window.LciaUtils.escapeHtml(parsed.location)}</td>
+                <td>${window.LciaUtils.toNumber(a.mean_impact).toFixed(1)}</td>
+            </tr>`;
+        }).join('');
+
+        return `
+            <section class="scope-doc-section">
+                <h3>${window.LciaUtils.escapeHtml(sec.label || sec.scope || '')}</h3>
+                <p><strong>Reported total:</strong> ${window.LciaUtils.toNumber(sec.total_kg_co2eq).toFixed(3)} kg CO<sub>2</sub>-eq</p>
+                <p>${window.LciaUtils.escapeHtml(sec.paragraph || '').replace(/\n/g, '<br>')}</p>
+                <table class="scope-doc-table">
+                    <thead>
+                        <tr><th>Activity</th><th>Amount</th><th>Location</th><th>Mean Impact (kg CO<sub>2</sub>-eq)</th></tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </section>`;
+    }).join('');
+
+    const overlay = document.createElement('div');
+    overlay.id = 'scopeReportPreviewOverlay';
+    overlay.className = 'scope-report-preview-overlay';
+    overlay.innerHTML = `
+        <div class="scope-report-preview-shell">
+            <div class="scope-report-preview-toolbar">
+                <button type="button" class="btn-small download" id="scopePreviewDownloadBtn">Download PDF</button>
+                <button type="button" class="btn-small delete" id="scopePreviewCloseBtn">Close Preview</button>
+            </div>
+            <article class="scope-report-paper">
+                <h1>ESG Scope Emissions Report</h1>
+                <p><strong>Product:</strong> ${window.LciaUtils.escapeHtml(preview.product || record?.product || 'N/A')}</p>
+                <p><strong>System boundary:</strong> ${window.LciaUtils.escapeHtml(preview.system_boundary || record?.form?.systemBoundary || 'N/A')}</p>
+                <p><strong>Total reported emissions:</strong> ${window.LciaUtils.toNumber(preview.total_kg_co2eq).toFixed(3)} kg CO<sub>2</sub>-eq</p>
+                ${sectionHtml}
+            </article>
+        </div>`;
+
+    document.body.appendChild(overlay);
+    overlay.querySelector('#scopePreviewCloseBtn')?.addEventListener('click', () => overlay.remove());
+    overlay.querySelector('#scopePreviewDownloadBtn')?.addEventListener('click', (e) => _downloadScopePdf(report, record, e.currentTarget));
+}
+
+function buildScopeClassificationSection(record) {
+    const activities = _collectScopeActivities(record);
+
+    const section = document.createElement('section');
+    section.className = 'detail-section scope-report-section';
+    section.innerHTML = `
+        <h3 class="detail-section-title">ESG Scope Classification (Scope 1 / 2 / 3)</h3>`;
+
+    if (!activities.length) {
+        const empty = document.createElement('p');
+        empty.className = 'scope-report-empty';
+        empty.textContent = 'No activity-level LCIA data is available for scope classification.';
+        section.appendChild(empty);
+        return section;
+    }
+
+    const persistedScopeReport = (record.scopeReport && typeof record.scopeReport === 'object') ? record.scopeReport : null;
+    const stateForRecord = _initializeScopeState(record.id, activities, persistedScopeReport);
+
+    const summary = document.createElement('div');
+    summary.className = 'scope-report-summary';
+    section.appendChild(summary);
+
+    const board = document.createElement('div');
+    board.className = 'scope-board-grid';
+    section.appendChild(board);
+
+    const actions = document.createElement('div');
+    actions.className = 'scope-report-actions';
+    actions.innerHTML = `
+        <div class="scope-report-status" id="scopeReportStatus-${record.id}"></div>
+        <div class="scope-report-btns">
+            <button type="button" class="btn-small view" id="scopeGenerateBtn-${record.id}">Generate Report</button>
+            <button type="button" class="btn-small download" id="scopeOpenBtn-${record.id}" ${stateForRecord.latestReport ? '' : 'hidden'}>Open Report Preview</button>
+        </div>`;
+    section.appendChild(actions);
+
+    const statusEl = actions.querySelector(`#scopeReportStatus-${record.id}`);
+    const generateBtn = actions.querySelector(`#scopeGenerateBtn-${record.id}`);
+    const openBtn = actions.querySelector(`#scopeOpenBtn-${record.id}`);
+
+    const dragState = { activityId: '' };
+    const columns = {
+        unassigned: { label: 'Unassigned' },
+        scope1: { label: 'Scope 1' },
+        scope2: { label: 'Scope 2' },
+        scope3: { label: 'Scope 3' }
+    };
+
+    function createCard(activity) {
+        const card = document.createElement('article');
+        card.className = 'scope-activity-card';
+        card.draggable = true;
+        card.dataset.activityId = activity.id;
+        card.innerHTML = `
+            <div class="scope-activity-name">${window.LciaUtils.escapeHtml(activity.process)}</div>
+            <div class="scope-activity-meta">${window.LciaUtils.escapeHtml(activity.amount_location || 'No amount/location provided')}</div>
+            <div class="scope-activity-impact">${window.LciaUtils.toNumber(activity.mean_impact).toFixed(2)} kg CO₂-eq</div>
+            <div class="scope-quick-actions">
+                <button type="button" data-scope="scope1">S1</button>
+                <button type="button" data-scope="scope2">S2</button>
+                <button type="button" data-scope="scope3">S3</button>
+            </div>`;
+
+        card.addEventListener('dragstart', e => {
+            dragState.activityId = activity.id;
+            card.classList.add('dragging');
+            e.dataTransfer?.setData('text/plain', activity.id);
+        });
+        card.addEventListener('dragend', () => card.classList.remove('dragging'));
+
+        card.querySelectorAll('.scope-quick-actions button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                stateForRecord.assignments[activity.id] = btn.dataset.scope || '';
+                renderBoard();
+            });
+        });
+
+        return card;
+    }
+
+    function createColumn(scopeKey, label) {
+        const col = document.createElement('section');
+        col.className = 'scope-drop-column';
+        col.dataset.scope = scopeKey;
+        col.innerHTML = `
+            <header class="scope-drop-column-head">
+                <span>${window.LciaUtils.escapeHtml(label)}</span>
+                <span class="scope-drop-column-count" data-count-for="${scopeKey}">0</span>
+            </header>
+            <div class="scope-card-list" data-list-for="${scopeKey}"></div>`;
+
+        col.addEventListener('dragover', e => {
+            e.preventDefault();
+            col.classList.add('scope-drop-column--active');
+        });
+        col.addEventListener('dragleave', () => col.classList.remove('scope-drop-column--active'));
+        col.addEventListener('drop', e => {
+            e.preventDefault();
+            col.classList.remove('scope-drop-column--active');
+            const dragged = e.dataTransfer?.getData('text/plain') || dragState.activityId;
+            if (!dragged) return;
+            stateForRecord.assignments[dragged] = scopeKey === 'unassigned' ? '' : scopeKey;
+            renderBoard();
+        });
+
+        return col;
+    }
+
+    Object.entries(columns).forEach(([key, value]) => board.appendChild(createColumn(key, value.label)));
+
+    function renderBoard() {
+        const buckets = { unassigned: [], scope1: [], scope2: [], scope3: [] };
+        activities.forEach(activity => {
+            const scope = stateForRecord.assignments[activity.id];
+            if (SCOPE_KEYS.includes(scope)) buckets[scope].push(activity);
+            else buckets.unassigned.push(activity);
+        });
+
+        Object.keys(buckets).forEach(scopeKey => {
+            const listEl = board.querySelector(`[data-list-for="${scopeKey}"]`);
+            const countEl = board.querySelector(`[data-count-for="${scopeKey}"]`);
+            if (!listEl || !countEl) return;
+            listEl.innerHTML = '';
+            buckets[scopeKey].forEach(a => listEl.appendChild(createCard(a)));
+            if (!buckets[scopeKey].length) {
+                const hint = document.createElement('div');
+                hint.className = 'scope-card-empty';
+                hint.textContent = scopeKey === 'unassigned' ? 'Drag card here to unassign' : 'Drop activity here';
+                listEl.appendChild(hint);
+            }
+            countEl.textContent = String(buckets[scopeKey].length);
+        });
+
+        const totals = SCOPE_KEYS.map(scope => {
+            const total = buckets[scope].reduce((sum, a) => sum + window.LciaUtils.toNumber(a.mean_impact), 0);
+            return `${scope.toUpperCase()}: ${total.toFixed(2)} kg CO₂-eq`;
+        });
+
+        summary.innerHTML = `<div><strong>Assigned:</strong> ${activities.length - buckets.unassigned.length}/${activities.length}</div><div>${totals.join(' &nbsp;•&nbsp; ')}</div>`;
+
+        const ready = buckets.unassigned.length === 0;
+        generateBtn.disabled = !ready;
+        statusEl.textContent = ready
+            ? 'Ready to generate report.'
+            : `Please assign ${buckets.unassigned.length} remaining activit${buckets.unassigned.length === 1 ? 'y' : 'ies'}.`;
+    }
+
+    generateBtn.addEventListener('click', async () => {
+        generateBtn.disabled = true;
+        const originalText = generateBtn.textContent;
+        generateBtn.textContent = 'Generating...';
+        statusEl.textContent = 'Generating scope report...';
+
+        const grouped = { scope1: [], scope2: [], scope3: [] };
+        activities.forEach(a => {
+            const scope = stateForRecord.assignments[a.id];
+            if (SCOPE_KEYS.includes(scope)) grouped[scope].push(a);
+        });
+
+        try {
+            const resp = await fetch(`${FLASK_BASE}/api/esg/scope-report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    product: record.product,
+                    form: record.form || {},
+                    system_boundary: record.form?.systemBoundary || record.intentParams?.system_boundary || 'cradle-to-gate',
+                    scope_assignments: grouped
+                })
+            });
+
+            const data = await resp.json();
+            if (!resp.ok) {
+                throw new Error(data?.error || 'Failed to generate report');
+            }
+
+                        stateForRecord.latestReport = data;
+            scopeReportStateByRecordId.set(record.id, stateForRecord);
+
+            try {
+                const persisted = await _persistScopeReportForRecord(record.id || record._id, data);
+                if (persisted?.latex) {
+                    stateForRecord.latestReport = persisted;
+                    scopeReportStateByRecordId.set(record.id, stateForRecord);
+                    record.scopeReport = persisted;
+                }
+                statusEl.textContent = 'Report generated and saved successfully. Click "Open Report Preview" to view it.';
+            } catch (persistErr) {
+                console.error('Scope report persistence failed:', persistErr);
+                statusEl.textContent = `Report generated, but failed to save to database: ${persistErr.message || 'Unknown error'}`;
+            }
+
+            openBtn.hidden = false;
+        } catch (err) {
+            console.error('Scope report generation failed:', err);
+            statusEl.textContent = `Report generation failed: ${err.message || 'Unknown error'}`;
+        } finally {
+            generateBtn.textContent = originalText;
+            renderBoard();
+        }
+    });
+
+    openBtn.addEventListener('click', () => {
+        if (!stateForRecord.latestReport) return;
+        openScopeReportPreview(stateForRecord.latestReport, record);
+    });
+
+    renderBoard();
+    return section;
 }
 
 // ─── CSV export ───────────────────────────────────────────────────────────────
@@ -1243,7 +1701,6 @@ function downloadRecordCSV(record) {
 // ─── Delete backend record ────────────────────────────────────────────────────
 
 async function deleteBackendRecord(recordId) {
-    if (!confirm('Are you sure you want to delete this record?')) return;
 
     const chartId = `chart-${recordId}`;
     if (charts[chartId]) { charts[chartId].destroy(); delete charts[chartId]; }
@@ -1257,6 +1714,35 @@ async function deleteBackendRecord(recordId) {
     }
     loadBackendHistory();
 }
+
+async function deleteDraftRecord(recordId) {
+    const idx = state.records.findIndex(r => r.id === recordId);
+    if (idx < 0) return;
+
+    const record = state.records[idx];
+    const isRunning = record.status === STATUS.RUNNING;
+    const ok = confirm(isRunning
+        ? 'This draft is still generating. Delete it and stop tracking this run?'
+        : 'Are you sure you want to delete this draft?');
+    if (!ok) return;
+
+    if (isRunning && record.jobId) {
+        try {
+            await fetch(`${FLASK_BASE}/api/jobs/${record.jobId}`, { method: 'DELETE' });
+        } catch (err) {
+            console.warn('Failed to cancel background draft job before deletion:', err);
+        }
+    }
+
+    state.records.splice(idx, 1);
+    if (state.activeRecordId === recordId) {
+        state.activeRecordId = null;
+    }
+    persistState();
+
+    await loadBackendHistory();
+}
+
 
 function renderConsole(logs) {
     const body = document.getElementById('lcaConsoleBody');
@@ -1686,12 +2172,14 @@ async function _onLcaJobDone(answerPack, record, f, question) {
 
     const backendPayload = {
         product:        f.productDescription || 'Unnamed Product',
+        source:         'full_lca',
         form:           f,
         data:           lciaData,
         carbonEmission: resultData.totalImpact,
         query:          question,
         answerText:     resultData.answerText || ''
     };
+
 
     appendLog('Saving result to database...');
     let savedId = null;
@@ -1717,7 +2205,9 @@ async function _onLcaJobDone(answerPack, record, f, question) {
         carbonEmission: backendPayload.carbonEmission,
         query:          backendPayload.query,
         answerText:     backendPayload.answerText,
+        source:         backendPayload.source,
         timestamp:      new Date().toISOString()
+
     });
 
     await loadBackendHistory();
