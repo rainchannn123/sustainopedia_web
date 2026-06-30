@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="/mobile-check.js"></script>
+  <title>SustainOpedia - Past LCA Results</title>
+  <link rel="icon" type="image/x-icon" href="/static/img/logo.ico">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="full_lca.css" />
+  <script src="light-dark-mode.js"></script>
+  <script src="js lib/chart.umd.js"></script>
+</head>
+<body class="past-results-page">
+  <div class="app-container">
+
+    <nav class="left-nav">
+      <ul>
+        <li class="logo-tab">
+          <img src="static/img/logo.png" alt="Sustainopedia Logo" class="logo-img">
+          <span>SustainOpedia</span>
+        </li>
+        <li class="tab"><a href="/index.html">Chat</a></li>
+        <li class="tab"><a href="/full_lca.html">Full LCA Report</a></li>
+        <li class="tab"><a href="/workbench.html">Workbench</a></li>
+        <li class="tab active"><a href="/past_lca_results.html">Past LCA Results</a></li>
+        <li class="tab"><a href="/settings.html">Settings</a></li>
+      </ul>
+      <div class="nav-user">
+        <span id="navUsername" class="nav-username"></span>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <div class="content-wrapper">
+
+        <div id="lcaHistoryView" class="page active">
+          <div class="records-header">
+            <div class="records-header-top">
+              <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open navigation">&#9776;</button>
+              <h2>Past LCA Results</h2>
+            </div>
+            <div class="records-filters">
+              <input type="text" id="lcaSearch" class="search-input" placeholder="Search by product name...">
+              <select id="lcaSort" class="sort-select">
+                <option value="recent">Most Recent</option>
+                <option value="oldest">Oldest First</option>
+                <option value="product">Product Name</option>
+                <option value="emissions">Highest Emissions</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="lcaHistoryContainer" class="records-container">
+            <div class="empty-state">
+              <p>No completed assessments yet.</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="lcaWorkspaceView" class="page">
+          <div class="records-header lca-form-topbar">
+            <div class="records-header-top">
+              <button id="mobileMenuBtn2" class="mobile-menu-btn" aria-label="Open navigation">&#9776;</button>
+              <button id="backToHistoryBtn" class="lca-back-btn">&#8592; Back</button>
+            </div>
+            <div class="lca-work-subtitle">
+              <p class="lca-form-subtitle" id="workspaceSubtitle"></p>
+            </div>
+          </div>
+
+          <div id="workspaceResultsPanel" class="lca-work-panel active">
+            <div class="lca-results-with-chat">
+              <div class="lca-results-pane">
+                <div class="lca-results-scroll">
+                  <div id="backendResultsContainer">
+                    <div class="empty-state">
+                      <p>Select a record from Past LCA Results to view details here.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lca-results-chat-pane">
+                <div class="results-chat-header">
+                  <span>SustainOpedia Assistant</span>
+                </div>
+                <div id="resultsChatWindow" class="results-chat-window"></div>
+                <form id="resultsChatForm" class="results-chat-form">
+                  <textarea id="resultsChatInput" class="results-chat-input" rows="1"
+                    placeholder="Ask about the results…"></textarea>
+                  <button type="submit" class="results-chat-send-btn" title="Send">
+                    <img src="./static/img/send-button.png" alt="Send" />
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js lib/markdown-it.min.js"></script>
+  <script src="shared.js"></script>
+  <script src="functions/lcia-utils.js"></script>
+  <script src="/config.js"></script>
+  <script src="full_lca.js"></script>
+  <script src="past_lca_results_mode.js"></script>
+</body>
+</html>

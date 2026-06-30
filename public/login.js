@@ -1,4 +1,4 @@
-// Login and Registration Logic
+﻿// Login and Registration Logic
 
 // If a valid (non-expired) token is already stored, skip the login page entirely.
 (function redirectIfAuthenticated() {
@@ -9,7 +9,7 @@
         if (payload.exp && Date.now() / 1000 < payload.exp) {
             window.location.replace('/index.html');
         }
-    } catch { /* malformed token — fall through to login page */ }
+    } catch {  }
 })();
 
 const loginForm = document.getElementById('loginForm');
@@ -196,3 +196,4 @@ window.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/index.html';
     }
 });
+

@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="/mobile-check.js"></script>
+  <title>SustainOpedia - Workbench</title>
+  <link rel="icon" type="image/x-icon" href="/static/img/logo.ico">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="workbench.css" />
+  <script src="light-dark-mode.js"></script>
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- Left Navigation -->
+    <nav class="left-nav">
+      <ul>
+        <li class="logo-tab">
+          <img src="static/img/logo.png" alt="Sustainopedia Logo" class="logo-img">
+          <span>SustainOpedia</span>
+        </li>
+        <li class="tab"><a href="/index.html">Chat</a></li>
+        <li class="tab"><a href="/full_lca.html">Full LCA Report</a></li>
+        <li class="tab active"><a href="/workbench.html">Workbench</a></li>
+        <li class="tab"><a href="/past_lca_results.html">Past LCA Results</a></li>
+
+        <li class="tab"><a href="/settings.html">Settings</a></li>
+      </ul>
+      <div class="nav-user">
+        <span id="navUsername" class="nav-username"></span>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="content-wrapper">
+
+        <!-- ── Top bar ── -->
+        <div class="wb-topbar">
+          <div class="wb-topbar-left">
+            <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open navigation">&#9776;</button>
+            <h2 class="wb-title">Workbench</h2>
+          </div>
+          <!-- Sub-tab switcher -->
+          <div class="wb-subtabs" role="tablist">
+            <button class="wb-subtab active" data-tab="warehouse" role="tab" aria-selected="true">Process Warehouse</button>
+            <button class="wb-subtab" data-tab="construction" role="tab" aria-selected="false">Construction</button>
+            <button class="wb-subtab wb-subtab--disabled" data-tab="future" role="tab" aria-selected="false" aria-disabled="true" disabled>Coming Soon</button>
+          </div>
+        </div>
+
+        
+        <div id="tab-warehouse" class="wb-tab-panel active">
+          <!-- Maintenance notice -->
+          <div class="wh-maintenance-banner" role="status">
+            <span class="wh-maintenance-icon">&#9881;</span>
+            <span>This section is currently under active development. Some features may be limited or unavailable — full functionality will be available in an upcoming release.</span>
+          </div>
+          <!-- Toolbar: search + import + create -->
+          <div class="wh-toolbar">
+            <div class="wh-search-wrap">
+              <input type="text" id="whSearchInput" class="wh-search-input"
+                placeholder="Search by name, ID, region, unit, or category…" autocomplete="off">
+              <button id="whSearchClearBtn" class="wh-search-clear" title="Clear" hidden>&#10005;</button>
+            </div>
+            <button id="whImportBtn" class="wb-secondary-btn" hidden>&#8659; Import EcoInvent</button>
+            <button id="whClearAllBtn" class="wb-danger-btn" title="Delete ALL processes from your warehouse" hidden>&#128465; Clear All</button>
+            <button id="whCreateBtn" class="wb-primary-btn">+ Create Process</button>
+          </div>
+          <div id="whImportProgress" class="wh-import-progress" hidden></div>
+
+          <!-- Process grid: rows grouped by category -->
+          <div id="whGrid" class="wh-grid">
+            <div class="wh-empty-state" id="whEmptyState">
+              <p>No processes yet. Click <strong>+ Create Process</strong> to add your first one.</p>
+            </div>
+          </div>
+        </div>
+
+        
+        <div id="tab-construction" class="wb-tab-panel">
+
+          <div class="con-layout">
+
+            <!-- Value chain builder -->
+            <section class="con-chain-section">
+              <div class="con-chain-header">
+                <h3>Value Chain</h3>
+                <button id="conAddNodeBtn" class="wb-secondary-btn">+ Add Step</button>
+              </div>
+              <div class="con-chain-scroll">
+                <div id="conChain" class="con-chain">
+                  <!-- nodes injected by JS -->
+                </div>
+              </div>
+            </section>
+
+            <!-- Metadata form -->
+            <section class="con-meta-section">
+              <h3 class="con-meta-title">Value Chain Metadata</h3>
+              <form id="conForm" class="con-form" novalidate>
+
+                <div class="con-field">
+                  <label for="conChainName">Value Chain Name <span class="con-required">*</span></label>
+                  <input type="text" id="conChainName" placeholder="e.g. Steel Production - China" required>
+                </div>
+
+                <div class="con-field">
+                  <label for="conProductName">Product Name <span class="con-required">*</span></label>
+                  <input type="text" id="conProductName" placeholder="e.g. Crude Steel">
+                </div>
+
+                <div class="con-field-row">
+                  <div class="con-field">
+                    <label for="conFunctionalUnitAmount">Functional Unit Amount</label>
+                    <input type="text" id="conFunctionalUnitAmount" placeholder="e.g. 1">
+                  </div>
+                  <div class="con-field">
+                    <label for="conFunctionalUnitUnit">Functional Unit Unit</label>
+                    <select id="conFunctionalUnitUnit">
+                      <option value="tonne">tonne</option>
+                      <option value="kilogram">kilogram</option>
+                      <option value="gram">gram</option>
+                      <option value="unit">unit</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="con-field">
+                  <label for="conSystemBoundary">System Boundary</label>
+                  <select id="conSystemBoundary">
+                    <option value="cradle-to-gate">Cradle-to-Gate</option>
+                    <option value="cradle-to-grave">Cradle-to-Grave</option>
+                    <option value="gate-to-gate">Gate-to-Gate</option>
+                    <option value="cradle-to-cradle">Cradle-to-Cradle</option>
+                  </select>
+                </div>
+
+                <div class="con-field-row">
+                  <div class="con-field">
+                    <label for="conRunMc">Run Monte Carlo</label>
+                    <select id="conRunMc">
+                      <option value="false">No</option>
+                      <option value="true">Yes</option>
+                    </select>
+                  </div>
+                  <div class="con-field">
+                    <label for="conNSimulations">N Simulations</label>
+                    <input type="text" id="conNSimulations" placeholder="e.g. 25">
+                  </div>
+                </div>
+
+                <div class="con-field">
+                  <label for="conNotes">Additional Notes</label>
+                  <textarea id="conNotes" rows="3" placeholder="Any assumptions, data sources, or remarks…"></textarea>
+                </div>
+
+                <div class="con-console" id="conConsole" aria-live="polite">
+                  <div class="con-console-title">Progress Console</div>
+                  <div id="conConsoleLog" class="con-console-log">
+                    <p class="con-console-empty">No run started yet.</p>
+                  </div>
+                </div>
+
+                <div class="con-form-actions">
+                  <button type="button" id="conClearBtn" class="wb-secondary-btn">Clear</button>
+                  <button type="submit" id="conSubmitBtn" class="wb-primary-btn">Run LCA</button>
+                </div>
+
+              </form>
+            </section>
+          </div>
+        </div>
+
+        
+
+      </div><!-- /.content-wrapper -->
+    </main>
+  </div><!-- /.app-container -->
+
+  
+  <div id="processModal" class="wb-modal-overlay" hidden aria-modal="true" role="dialog" aria-labelledby="processModalTitle">
+    <div class="wb-modal">
+      <div class="wb-modal-header">
+        <h3 id="processModalTitle">Create Process</h3>
+        <button class="wb-modal-close" id="processModalClose" aria-label="Close">&#10005;</button>
+      </div>
+      <div class="wb-modal-body">
+        <form id="processForm" novalidate>
+
+          <div class="con-field">
+            <label for="pfName">Process Name <span class="con-required">*</span></label>
+            <input type="text" id="pfName" required placeholder="e.g. Steel, low-alloyed, at plant">
+          </div>
+
+          <div class="con-field">
+            <label for="pfRegion">Region</label>
+            <select id="pfRegion">
+              <option value="">-- Select Region --</option>
+              <option value="GLO">GLO - Global</option>
+              <option value="RoW">RoW - Rest of World</option>
+              <option value="CN">CN - China</option>
+              <option value="US">US - United States</option>
+              <option value="RER">RER - Europe</option>
+              <option value="DE">DE - Germany</option>
+              <option value="CH">CH - Switzerland</option>
+              <option value="FR">FR - France</option>
+              <option value="GB">GB - United Kingdom</option>
+              <option value="JP">JP - Japan</option>
+              <option value="IN">IN - India</option>
+              <option value="BR">BR - Brazil</option>
+              <option value="RU">RU - Russia</option>
+              <option value="AU">AU - Australia</option>
+              <option value="KR">KR - Korea, South</option>
+              <option value="CA">CA - Canada</option>
+              <option value="MX">MX - Mexico</option>
+              <option value="ZA">ZA - South Africa</option>
+              <option value="RAF">RAF - Africa</option>
+              <option value="RAS">RAS - Asia</option>
+              <option value="RNA">RNA - North America</option>
+              <option value="RLA">RLA - Latin America</option>
+              <option value="RME">RME - Middle East</option>
+              <option value="others">Others…</option>
+            </select>
+            <input type="text" id="pfRegionCustom" class="con-region-custom"
+                   placeholder="Enter custom region code" style="display:none;">
+          </div>
+
+          <div class="con-field-row">
+            <div class="con-field">
+              <label for="pfProvider">Provider Name</label>
+              <input type="text" id="pfProvider" placeholder="e.g. EcoInvent">
+            </div>
+            <div class="con-field">
+              <label for="pfUnit">Unit</label>
+              <input type="text" id="pfUnit" placeholder="e.g. kilogram">
+            </div>
+          </div>
+
+          <div class="con-field">
+            <label for="pfCategory">Process Set Category</label>
+            <input type="text" id="pfCategory" placeholder="e.g. Metals, Energy, Transport">
+          </div>
+
+          <div class="con-field">
+            <label for="pfDescription">Description <span style="font-weight:400;color:#889;">(optional)</span></label>
+            <textarea id="pfDescription" rows="3" placeholder="Short description of this process…"></textarea>
+          </div>
+
+          <p id="processFormError" class="con-form-error" hidden></p>
+
+          <div class="con-form-actions">
+            <button type="button" id="processModalCancel" class="wb-secondary-btn">Cancel</button>
+            <button type="submit" class="wb-primary-btn">Upload to Warehouse</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  
+
+    <script src="js lib/markdown-it.min.js"></script>
+  <script src="js lib/chart.umd.js"></script>
+  <script src="shared.js"></script>
+  <script src="functions/lcia-utils.js"></script>
+  <script src="/config.js"></script>
+  <script src="workbench.js"></script>
+
+</body>
+</html>

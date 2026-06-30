@@ -1,4 +1,4 @@
-# SKILL.md — Sustainopedia Web Frontend (LLM Reference)
+ SKILL.md — Sustainopedia Web Frontend (LLM Reference)
 
 > **Purpose:** Authoritative map of the frontend codebase for LLM agents. Read this before editing any file.  
 > **Runtime:** Node.js (Express) server at port 3000, serving static files from `public/`. Database: MongoDB via Mongoose. Auth: JWT stored in `localStorage`.  
@@ -10,44 +10,23 @@
 
 ```
 sustainopedia_web/
-├── server.js                      # Express server — auth + data API + static file serving
-├── package.json                   # Dependencies: express, mongoose, bcrypt, jsonwebtoken, helmet, cors
-├── .env                           # Secrets (MONGODB_URI, JWT_SECRET, PORT)
-│
-└── public/                        # All static assets served directly to browser
-    ├── welcome.html               # Landing / marketing page (unauthenticated)
-    ├── login.html                 # Login + registration page
-    ├── index.html                 # Main chat interface (fast query mode)
-    ├── full_lca.html              # Full LCA assessment workspace (multi-step form + results)
-    ├── records.html               # Historical LCA records browser
-    ├── settings.html              # User account settings
-    │
-    ├── script.js                  # Chat page logic (index.html)
-    ├── full_lca.js                # Full LCA workspace logic (full_lca.html)
-    ├── records.js                 # Records page logic (records.html)
-    ├── settings.js                # Settings page logic (settings.html)
-    ├── login.js                   # Login/register logic (login.html)
-    ├── welcome.js                 # Welcome page logic (welcome.html)
-    ├── shared.js                  # Auth guard + authenticated fetch helper (loaded on every page)
-    ├── light-dark-mode.js         # Theme toggle (loaded on every page)
-    ├── mobile-check.js            # Mobile device detection + redirect to mobile-unsupported.html
-    │
-    ├── style.css                  # Chat page styles
-    ├── full_lca.css               # Full LCA workspace styles
-    ├── login-style.css            # Login page styles
-    ├── welcome.css                # Welcome page styles
-    ├── mobile-ns.css              # Mobile unsupported page styles
-    │
-    ├── functions/
-    │   ├── lcia-utils.js          # Shared LCIA utilities — exposed as window.LciaUtils
-    │   ├── local storage.js       # Legacy localStorage helpers (chat history only)
-    │   └── firebase.js            # Firebase Analytics initialisation (unused beyond analytics)
-    │
-    ├── js lib/
-    │   ├── chart.umd.js           # Chart.js v4 bundled (CDN-free)
-    │   └── markdown-it.min.js     # markdown-it bundled (CDN-free)
-    │
-    └── static/img/                # Static images (logo, icons, backgrounds)
+├── server.js
+├── package.json
+├── .env
+└── public/
+    ├── index.html / script.js / style.css               # Chat
+    ├── full_lca.html / full_lca.js / full_lca.css       # Full LCA workspace
+    ├── workbench.html / workbench.js / workbench.css    # Workbench (warehouse + construction; result routing)
+    ├── past_lca_results.html / past_lca_results_mode.js # Past LCA history + detail workspace view
+    ├── records.html / records.js                         # Legacy/alternate LCA record browser
+        ├── settings.html / settings.js
+    ├── welcome.html / welcome.js
+    ├── login.html / login.js / login-style.css
+
+    ├── shared.js / light-dark-mode.js / mobile-check.js
+    ├── functions/lcia-utils.js
+    ├── js lib/chart.umd.js / js lib/markdown-it.min.js
+    └── static/img/*
 ```
 
 ---
@@ -97,6 +76,18 @@ LcaResultChatMessage               // Per-record follow-up chat
   role:      "user" | "bot"
   content:   String
   timestamp: Date
+
+WarehouseProcess                   // Workbench process warehouse
+  userId, processName, processId (user+processId unique), region,
+  providerName, unit, category, uuid, description, createdAt
+
+ValueChain                         // Workbench construction draft
+  userId, chainName, productName, functionalUnit,
+  systemBoundary, notes, nodes[], createdAt
+
+WorkbenchHistory                   // Workbench run history
+  userId, chainName, productName, functionalUnit,
+  systemBoundary, notes, nodes[], results, runAt
 ```
 
 #### `FormInputs` Embedded Schema
@@ -152,16 +143,35 @@ verifyToken(req, res, next)
 | `GET` | `/api/lca-results-chat/:recordId` | Load follow-up chat history for one LCA record |
 | `POST` | `/api/lca-results-chat/:recordId` | Append a message. Body: `{role, content}` |
 
+#### Workbench APIs (requires JWT)
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/workbench/processes` | Search/list warehouse processes (global pool; supports `q`, `limit`) |
+| `GET` | `/api/workbench/processes/preview` | Default preview (sampled by featured regions) |
+| `POST` | `/api/workbench/processes` | Create one warehouse process |
+| `POST` | `/api/workbench/processes/batch` | Batch create (used by EcoInvent import) |
+| `DELETE` | `/api/workbench/processes/:id` | Delete one owned process |
+| `DELETE` | `/api/workbench/processes` | Delete all owned processes |
+| `POST` | `/api/workbench/chains` | Save value-chain draft |
+| `GET` | `/api/workbench/history` | List run history |
+| `GET` | `/api/workbench/history/:id` | Fetch one run record |
+| `POST` | `/api/workbench/history` | Save run result record |
+| `DELETE` | `/api/workbench/history/:id` | Delete run record |
+
 #### Utility
 | Method | Path | Description |
 |---|---|---|
-| `GET` | `/api/health` | Health check. Returns `{status: "ok"}` |
-| `GET` | `/config.js` | Injects `window.FLASK_BASE` from `process.env.FLASK_BASE` into client JS |
+| `GET` | `/api/health` | Health check |
+| `GET` | `/config.js` | Injects `window.FLASK_BASE` for browser clients |
+
 
 ### Static File Serving
 - `GET /` → `public/welcome.html`
 - `app.use(express.static(...))` serves everything in `public/` by filename.
-- Named routes (`/index.html`, `/records.html`, etc.) explicitly redirect to auth-gated pages with `verifyToken`-style logic on the client (not server-enforced except for API routes).
+- Named routes include `/index.html`, `/full_lca.html`, `/workbench.html`, `/past_lca_results.html`, `/settings.html`, `/records.html`, etc.
+- Page access control is mainly client-side (`checkAuth()` in `shared.js`); API access is server-protected via `verifyToken`.
+
+
 
 ---
 
@@ -197,256 +207,119 @@ async function apiReq(method: string, url: string, body?: any): Promise<any>
 
 ## 4. Chat Page — `public/script.js`
 
-Corresponds to `index.html`. Connects to Flask backend at `window.FLASK_BASE` (injected by `/config.js`).
+`index.html` chat client with MongoDB-backed conversation history.
 
-### Module-Level State
-```js
-const FLASK_BASE        // injected via window.FLASK_BASE, fallback 'http://localhost:5052'
-const POLL_INTERVAL_MS = 2500
-let chatting            // boolean — blocks concurrent submissions
-let md                  // markdown-it instance
-let conversations       // Array of ChatHistory docs from MongoDB
-let activeConvId        // _id of active conversation
-let _pollTimer          // setInterval handle
-let _activeJobId        // currently tracked Flask job UUID
-let currentMode = 'fast'  // 'fast' | 'thinking' (full LCA)
-```
+Core flow:
+1. Load conversations from `GET /api/chat-histories`.
+2. User submit → `POST {FLASK_BASE}/api/jobs`.
+3. Poll `GET {FLASK_BASE}/api/jobs/:jobId` every 2.5s.
+4. Persist user/bot messages via `PUT /api/chat-histories/:id`.
 
-### Key Functions
-```js
-function _stopPolling(): void
-  // Clears _pollTimer, nulls _activeJobId, removes pendingJob from sessionStorage.
+Important state:
+- `conversations`, `activeConvId`
+- polling state (`_pollTimer`, `_activeJobId`)
+- mode selector (`currentMode`: `fast` / `thinking`)
+- markdown renderer (`markdown-it`)
 
-function _startPolling(jobId, typingEl, extractionTimer, onMessage): void
-  // Polls GET /api/jobs/:jobId every POLL_INTERVAL_MS.
-  // On done: parses answer_pack, calls onMessage to render bot response.
-  // On error or 404: shows error message, re-enables send button.
-  // Handles up to 3 consecutive network errors before giving up.
-  // onMessage signature: (role: "user-message"|"bot-message", content) → void
-```
-
-**Session resume:** On page load, `sessionStorage.getItem('pendingJob')` is checked. If a job UUID is found, polling resumes automatically.
+Resilience:
+- pending jobs are stored in `sessionStorage.pendingJob` and resumed on reload.
+- repeated network failures stop polling gracefully.
 
 ---
+
 
 ## 5. Full LCA Workspace — `public/full_lca.js`
 
-Corresponds to `full_lca.html`. The primary production surface. Manages LCA assessment lifecycle from form → job → results → follow-up chat.
+`full_lca.html` is the detailed assessment workbench.
 
-### Module-Level Constants & State
-```js
-const FLASK_BASE        // window.FLASK_BASE || 'http://localhost:5052'
-const POLL_INTERVAL_MS = 3000
-const STORAGE_KEY = 'lca_assessments_v2'  // localStorage key for draft records
-const STATUS = { DRAFT, PENDING, RUNNING, DONE, ERROR, CANCELLED }
-const state = {
-  records: [],           // all LCA records (drafts + backend history)
-  activeId: null,        // currently open record ID
-  lcaPollTimer: null,
-  lcaActiveJobId: null,
-  resultsChatPollTimer: null
-}
-```
+Primary responsibilities:
+- manage draft/active records in local state + localStorage
+- read/validate multi-question form inputs
+- submit full jobs to Flask (`mode: "full_lca"`) and poll until complete
+- normalize backend `answer_pack` into the frontend record shape
+- persist completed runs to `/api/lca-records`
+- render charts/tables and support export
+- provide per-record follow-up chat via `/api/lca-results-chat/:recordId`
 
-### State Management
-```js
-function createBlankRecord(): object
-  // Returns a new empty record with generated ID, STATUS.DRAFT, blank form fields.
-
-function createId(): string
-  // Generates a random alphanumeric ID string.
-
-function loadState(): void
-  // Loads state.records from localStorage (STORAGE_KEY).
-
-function persistState(): void
-  // Saves state.records to localStorage (STORAGE_KEY).
-
-function getActiveRecord(): object | null
-  // Returns state.records.find(r => r.id === state.activeId).
-
-function saveActiveRecord(): void
-  // Reads current form into active record via readForm(), then calls persistState().
-```
-
-### Form I/O
-```js
-function readForm(): object
-  // Reads all form inputs from the DOM. Returns FormInputs-shaped object.
-
-function fillForm(form: object): void
-  // Populates DOM form fields from a FormInputs object.
-
-function normalizeForm(form: object): object
-  // Coerces form fields to correct types (string → number for amounts, etc.).
-
-function setValue(id: string, value: any): void
-  // Set value of input/select/textarea by element ID.
-
-function setChecked(id: string, checked: boolean): void
-  // Set checked state of checkbox by element ID.
-
-function getGroupActiveValue(groupId: string): string
-  // Read active value from a radio-button-style option group.
-
-function setGroupActiveValue(groupId: string, value: string): void
-  // Set active button in an option group by matching data-value attribute.
-
-function collectAndSaveForm(): void
-  // readForm() → saveActiveRecord() — convenience wrapper.
-
-function validateForm(): boolean
-  // Checks required form fields. Calls _markValidationErrors() on failures.
-  // Returns true only if all required fields are filled.
-```
-
-### Record Rendering
-```js
-function createLocalDraftCard(record): HTMLElement
-  // Build a sidebar card DOM element for a draft record.
-
-function createHistoryCard(record): HTMLElement
-  // Build a sidebar card DOM element for a completed backend record.
-
-async function loadBackendHistory(): Promise<void>
-  // GET /api/lca-records, normalise with LciaUtils.normalizeRecord,
-  // merge with local drafts, render sidebar.
-
-function filterAndRenderHistory(records): void
-  // Apply search/sort controls, render filtered list in sidebar.
-
-function openRecord(recordId: string): void
-  // Set activeId, fill form from record, switch to workspace panel,
-  // render results if available.
-
-function addNewRecord(): void
-  // Create blank record, push to state.records, open it.
-
-function setWorkspaceTitle(record): void
-  // Update the workspace header title from record.form.productDescription.
-```
-
-### Charts
-```js
-function renderStreamPieChart(canvasId: string, record, isDetail?: boolean): void
-  // Pie chart: upstream / downstream / gate-to-gate impact breakdown.
-  // Uses CHART_PALETTE. Destroys existing chart on canvasId if present.
-
-function renderPreviewChart(canvasId: string, record): void
-  // Horizontal bar chart: top processes by mean impact (sidebar preview).
-
-function renderDetailChart(canvasId: string, record): void
-  // Full horizontal bar chart with SD error bars (detail panel).
-```
-
-### LCA Job Lifecycle
-```js
-async function generateResult(e: Event): Promise<void>
-  // Main submit handler. Validates form → buildStructuredLcaQuery →
-  // POST /api/jobs {mode: "full_lca"} → _startLcaPolling.
-
-function _startLcaPolling(jobId, record, f, question): void
-  // Polls Flask GET /api/jobs/:jobId every POLL_INTERVAL_MS.
-  // Appends log messages to console via appendLog().
-  // On done: calls _onLcaJobDone.
-
-function _stopLcaPolling(): void
-  // Clears lcaPollTimer and lcaActiveJobId.
-
-async function _onLcaJobDone(answerPack, record, f, question): Promise<void>
-  // Post-job completion: normalizeAnswerPackToResult → save record to backend
-  // → update local state → render charts → open results panel.
-
-async function _cancelCurrentJob(jobId: string): Promise<void>
-  // DELETE /api/jobs/:jobId → sets record status to CANCELLED.
-
-async function saveDraft(): Promise<void>
-  // collectAndSaveForm → POST /api/lca-records with STATUS.DRAFT.
-```
-
-### Results Follow-Up Chat
-```js
-function buildLcaContextText(record): string
-  // Serialise record.result into a text string injected as LCA context
-  // in the fast-mode chat query (so the LLM knows the current results).
-
-function initResultsChat(record): void
-  // Set up the in-panel chat UI, load existing messages, bind send handler.
-
-async function _lcaResultsChatLoad(recordId: string): Promise<void>
-  // GET /api/lca-results-chat/:recordId → render messages.
-
-async function _lcaResultsChatSave(recordId, role, content): Promise<void>
-  // POST /api/lca-results-chat/:recordId → persist message to backend.
-```
-
-### Rendering Utilities
-```js
-function buildFormInputsSection(form): string
-  // Build HTML string showing all form inputs in a structured read-only display.
-
-function buildLciaDetailTable(record): string
-  // Build HTML for the per-process LCIA impact table with mass flow columns.
-
-function downloadRecordCSV(record): void
-  // Serialise record to CSV and trigger browser download.
-
-function renderConsole(logs: Array): void
-  // Re-render the full live log console from a logs array.
-
-function appendLog(message: string, level?: string): void
-  // Append a single log line to the live console panel ('', 'warning', 'error').
-```
-
-### Data Transformation
-```js
-function buildStructuredLcaQuery(form): string
-  // Converts FormInputs object → multiline "Key: Value" string for Flask backend.
-  // This is the format expected by non_RAG_methods.input_q_to_json() on the backend.
-
-function normalizeAnswerPackToResult(answerPack, form): object
-  // Converts raw Flask answer_pack → internal record.result shape.
-  // Calls LciaUtils.normalizeLciaPayload on processed_json.
-
-function inferProcessStream(processName: string): "upstream"|"downstream"|"gate-to-gate"
-  // Client-side heuristic stream classification (mirrors backend _classify_stream).
-
-function formatStructuredValue(raw, fallback?): string
-  // Coerce a raw field value to display string. Returns fallback if null/empty.
-
-function toSafeNumber(value, fallback?): number
-  // Safe numeric coercion. Returns fallback (default 0) on NaN/null/undefined.
-
-function clampInt(value, fallback, min, max): number
-  // Clamp an integer value to [min, max], returning fallback if out of range.
-```
-
-### Validation
-```js
-function syncMonteCarloInputState(): void
-  // Show/hide nSimulations input based on runMc checkbox state.
-
-function validateForm(): boolean
-  // Returns false and highlights invalid fields if required questions are unanswered.
-
-function _getQuestionCard(qNum: number): HTMLElement | null
-  // Find a question card DOM element by question number attribute.
-
-function _markValidationErrors(failingQs: number[]): void
-  // Add error styling to specified question cards.
-
-function _refreshValidationErrors(): void
-  // Re-run validation and update error states without submitting.
-
-function _setBtnState(btn: HTMLElement, mode: string): void
-  // Set button to mode: "idle" | "loading" | "cancelling" | "disabled".
-```
+Key invariants:
+- Form-to-backend query format (`buildStructuredLcaQuery`) must stay aligned with backend parser.
+- Chart instances must be destroyed before re-rendering same canvas.
+- Run lifecycle states: `DRAFT → PENDING/RUNNING → DONE | ERROR | CANCELLED`.
 
 ---
 
-## 6. Records Page — `public/records.js`
 
-Corresponds to `records.html`. Read-only view of all completed LCA assessments.
+## 6. Workbench Page — `public/workbench.html`, `public/workbench.js`, `public/workbench.css`
+
+
+`workbench.html` currently exposes **2 active subtabs + 1 disabled placeholder**:
+1. **Process Warehouse** — search/create/import process cards.
+2. **Construction** — build value-chain steps and submit a run.
+3. **Coming Soon** — disabled placeholder tab (non-interactive).
+
+### `workbench.js` (runtime behavior)
+- Boot flow: `checkAuth()` → initialize subtabs, warehouse, construction, modals.
+- State object: `WB = { activeTab, warehouse, construction }`.
+- Warehouse:
+  - Default preview: `GET /api/workbench/processes/preview`
+  - Search: `GET /api/workbench/processes?q=...`
+  - Create modal submit: `POST /api/workbench/processes`
+  - Optional bulk import helper: `POST /api/workbench/processes/batch`
+- Construction:
+  - Node builder with autocomplete search (`limit=8`)
+  - Stores selected process metadata per node (`processId`, `processName`, `region`, `providerName`)
+  - Activity names are title-cased in both chain node cards and autocomplete dropdowns.
+  - Monte Carlo handling: when `Run Monte Carlo = No`, payload sends `nSimulations = '0'`; when `Yes`, defaults to `'25'` if empty.
+  - Submit flow:
+    1. saves chain draft via `POST /api/workbench/chains`
+    2. starts Flask job `POST {FLASK_BASE}/api/jobs` with `{ mode: 'workbench_lca', workbench_payload }`
+    3. polls logs/status from `GET {FLASK_BASE}/api/jobs/:jobId`
+    4. persists output to both:
+       - `POST /api/lca-records` (with `source: 'workbench'`)
+       - `POST /api/workbench/history`
+    5. routes to `/past_lca_results.html?recordId=<id>&from=workbench`
+
+### Legacy history functions in `workbench.js`
+- `workbench.js` still contains `_renderHistory`, `_openHistDetail`, and related history/detail UI code.
+- These paths are currently **not wired to active tabs in `workbench.html`** and are effectively dormant.
+- Treat as legacy cleanup candidates unless reactivated intentionally.
+
+### `workbench.css` (styling scope)
+- Depends on global design tokens from `style.css` (`:root` variables).
+- Defines shells for:
+  - topbar/subtabs (`.wb-topbar`, `.wb-subtab`)
+  - warehouse cards (`.wh-*`)
+  - construction chain & node UI (`.con-*`)
+  - history/detail styles (`.hist-*`, currently mostly legacy)
+  - modals/toast (`.wb-modal-*`, `.wb-toast`)
+- Includes responsive rules for ≤700px.
+
+---
+
+## 7. Past LCA Results Page — `public/past_lca_results.html`, `public/past_lca_results_mode.js`
+
+
+Past results UX is rendered by `full_lca.js` on this page, with mode-specific behavior from `past_lca_results_mode.js`.
+
+- History list cards are **row/text style** (`record-card--row`) without preview chart thumbnails.
+- Row interaction model:
+  - click row → open result detail workspace
+  - actions show date/time + delete
+  - no row-level "View Details" or "Download CSV" buttons
+- Source badges:
+  - `workbench` records: `WORKBENCH` (`.hist-source-badge--workbench`)
+  - non-workbench records: `FULL LCA PROCESS` (`.hist-source-badge--full-lca`)
+- Deep link support:
+  - if `?recordId=<id>` is present, page auto-opens that record in detail view after history load
+  - URL is cleaned with `history.replaceState` after opening
+- Draft cards on this page redirect to editable form route: `/full_lca.html?draftId=<id>`.
+
+---
+
+## 8. Records Page — `public/records.js`
+
+
+Legacy/alternate read-only view of completed LCA assessments (`records.html`).
 
 ```js
 async function loadRecordsPage(): Promise<void>
@@ -458,7 +331,9 @@ function filterAndRenderRecords(records): void
 
 ---
 
-## 7. Shared LCIA Utilities — `public/functions/lcia-utils.js`
+## 9. Shared LCIA Utilities — `public/functions/lcia-utils.js`
+
+
 
 Exposed as `window.LciaUtils`. Loaded before page-specific scripts. Use `LciaUtils.functionName()`.
 
@@ -500,7 +375,9 @@ LciaUtils.normalizeRecord(record): object | null
 
 ---
 
-## 8. Legacy localStorage Helpers — `public/functions/local storage.js`
+## 10. Legacy localStorage Helpers — `public/functions/local storage.js`
+
+
 
 Global functions (no namespace). Used only for legacy chat history persistence.
 
@@ -512,7 +389,9 @@ function addMessage(header, message): void // Append message to a conversation h
 
 ---
 
-## 9. Auth Flow (Client-Side)
+## 11. Auth Flow (Client-Side)
+
+
 
 ```
 1. User visits welcome.html → clicks Login/Register → login.html
@@ -529,7 +408,9 @@ function addMessage(header, message): void // Append message to a conversation h
 
 ---
 
-## 10. Flask Integration (Frontend ↔ Backend)
+## 12. Flask Integration (Frontend ↔ Backend)
+
+
 
 ### Backend URL Injection
 `server.js` serves `/config.js` which sets `window.FLASK_BASE` from `process.env.FLASK_BASE`. All pages use this global before falling back to `'http://localhost:5052'`.
@@ -545,7 +426,20 @@ function addMessage(header, message): void // Append message to a conversation h
 7. On status="done": normalizeAnswerPackToResult(answer_pack, form) → save record
 ```
 
+### Workbench Job Flow
+```
+1. workbench.js builds value-chain payload from Construction form + nodes
+2. POST {FLASK_BASE}/api/jobs {mode:"workbench_lca", workbench_payload: payload}
+3. Poll GET {FLASK_BASE}/api/jobs/:jobId for logs/status
+4. On done: normalize answer_pack to LCIA object
+5. Persist to:
+   - /api/lca-records (source="workbench")
+   - /api/workbench/history (includes lcaRecordId linkage)
+6. Redirect to /past_lca_results.html?recordId=<savedRecordId>&from=workbench
+```
+
 ### `answer_pack` → `record.result` Mapping
+
 | `answer_pack` field | `record.result` field | Notes |
 |---|---|---|
 | `answer` | `answer` | Markdown narrative string |
@@ -562,7 +456,9 @@ function addMessage(header, message): void // Append message to a conversation h
 
 ---
 
-## 11. Key Conventions & Invariants
+## 13. Key Conventions & Invariants
+
+
 
 ### LocalStorage Keys (Full LCA)
 | Key | Type | Contents |
@@ -596,7 +492,16 @@ Do **not** change this format without updating `input_q_to_json` in the backend.
 ### Markdown Rendering
 Pages load `js lib/markdown-it.min.js` locally. The `md` instance is created as `markdownit()` with default settings. Do not add external CDN references — all libraries are bundled.
 
+### Navigation Order Convention
+Left navigation is standardized across authenticated pages as:
+1. Chat
+2. Full LCA Report
+3. Workbench
+4. Past LCA Results
+5. Settings
+
 ### Security Notes
 - JWT signature is verified **server-side only** (`verifyToken` in `server.js`). Client-side `_jwtExpired` is a UX convenience only.
 - `helmet()` is applied with custom CSP. When adding new external resources, update the `contentSecurityPolicy` directives in `server.js`.
 - All API routes that modify user data require `verifyToken` middleware. Never add write endpoints without it.
+

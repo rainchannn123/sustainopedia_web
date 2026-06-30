@@ -210,13 +210,15 @@
 
         if (!data || !Array.isArray(data.processes) || !data.processes.length) return null;
 
-        return {
+                return {
             ...record,
             product: record.product || 'Unknown Product',
+            source: record.source || 'chat',
             timestamp: record.timestamp || new Date().toISOString(),
             carbonEmission: toNumber(record.carbonEmission) || toNumber(data.totalMeanImpact),
             data
         };
+
     }
 
     // ─── Export ───────────────────────────────────────────────────────────────
