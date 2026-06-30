@@ -1,4 +1,4 @@
-.records-header-top {
+﻿.records-header-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -52,7 +52,6 @@
   cursor: pointer;
   transition: var(--transition);
 }
-
 
 .lca-back-btn {
   border: none;
@@ -156,7 +155,7 @@
 }
 
 .question-card {
-  /* background: #fff; */
+  
   background: #F3F1E9;
   border-radius: 2px;
   padding: 12px;
@@ -201,12 +200,12 @@
 .question-card select {
   width: 100%;
   border: none;
-  /* border-radius: 8px; */
+  
   padding: 10px 11px;
   font-family: inherit;
   font-size: 0.85rem;
   margin-bottom: 8px;
-  /* background-color: #94bfa668; */
+  
   background-color: #E0DDD3;
 }
 
@@ -246,7 +245,7 @@
   border: 1px solid var(--border-color);
   border-radius: 9999px;
   padding: 6px 12px;
-  /* background: #fff; */
+  
   background: #F3F1E9;
   color: var(--text-primary);
   font-family: inherit;
@@ -484,10 +483,8 @@
   background: rgba(48,92,66,0.22);
 }
 
-
-/* History cards */
 .lca-history-card {
-  /* background: #fff; */
+  
   background: #F3F1E9;
   border: 1px solid var(--border-color);
   border-radius: 10px;
@@ -500,7 +497,7 @@
 }
 
 .lca-history-card:hover {
-  /* box-shadow: 0 8px 15px rgba(45, 106, 79, 0.2); */
+  
   box-shadow: 0 8px 15px rgba(7, 46, 27, 0.2);
   transform: translateY(-2px);
 }
@@ -572,7 +569,6 @@
   background: #fff6f6;
 }
 
-/* Results report */
 .lca-results-report {
   display: flex;
   flex-direction: column;
@@ -580,7 +576,7 @@
 }
 
 .lca-results-header {
-  /* background: #fff; */
+  
   background: #F3F1E9;
   border: 1px solid var(--border-color);
   border-radius: 10px;
@@ -622,7 +618,7 @@
 }
 
 .lca-kpi-card {
-  /* background: #fff; */
+  
   background: #F3F1E9;
   border: 1px solid var(--border-color);
   border-radius: 10px;
@@ -657,7 +653,7 @@
 }
 
 .lca-chart-card {
-  /* background: #fff; */
+  
   background: #F3F1E9;
   border: 1px solid var(--border-color);
   border-radius: 10px;
@@ -681,7 +677,7 @@
 }
 
 .lca-results-table-wrap {
-  /* background: #fff; */
+  
   background: #F3F1E9;
   border: 1px solid var(--border-color);
   border-radius: 10px;
@@ -697,7 +693,7 @@
 .lca-results-table th,
 .lca-results-table td {
   text-align: left;
-  /* border-bottom: 1px solid #e8efea; */
+  
   border-bottom: 1px solid #D4D1C6;
   padding: 9px 8px;
 }
@@ -709,16 +705,11 @@
   letter-spacing: 0.03em;
 }
 
-
-/* ══════════════════════════════════════════════════════════════════════════════
-   Record Detail Overlay — full-screen view
-══════════════════════════════════════════════════════════════════════════════ */
-
 .record-detail-overlay {
     position: absolute;
     inset: 0;
     z-index: 500;
-    /* background: #f0faf4; */
+    
     background: #E8E6DD;
     display: flex;
     flex-direction: column;
@@ -730,7 +721,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px 28px;
-    /* background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%); */
+    
     background: linear-gradient(135deg, #072E1B 0%, #305C42 100%);
     color: white;
     flex-shrink: 0;
@@ -791,7 +782,7 @@
 .detail-body::-webkit-scrollbar-thumb:hover { background: #305C42; }
 
 .detail-section {
-    /* background: white; */
+    
     background: #F3F1E9;
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
@@ -800,13 +791,13 @@
 }
 
 .detail-section-title {
-    /* color: #2d6a4f; */
+    
     color: #305C42;
     font-size: 1rem;
     font-weight: 700;
     margin: 0 0 14px 0;
     padding-bottom: 8px;
-    /* border-bottom: 2px solid #d8f3dc; */
+    
     border-bottom: 2px solid #C8C5BA;
 }
 
@@ -836,45 +827,42 @@
     box-sizing: border-box;
 }
 
-/* Summary card */
 .detail-summary {
     text-align: center;
     padding: 28px 24px;
-    /* background: linear-gradient(135deg, #d8f3dc 0%, #b7e4c7 100%); */
+    
     background: linear-gradient(135deg, #E8E6DD 0%, #D4D1C6 100%);
 }
 
 .detail-emission-value {
     font-size: 2.4rem;
     font-weight: 800;
-    /* color: #1b4332; */
+    
     color: #072E1B;
     letter-spacing: -0.02em;
 }
 
 .detail-emission-label {
     font-size: 0.9rem;
-    /* color: #2d6a4f; */
+    
     color: #305C42;
     margin-top: 6px;
     font-weight: 500;
 }
 
-/* Query block */
 .detail-query-text {
     font-size: 0.95rem;
     color: var(--text-primary);
     line-height: 1.6;
-    /* background: #f8f9fa; */
+    
     background: #F3F1E9;
-    /* border-left: 4px solid #40916c; */
+    
     border-left: 4px solid #305C42;
     padding: 10px 14px;
     border-radius: 4px;
     font-style: italic;
 }
 
-/* AI response block */
 .detail-answer-text {
     font-size: 0.92rem;
     color: var(--text-primary);
@@ -885,7 +873,6 @@
 .detail-answer-text ul,
 .detail-answer-text ol { margin: 0 0 10px; padding-left: 22px; }
 
-/* Detail chart */
 .detail-chart-container {
     width: 100%;
     height: 440px;
@@ -909,8 +896,6 @@
     height: 100% !important;
 }
 
-
-/* Assessment Inputs — grouped card layout */
 .form-inputs-section {
     padding: 16px 20px 20px !important;
 }
@@ -986,7 +971,6 @@
     font-style: italic;
 }
 
-/* Legacy grid — kept for any older code paths */
 .form-inputs-grid {
     display: grid;
     grid-template-columns: 160px 1fr;
@@ -1022,7 +1006,6 @@
     word-break: break-word;
 }
 
-/* LCIA table */
 .detail-table-wrapper {
     overflow-x: auto;
     border-radius: 6px;
@@ -1035,7 +1018,7 @@
 }
 
 .lcia-detail-table th {
-    /* background: #2d6a4f; */
+    
     background: #305C42;
     color: white;
     padding: 10px 12px;
@@ -1046,7 +1029,7 @@
 
 .lcia-detail-table td {
     padding: 7px 10px;
-    /* border-bottom: 1px solid #e9ecef; */
+    
     border-bottom: 1px solid #D4D1C6;
     color: var(--text-primary);
     word-break: break-word;
@@ -1058,16 +1041,15 @@
 }
 
 .lcia-total-row td {
-    /* background: #d8f3dc !important; */
+    
     background: #E0DDD3 !important;
-    /* color: #1b4332; */
+    
     color: #072E1B;
     font-weight: 700;
-    /* border-top: 2px solid #40916c; */
+    
     border-top: 2px solid #305C42;
 }
 
-/* Footer */
 .detail-footer {
     display: flex;
     justify-content: flex-end;
@@ -1264,7 +1246,6 @@
     gap: 10px;
 }
 
-
 .scope-report-preview-toolbar {
     display: flex;
     justify-content: flex-end;
@@ -1340,8 +1321,6 @@
   gap: 5px;
 }
 
-
-/* ============ Records Page Styles ============ */
 .records-header {
     padding: 20px 24px;
     border-bottom: 1px solid var(--border-color);
@@ -1479,9 +1458,6 @@
     color: #14532d;
 }
 
-
-
-
 .record-date {
     font-size: 0.85rem;
     color: var(--text-secondary);
@@ -1492,11 +1468,11 @@
     width: 60%;
     height: 100%;
     margin-top: 8px;
-    /* border: 1.5px solid #e2e8f0; */
+    
     border: 1.5px solid #C8C5BA;
     border-radius: 10px;
     padding: 8px;
-    /* background: #fff; */
+    
     background: #F3F1E9;
     box-sizing: border-box;
     overflow: hidden;
@@ -1507,11 +1483,11 @@
     width: 40%;
     height: 100%;
     margin-top: 8px;
-    /* border: 1.5px solid #e2e8f0; */
+    
     border: 1.5px solid #C8C5BA;
     border-radius: 10px;
     padding: 8px;
-    /* background: #fff; */
+    
     background: #F3F1E9;
     box-sizing: border-box;
 }
@@ -1540,28 +1516,28 @@
 }
 
 .btn-small.download {
-    /* background: linear-gradient(135deg, var(--bg-secondary) 0%, #40916c 100%); */
+    
     background: #305C42;
     color: white;
     border-color: var(--bg-secondary);
 }
 
 .btn-small.download:hover {
-    /* background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%); */
+    
     background: #305C42;
     cursor: pointer;
 }
 
 .btn-small.view {
-    /* background: linear-gradient(135deg, #52b788 0%, #74c69d 100%); */
+    
     background: #305C42;
     color: white;
-    /* border-color: #52b788; */
+    
     border-color: #305C42;
 }
 
 .btn-small.view:hover {
-    /* background: linear-gradient(135deg, #40916c 0%, #52b788 100%); */
+    
     background: #305C42;
     cursor: pointer;
 }
@@ -1581,8 +1557,6 @@
     position: relative;
     overflow: hidden;
 }
-
-/* ── Record card sub-elements ─────────────────────────────────────────────── */
 
 .record-info {
     display: flex;
@@ -1628,8 +1602,6 @@
     font-weight: 600;
 }
 
-
-
 @media (max-width: 1150px) {
   .lca-form-grid {
     grid-template-columns: 1fr;
@@ -1656,7 +1628,6 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-
 
 @media (max-width: 760px) {
   .lca-form-scroll,
@@ -1709,18 +1680,12 @@
   }
 }
 
-
-/* ══════════════════════════════════════════════════════════════════════════════
-   Results + Chat split layout
-══════════════════════════════════════════════════════════════════════════════ */
-
 .lca-results-with-chat {
     display: flex;
     height: 100%;
     overflow: hidden;
 }
 
-/* Left pane — LCA results scroll area */
 .lca-results-pane {
     flex: 0 0 67%;
     display: flex;
@@ -1736,7 +1701,6 @@
     padding: 16px 20px;
 }
 
-/* Right pane — contextual chat */
 .lca-results-chat-pane {
     flex: 1;
     display: flex;
@@ -1775,7 +1739,6 @@
 }
 .results-chat-window::-webkit-scrollbar-thumb:hover { background: #305C42; }
 
-/* Chat messages inside the results panel */
 .results-chat-window .message {
     max-width: 88%;
     animation: msgIn 0.25s ease-out;
@@ -1842,7 +1805,6 @@
     30%            { transform: translateY(-5px); opacity: 1;   }
 }
 
-/* Input bar at the bottom of the chat pane */
 .results-chat-form {
     display: flex;
     align-items: flex-end;
@@ -1915,7 +1877,6 @@
     }
 }
 
-/* Past LCA Results: compact list-style history rows */
 .past-results-page .records-container {
     display: flex;
     flex-direction: column;

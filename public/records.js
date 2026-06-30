@@ -1,4 +1,4 @@
-﻿// Records page — requires shared.js (checkAuth, apiReq globals)
+// Records page — requires shared.js (checkAuth, apiReq globals)
 
 // Global registry of Chart.js instances so they can be properly destroyed
 const charts = {};

@@ -1,9 +1,4 @@
-/**
- * mobile-check.js
- * Runs synchronously in <head> before any content renders.
- * Redirects mobile-sized viewports to the unsupported page.
- * Safe to include on every page — skips itself on the target page.
- */
+// Redirect mobile-sized viewports to the unsupported page before render.
 (function () {
     'use strict';
 

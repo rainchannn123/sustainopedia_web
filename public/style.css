@@ -1,31 +1,16 @@
-:root {
-    /* ── Old color palette ───────────────────────────────────────────────── */
-    /* --bg-primary: #ffffff; */
-    /* --bg-secondary: #446656; */
-    /* --bg-tertiary: #8ecaaf; */
-    /* --text-primary: #1b4332; */
-    /* --text-secondary: #005e32; */
-    /* --text-tertiary: #f6fff8; */
-    /* --border-color: #789f86; */
-    /* --user-msg-bg: #40916c; */
-    /* --btn-bg: #eef6f1; */
-    /* --btn-hover: #d8f3dc; */
-    /* --btn-primary-bg: #2d6a4f; */
-    /* --btn-primary-hover: #1b4332; */
-
-    /* ── New color palette ───────────────────────────────────────────────── */
-    --bg-primary: #E8E6DD;          /* page background */
-    --bg-secondary: #305C42;        /* nav bars, headers */
-    --bg-tertiary: #8AAD9A;         /* active state, highlight */
-    --text-primary: #072E1B;        /* primary text */
-    --text-secondary: #305C42;      /* secondary text / icons */
-    --text-tertiary: #F3F1E9;       /* chat box / light surfaces */
-    --border-color: #b8b5ac;        /* borders */
-    --user-msg-bg: #305C42;         /* user chat bubble */
-    --btn-bg: #F3F1E9;              /* button / input background */
-    --btn-hover: #E0DDD3;           /* button hover */
-    --btn-primary-bg: #305C42;      /* primary button */
-    --btn-primary-hover: #072E1B;   /* primary button hover */
+﻿:root {
+    --bg-primary: #E8E6DD;          
+    --bg-secondary: #305C42;        
+    --bg-tertiary: #8AAD9A;         
+    --text-primary: #072E1B;        
+    --text-secondary: #305C42;      
+    --text-tertiary: #F3F1E9;       
+    --border-color: #b8b5ac;        
+    --user-msg-bg: #305C42;         
+    --btn-bg: #F3F1E9;              
+    --btn-hover: #E0DDD3;           
+    --btn-primary-bg: #305C42;      
+    --btn-primary-hover: #072E1B;   
 
     --shadow-sm: 0 4px 5px 0 rgba(0, 0, 0, 0.1);
     --radius: 8px;
@@ -57,9 +42,9 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 
 .left-nav {
     width: 240px;
-    /* background: #f8f8f8; */
+    
     background: #e2e1d7;
-    /* border-right: 1px solid var(--border-color); */
+    
     display: flex;
     flex-direction: column;
 }
@@ -87,7 +72,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     font-weight: 600;
 }
 
-/* Nav tabs use <a> links — make the anchor fill the tab and strip link styling */
 .left-nav .tab > a {
     display: block;
     width: 100%;
@@ -119,13 +103,11 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     object-fit: contain;
 }
 
-/* ── Chat tab in nav — label + action buttons ─────────────────────────── */
 .nav-chat-tab {
     padding: 0;
     align-items: stretch;
 }
 
-/* override .left-nav .tab > a (display:block / width:100%) for the shared-row design */
 .nav-chat-link {
     flex: 1;
     display: flex;
@@ -168,7 +150,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     font-size: 19px;
 }
 
-/* In-nav conversation history panel */
 .nav-conv-list-item {
     overflow: hidden;
 }
@@ -178,7 +159,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     overflow-y: auto;
     transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     scrollbar-width: none;
-    /* background: rgba(142, 202, 175, 0.14); */
+    
 }
 
 .nav-conv-panel::-webkit-scrollbar { display: none; }
@@ -204,7 +185,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     background: #d5d4cb;
 }
 
-/* Inline rename span inside nav conversation items */
 .conv-name {
     display: block;
     white-space: nowrap;
@@ -220,12 +200,10 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     overflow: visible;
 }
 
-/* Mobile-only top bar — hidden on desktop */
 .mobile-topbar {
     display: none;
 }
 
-/* Username footer pinned to bottom of left nav */
 .nav-user {
     margin-top: auto;
     padding: 14px 20px;
@@ -246,7 +224,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     text-overflow: ellipsis;
 }
 
-/* Main area */
 .main-content {
     flex: 1;
     display: flex;
@@ -303,13 +280,12 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     white-space: nowrap;
 }
 
-/* Dropdown (kept simple) */
 .dropdown {
     display: none;
     position: absolute;
     right: 16px;
     top: 60px;
-    /* background: white; */
+    
     background: #F3F1E9;
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
@@ -335,7 +311,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     margin: 8px 0;
 }
 
-/* Page content */
 .content-wrapper {
     flex: 1;
     overflow: hidden;
@@ -353,7 +328,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     display: flex;
 }
 
-/* Chat layout */
 .chat-header {
     display: flex;
     align-items: center;
@@ -422,11 +396,10 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     border-color: var(--btn-primary-bg);
 }
 
-/* Conversation Picker */
 .conversation-picker-container {
     flex: 1;
     display: flex;
-    /* flex-direction: column; */
+    
     gap: 5px;
     min-width: 200px;
     max-width: 200px;
@@ -465,7 +438,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     transition: background 0.15s, border-color 0.15s;
 }
 
-
 .conversation-title-input:not([readonly]) {
     cursor: text;
 }
@@ -475,7 +447,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     border: none;
     cursor: pointer;
     color: var(--text-primary);
-    /* padding: 4px 8px; */
+    
     transition: var(--transition);
 }
 
@@ -488,7 +460,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     top: 100%;
     left: 0;
     right: 0;
-    /* background: white; */
+    
     background: #F3F1E9;
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
@@ -514,19 +486,18 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     list-style: none;
     padding: 0;
     margin: 0;
-    scrollbar-width: none;    /* Firefox */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    scrollbar-width: none;    
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
 }
 
 .conversation-list::-webkit-scrollbar {
-  display: none;            /* Chrome, Safari */
+  display: none;            
 }
 
 .conversation-list li:last-child {
     border-bottom: none;
 }
-
 
 .current-conversation-title {
     padding: 8px 12px;
@@ -537,10 +508,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     text-overflow: ellipsis;
 }
 
-/* Chat window */
-
-/* Modal for new chat */
-/* New Chat Modal styles removed — modal replaced by direct welcome screen navigation */
 .chat-window {
     flex: 1;
     overflow-y: auto;
@@ -550,7 +517,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     gap: 16px;
     transition: flex 0.4s ease;
     border-bottom: 1px solid transparent;
-    /* Apply a fade mask at the bottom */
+    
     -webkit-mask-image: linear-gradient(to top, transparent 0px, black 20px);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100% 100%;
@@ -559,15 +526,13 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     mask-size: 100% 100%;
 }
 
-/* ── Welcome mode: center greeting and give form a max-width ───────────── */
 #chatbot.welcome-mode .chat-window {
     justify-content: center;
     align-items: center;
-    overflow: visible;  /* must not clip the absolutely-positioned feature-menu popup */
-    gap: 24px;          /* space between greeting and form */
+    overflow: visible;  
+    gap: 24px;          
 }
 
-/* Form is moved inside .chat-window in welcome mode — center + constrain width */
 #chatbot.welcome-mode .chat-window .input-form {
     max-width: 800px;
     width: calc(100% - 48px);
@@ -581,7 +546,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     gap: 5px;
 }
 
-/* Conversation mode — floating card centered at the bottom */
 #chatbot:not(.welcome-mode) > .input-form {
     margin: 0 auto 24px;
     width: calc(100% - 48px);
@@ -640,8 +604,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     line-height: 1.5;
 }
 
-/* ── Input toolbar (feature menu button) ───────────────────────────────── */
-
 .input-toolbar {
     display: none;
 }
@@ -670,12 +632,11 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     height: 15px;
 }
 
-/* Feature menu popup */
 .feature-menu {
     position: absolute;
     bottom: calc(100% + 8px);
     left: 0;
-    /* background: white; */
+    
     background: #F3F1E9;
     border: 1px solid var(--border-color);
     border-radius: 14px;
@@ -709,7 +670,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 }
 
 .feature-menu-item:not(:last-child) {
-    /* border-bottom: 1px solid #eef4f0; */
+    
     border-bottom: 1px solid #E0DDD3;
 }
 
@@ -749,7 +710,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     color: #9ca3af;
 }
 
-/* Mode selector — pill button in the bottom action bar */
 .mode-btn {
     min-width: auto;
     min-height:38px;
@@ -760,7 +720,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     gap: 5px;
     padding: 0 12px;
     border: none;
-    /* background: #eef6f1; */
+    
     background: #F3F1E9;
     border-radius: 20px;
     color: var(--text-primary);
@@ -772,8 +732,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     user-select: none;
 }
 
-
-/* Relative wrapper so .mode-menu pops up correctly */
 .mode-btn-wrapper {
     position: relative;
 }
@@ -784,12 +742,11 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     color: var(--text-secondary);
 }
 
-/* Mode menu popup — mirrors feature-menu but anchored to right edge */
 .mode-menu {
     position: absolute;
     bottom: calc(100% + 8px);
     right: 0;
-    /* background: white; */
+    
     background: #F3F1E9;
     border: 1px solid var(--border-color);
     border-radius: 14px;
@@ -820,9 +777,8 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     cursor: default;
 }
 
-
 .mode-menu-item:not(:last-child) {
-    /* border-bottom: 1px solid #eef4f0; */
+    
     border-bottom: 1px solid #E0DDD3;
 }
 
@@ -830,13 +786,12 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     background: var(--btn-hover);
 }
 
-/* Active mode gets a subtle tint and a check indicator */
 .mode-menu-item.active {
     background: var(--btn-bg);
 }
 
 .mode-menu-item.active::after {
-    content: '✓';
+    content: 'âœ“';
     color: var(--text-secondary);
     font-weight: 700;
     font-size: 0.9rem;
@@ -862,7 +817,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     color: #6b7280;
 }
 
-/* Sample query rows — absolute dropdown, no layout shift */
 .sample-queries {
     position: absolute;
     top: calc(100% + 6px);
@@ -876,7 +830,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     display: flex;
     flex-direction: column;
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
-    /* Slide-down reel animation via max-height transition */
+    
     max-height: 400px;
     opacity: 1;
     transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
@@ -884,7 +838,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
                 box-shadow 0.2s ease;
 }
 
-/* Override [hidden] so CSS transition runs instead of instant display:none */
 .sample-queries[hidden] {
     display: flex !important;
     max-height: 0 !important;
@@ -926,12 +879,9 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     margin-right: 6px;
 }
 
-
-
-/* Input area — Gemini-style floating card */
 .input-form {
     position: relative;
-    /* background: #ffffff; */
+    
     background: #F3F1E9;
     border: none;
     border-radius: 20px;
@@ -948,14 +898,13 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     box-shadow: 0 4px 28px rgba(45, 106, 79, 0.16), 0 2px 8px rgba(0, 0, 0, 0.09);
 }
 
-/* Bottom action bar: product · explore  |  mode · send */
 .input-bottom-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
     padding-top: 8px;
-    /* border-top: 1px solid #edf4ef; */
+    
     border-top: 1px solid #D4D1C6;
     flex-wrap: wrap;
 }
@@ -1076,7 +1025,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     margin-top: 12px;
 }
 
-/* Messages */
 .message {
     max-width: 82%;
     display: flex;
@@ -1107,7 +1055,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     box-shadow: 0 2px 8px rgba(45,106,79,0.18);
 }
 
-/* ── Bot message: avatar + bubble row layout ──────────────────────────── */
 .bot-message {
     align-self: flex-start;
     flex-direction: row;
@@ -1122,46 +1069,15 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     to   { opacity: 1; transform: translateY(0);   }
 }
 
-
-/* .bot-avatar {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    padding-top: 4px;
-}
-
-.bot-avatar img {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    object-fit: contain;
-    background: #f0faf4;
-    border: 1px solid #b7e4c7;
-    padding: 2px;
-}
-
-.bot-avatar-label {
-    font-size: 0.63rem;
-    font-weight: 700;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-} */
-
 .bot-message .message-content {
     flex: 1;
     min-width: 0;
     padding: 14px 18px;
     border-radius: 4px 18px 18px 18px;
-    /* background: #f8fffb;
-    border: 1px solid #d4eddb;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05); */
+    
     line-height: 1.7;
 }
 
-/* ── Typing indicator (bot-typing) ───────────────────────────────────── */
 .bot-typing {
     align-self: flex-start;
     flex-direction: row;
@@ -1206,7 +1122,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     font-family: "Segoe UI", Arial, Helvetica, sans-serif;
 }
 
-/* Markdown table styles (same as before) */
 .markdown-table {
     border-collapse: collapse;
     margin: 16px 0;
@@ -1221,13 +1136,11 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 }
 
 .markdown-table th {
-    /* background: #f1f3f5; */
+    
     background: #E8E6DD;
     font-weight: 600;
 }
 
-
-/* ============ Settings Page Styles ============ */
 .settings-container {
     max-width: 600px;
     margin: 0 auto;
@@ -1241,7 +1154,7 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
 }
 
 .settings-section {
-    /* background: white; */
+    
     background: #F3F1E9;
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
@@ -1290,7 +1203,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     margin-bottom: 0;
 }
 
-/* ============ Utility Classes ============ */
 .btn-text {
     background: none;
     border: none;
@@ -1307,7 +1219,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     border-radius: 6px;
 }
 
-/* ── Shared markdown prose — used in both chat window and records detail ── */
 .bot-message .message-content,
 .bot-message-prose {
     line-height: 1.7;
@@ -1466,8 +1377,6 @@ margin-top: 0.5em !important;
     }
 }
 
-
-/* ── Cursor blink at end of bot typing stream ───────────────────────────── */
 .bot-cursor {
     display: inline-block;
     width: 2px;
@@ -1484,7 +1393,6 @@ margin-top: 0.5em !important;
     50%,100% { opacity: 0; }
 }
 
-/* Compact classification badge shown above each bot response */
 .intent-badge {
     display: inline-flex;
     align-items: center;
@@ -1502,11 +1410,6 @@ margin-top: 0.5em !important;
     white-space: nowrap;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   Mobile navigation utilities — global (active across all screen sizes)
-═══════════════════════════════════════════════════════════════════════════ */
-
-/* Flexbox container for hamburger + page title */
 .top-left {
     display: flex;
     align-items: center;
@@ -1515,7 +1418,6 @@ margin-top: 0.5em !important;
     min-width: 0;
 }
 
-/* Hamburger button — shown only on mobile via media query below */
 .mobile-menu-btn {
     display: none;
     align-items: center;
@@ -1537,7 +1439,6 @@ margin-top: 0.5em !important;
     background: rgba(255, 255, 255, 0.15);
 }
 
-/* Dim overlay that closes the drawer on tap */
 .mobile-nav-overlay {
     display: none;
     position: fixed;
@@ -1560,15 +1461,6 @@ body.nav-open {
     overflow: hidden;
 }
 
-/* Bottom nav bar — removed */
-/* .mobile-bottom-nav {
-    display: none !important;
-} */
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   Responsive — Tablet & Mobile  (≤ 768 px)
-═══════════════════════════════════════════════════════════════════════════ */
-
 @media (max-width: 768px) {
     html, body {
         height: 100%;
@@ -1581,7 +1473,7 @@ body.nav-open {
         height: 100dvh !important;
     }
 
-    /* ── Navigation drawer ──────────────────────────────────────────── */
+    
     .mobile-menu-btn {
         display: flex;
     }
@@ -1603,13 +1495,13 @@ body.nav-open {
         transform: translateX(0);
     }
 
-    /* ── Layout ─────────────────────────────────────────────────────── */
+    
     .main-content {
         width: 100%;
         min-width: 0;
     }
 
-    /* ── Top bar ────────────────────────────────────────────────────── */
+    
     .top-bar {
         padding: 10px 14px;
     }
@@ -1625,10 +1517,9 @@ body.nav-open {
         display: none;
     }
 
-    /* ── Bottom navigation bar ──────────────────────────────────────── */
     
 
-    /* ── Mobile top bar ─────────────────────────────────────────────── */
+    
     .mobile-topbar {
         display: flex;
         align-items: center;
@@ -1643,7 +1534,7 @@ body.nav-open {
         color: white;
     }
 
-    /* ── Chat header ────────────────────────────────────────────────── */
+    
     .chat-header {
         padding: 8px 12px;
         gap: 8px;
@@ -1665,13 +1556,13 @@ body.nav-open {
         flex-shrink: 0;
     }
 
-    /* ── Chat window ────────────────────────────────────────────────── */
+    
     .chat-window {
         padding: 40px 4% 100px;
         border-bottom: 40vw solid white;
     }
 
-    /* ── Messages ───────────────────────────────────────────────────── */
+    
     .message {
         max-width: 95%;
     }
@@ -1680,11 +1571,11 @@ body.nav-open {
         max-width: 98%;
     }
 
-    /* ── Input form ─────────────────────────────────────────────────── */
+    
     .input-form {
         padding: 10px 12px 10px;
         border-radius: 16px;
-        /* padding-bottom: env(safe-area-inset-bottom); */
+        
     }
 
     #chatbot:not(.welcome-mode) > .input-form {
@@ -1725,7 +1616,7 @@ body.nav-open {
         height: 17px;
     }
 
-    /* ── Welcome screen ─────────────────────────────────────────────── */
+    
     .welcome-core-greeting {
         font-size: 1.6rem;
     }
@@ -1740,12 +1631,12 @@ body.nav-open {
         width: calc(100% - 20px);
     }
 
-    /* ── Feature menu ───────────────────────────────────────────────── */
+    
     .feature-menu {
         min-width: 220px;
     }
 
-    /* ── LCIA results table ─────────────────────────────────────────── */
+    
     .lcia-results {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -1755,7 +1646,7 @@ body.nav-open {
         min-width: 560px;
     }
 
-    /* ── Records page ───────────────────────────────────────────────── */
+    
     .records-header {
         padding: 16px 12px;
     }
@@ -1775,7 +1666,7 @@ body.nav-open {
         width: 100%;
     }
 
-    /* ── Settings page ──────────────────────────────────────────────── */
+    
     .settings-container {
         padding: 16px 12px;
     }
@@ -1785,7 +1676,7 @@ body.nav-open {
         min-width: 70vw;
     }
 
-    /* ── Record detail overlay ──────────────────────────────────────── */
+    
     .detail-header {
         padding: 12px 16px;
     }
@@ -1808,21 +1699,17 @@ body.nav-open {
         gap: 8px;
     }
 
-    /* ── Modal ──────────────────────────────────────────────────────── */
+    
     .modal-box {
         width: calc(100% - 32px);
     }
 
-    /* ── User dropdown ──────────────────────────────────────────────── */
+    
     .dropdown {
         right: 8px;
         top: 52px;
     }
 }
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   Responsive — Small phones  (≤ 480 px)
-═══════════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 480px) {
     html, body {
@@ -1858,13 +1745,8 @@ body.nav-open {
 
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   Dark Mode Toggle Button
-═══════════════════════════════════════════════════════════════════════════ */
-
-/* DARK MODE TEMPORARILY DISABLED — button hidden, class never applied */
 .dark-mode-btn {
-    display: none; /* TEMPORARILY DISABLED */
+    display: none; 
     width: 30px;
     height: 30px;
     border: none;
@@ -1895,10 +1777,6 @@ body.nav-open {
     opacity: 0.9;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   Dark Mode — body class applied via JS on toggle
-═══════════════════════════════════════════════════════════════════════════ */
-
 html.dark-mode {
     color-scheme: dark;
 }
@@ -1921,12 +1799,10 @@ html.dark-mode body {
     color: var(--text-primary);
 }
 
-/* Left nav */
 html.dark-mode .left-nav {
     background: #1b2b23;
 }
 
-/* Input floating card */
 html.dark-mode .input-form {
     background: #1d2e26;
     box-shadow: 0 2px 18px rgba(0, 0, 0, 0.45), 0 1px 4px rgba(0, 0, 0, 0.25);
@@ -1946,7 +1822,6 @@ html.dark-mode .mode-btn {
     background: #243530;
 }
 
-/* Popup menus */
 html.dark-mode .feature-menu,
 html.dark-mode .mode-menu,
 html.dark-mode .conversation-list-panel {
@@ -1969,7 +1844,6 @@ html.dark-mode .sample-query-card {
     border-bottom-color: #2b3f33;
 }
 
-/* Muted grey text → softer light-green */
 html.dark-mode .fmenu-text span,
 html.dark-mode .mode-item-text span,
 html.dark-mode .welcome-core-sub,
@@ -1979,7 +1853,6 @@ html.dark-mode .intent-badge {
     color: #7aa88e;
 }
 
-/* Modal */
 html.dark-mode .modal-box {
     background: #1d2e26;
 }
@@ -1994,7 +1867,6 @@ html.dark-mode .modal-box input[type="text"] {
     border-color: #2b3f33;
 }
 
-/* Old conversation picker (legacy) */
 html.dark-mode .conversation-picker-header {
     background: #1d2e26;
     color: var(--text-primary);
@@ -2005,7 +1877,6 @@ html.dark-mode .new-chat-btn {
     color: var(--text-primary);
 }
 
-/* Record cards */
 html.dark-mode .record-card {
     background: #1d2e26;
     border-color: #2b3f33;
@@ -2015,13 +1886,11 @@ html.dark-mode .record-card:hover {
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.45);
 }
 
-/* Settings sections */
 html.dark-mode .settings-section {
     background: #1d2e26;
     border-color: #2b3f33;
 }
 
-/* Record detail overlay */
 html.dark-mode .record-detail-overlay {
     background: #18211c;
 }
@@ -2048,7 +1917,6 @@ html.dark-mode .detail-query-text {
     color: var(--text-primary);
 }
 
-/* LCIA tables */
 html.dark-mode .lcia-detail-table td              { border-bottom-color: #2b3f33; }
 html.dark-mode .lcia-detail-table tbody tr:nth-child(even) td { background: #1b2b23; }
 html.dark-mode .lcia-detail-table tbody tr:hover td           { background: #243530; }
@@ -2058,17 +1926,14 @@ html.dark-mode .lcia-total-row td {
     border-top-color: #40916c;
 }
 
-/* Markdown table */
 html.dark-mode .markdown-table th { background: #243530; color: var(--text-primary); }
 html.dark-mode .markdown-table td { border-color: #2b3f33; }
 
-/* Typing indicator */
 html.dark-mode .bot-typing .message-content {
     background: #1d2e26;
     border-color: #2b3f33;
 }
 
-/* Code blocks */
 html.dark-mode .bot-message .message-content code,
 html.dark-mode .bot-message-prose code {
     background: #d9d7d0;
@@ -2092,8 +1957,6 @@ html.dark-mode .bot-message .message-content table tr td{
     color: var(--text-primary);
 }
 
-
-/* Buttons (records page) */
 html.dark-mode .btn-small {
     background: #1d2e26;
     border-color: #2b3f33;
@@ -2105,7 +1968,6 @@ html.dark-mode .btn-small:hover {
     border-color: var(--text-secondary);
 }
 
-/* Search / sort inputs */
 html.dark-mode .search-input,
 html.dark-mode .sort-select {
     background: #1d2e26;
@@ -2113,7 +1975,6 @@ html.dark-mode .sort-select {
     border: 1px solid #2b3f33;
 }
 
-/* Dropdown */
 html.dark-mode .dropdown {
     background: #1d2e26;
     border-color: #2b3f33;
@@ -2127,7 +1988,6 @@ html.dark-mode .dropdown-item button:hover {
     background: #243530;
 }
 
-/* Dark mode toggle icon — invert to white in dark mode */
 html.dark-mode .dark-mode-icon {
     filter: brightness(0) invert(1);
     opacity: 0.75;
@@ -2137,8 +1997,7 @@ html.dark-mode .dark-mode-btn:hover {
     background: rgba(255, 255, 255, 0.1);
 }
 
-/* Nav conversation history panel background in dark mode */
 html.dark-mode .nav-conv-panel {
     background: rgba(39, 61, 49, 0.45);
 }
-/* END DARK MODE TEMPORARILY DISABLED */
+

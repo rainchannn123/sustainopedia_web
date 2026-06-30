@@ -34,7 +34,6 @@ const state = {
 const SCOPE_KEYS = ['scope1', 'scope2', 'scope3'];
 const scopeReportStateByRecordId = new Map();
 
-
 function createBlankRecord() {
     return {
         id: createId(),
@@ -392,7 +391,6 @@ function createHistoryCard(record) {
     card.className = 'record-card record-card--row';
     card.title = 'Click to view full details';
 
-
     const date    = new Date(record.timestamp);
     const dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
@@ -427,7 +425,6 @@ function createHistoryCard(record) {
 
     card.appendChild(info);
 
-
     const actions = document.createElement('div');
     actions.className = 'record-actions record-actions--row';
     actions.innerHTML = `<span class="record-date">${dateStr} at ${timeStr}</span>`;
@@ -446,7 +443,6 @@ function createHistoryCard(record) {
     card.addEventListener('click', () => openBackendResultsInTab(record));
     return card;
 }
-
 
 // ─── Preview chart (compact, up to 8 bars) ───────────────────────────────────
 
@@ -643,7 +639,6 @@ function openBackendResultsInTab(record) {
 
     const body = document.createElement('div');
     body.className = 'detail-body';
-
 
     // ── 1. Form inputs (always first — lets user review what was submitted) ────
     if (record.form && Object.keys(record.form).length > 0) {
@@ -1281,7 +1276,6 @@ async function _downloadScopePdf(report, record, triggerBtn = null) {
     }
 }
 
-
 function _seedScopeReportFromRecord(record) {
     if (!record?.id) return;
     const persisted = (record.scopeReport && typeof record.scopeReport === 'object') ? record.scopeReport : null;
@@ -1314,8 +1308,6 @@ async function _persistScopeReportForRecord(recordId, scopeReport) {
 
     return body?.scopeReport || scopeReport;
 }
-
-
 
 const SCOPE_LOCATION_DISPLAY_MAP = {
     GLO: 'Global (GLO)',
@@ -1743,7 +1735,6 @@ async function deleteDraftRecord(recordId) {
     await loadBackendHistory();
 }
 
-
 function renderConsole(logs) {
     const body = document.getElementById('lcaConsoleBody');
     if (!body) return;
@@ -2042,7 +2033,6 @@ async function generateResult(e) {
     appendLog('Submitting generation request to backend...');
     appendLog('Average response time is around 15 mins, it will take longer if the no. of Monte Carlo simulations is high. You can safely leave this page and come back later.');
 
-
     let resp;
     try {
         resp = await fetch(`${FLASK_BASE}/api/jobs`, {
@@ -2179,7 +2169,6 @@ async function _onLcaJobDone(answerPack, record, f, question) {
         query:          question,
         answerText:     resultData.answerText || ''
     };
-
 
     appendLog('Saving result to database...');
     let savedId = null;

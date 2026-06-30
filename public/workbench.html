@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,16 +45,14 @@
             <h2 class="wb-title">Workbench</h2>
           </div>
           <!-- Sub-tab switcher -->
-                    <div class="wb-subtabs" role="tablist">
+          <div class="wb-subtabs" role="tablist">
             <button class="wb-subtab active" data-tab="warehouse" role="tab" aria-selected="true">Process Warehouse</button>
             <button class="wb-subtab" data-tab="construction" role="tab" aria-selected="false">Construction</button>
             <button class="wb-subtab wb-subtab--disabled" data-tab="future" role="tab" aria-selected="false" aria-disabled="true" disabled>Coming Soon</button>
           </div>
         </div>
 
-        <!-- ════════════════════════════════════════════════════════════
-             TAB 1: PROCESS WAREHOUSE
-        ════════════════════════════════════════════════════════════ -->
+        
         <div id="tab-warehouse" class="wb-tab-panel active">
           <!-- Maintenance notice -->
           <div class="wh-maintenance-banner" role="status">
@@ -80,9 +80,7 @@
           </div>
         </div>
 
-        <!-- ════════════════════════════════════════════════════════════
-             TAB 2: CONSTRUCTION
-        ════════════════════════════════════════════════════════════ -->
+        
         <div id="tab-construction" class="wb-tab-panel">
 
           <div class="con-layout">
@@ -115,7 +113,7 @@
                   <input type="text" id="conProductName" placeholder="e.g. Crude Steel">
                 </div>
 
-                                <div class="con-field-row">
+                <div class="con-field-row">
                   <div class="con-field">
                     <label for="conFunctionalUnitAmount">Functional Unit Amount</label>
                     <input type="text" id="conFunctionalUnitAmount" placeholder="e.g. 1">
@@ -183,9 +181,7 @@
     </main>
   </div><!-- /.app-container -->
 
-  <!-- ══════════════════════════════════════════════════════════════
-       MODAL: Create / View Process
-  ══════════════════════════════════════════════════════════════ -->
+  
   <div id="processModal" class="wb-modal-overlay" hidden aria-modal="true" role="dialog" aria-labelledby="processModalTitle">
     <div class="wb-modal">
       <div class="wb-modal-header">

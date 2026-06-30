@@ -1,4 +1,5 @@
 
+
 const FLASK_BASE = window.FLASK_BASE || 'http://localhost:5052';
 const POLL_INTERVAL_MS = 2500;
 
@@ -18,12 +19,7 @@ function _stopPolling() {
     sessionStorage.removeItem('pendingJob');
 }
 
-/**
- * Start polling Flask for job completion.
- * @param {string}      jobId           - UUID returned by POST /api/jobs
- * @param {HTMLElement} typingEl        - typing indicator element to remove on completion
- * @param {number|null} extractionTimer - setTimeout handle to clear on completion (may be null)
- */
+// Start polling Flask for job completion.
 function _startPolling(jobId, typingEl, extractionTimer, onMessage) {
     _activeJobId = jobId;
     let _consecutiveNetworkErrors = 0;
@@ -548,7 +544,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         userInput.style.height = Math.min(userInput.scrollHeight, 160) + 'px';
     });
 
-
     // Submit on Enter (Shift+Enter keeps a newline)
     userInput.addEventListener('keydown', (e) => {
         // Ignore IME composition and modified Enter shortcuts
@@ -560,7 +555,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.preventDefault();
         chatForm.requestSubmit();
     });
-
 
     // New chat: go directly to welcome screen
     newChatBtn.addEventListener('click', () => {
@@ -751,7 +745,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return md.render(text);
     }
 
-
     // Build a compact classification badge displayed above each bot response
     function buildIntentBadge(intentParams) {
         if (!intentParams || !intentParams.intent) return null;
@@ -872,7 +865,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (chatting) {
             // ── Persist message to MongoDB ────────────────────────────────────
 
-
             const activeConv = conversations.find(c => c._id === activeConvId);
             if (activeConv && activeConvId) {
                 const serverMsg = {
@@ -919,7 +911,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         return `${year}-${month}-${day} ${hours}:${minutes}`;
     }
-
 
     function sanitizeInput(input) {
         const div = document.createElement('div');
@@ -1061,7 +1052,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-
 // });
     
 // structured renderer
@@ -1106,17 +1096,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 //     chatWindow.appendChild(messageDiv);
 //     chatWindow.scrollTop = chatWindow.scrollHeight;
 // }
-
-
-
-
-
-
-
-
-
-
-
 
     // --- Keep sendQuery function for future backend integration ---
     // // Example: Add this function to send query to backend and display response

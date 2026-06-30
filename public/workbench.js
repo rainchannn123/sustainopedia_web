@@ -1,12 +1,9 @@
-// workbench.js — Workbench feature: Process Warehouse + Construction
+﻿// workbench.js â€” Workbench feature: Process Warehouse + Construction
 
 // Requires shared.js to be loaded first (provides checkAuth() and apiReq()).
 
 'use strict';
 
-/* ══════════════════════════════════════════════════════════════
-   STATE
-══════════════════════════════════════════════════════════════ */
 const WB = {
     activeTab: 'warehouse',
     warehouse: {
@@ -21,13 +18,10 @@ const WB = {
 let _workbenchPollTimer = null;
 let _workbenchActiveJob = null;
 
-
-
-
 let _nodeCounter = 0;
 function nextNodeId() { return ++_nodeCounter; }
 
-// Region → colour-group mapping for card accent borders
+// Region â†’ colour-group mapping for card accent borders
 const REGION_GROUP = {
     // Global
     'GLO': 'global', 'RoW': 'global',
@@ -78,7 +72,7 @@ function _regionGroup(region) {
     return 'other';
 }
 
-// Region code → human-readable display name (fallback: show the raw code)
+// Region code â†’ human-readable display name (fallback: show the raw code)
 const REGION_NAME = {
     'GLO': 'Global',                'RoW': 'Rest of World',
     // Asia
@@ -127,9 +121,6 @@ function _regionName(code) {
     return REGION_NAME[code] || code;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   INIT
-══════════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
     if (!checkAuth()) return;
 
@@ -140,9 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-/* ══════════════════════════════════════════════════════════════
-   SUB-TABS
-══════════════════════════════════════════════════════════════ */
 function _initSubtabs() {
     document.querySelectorAll('.wb-subtab').forEach(btn => {
         if (btn.disabled || btn.getAttribute('aria-disabled') === 'true') return;
@@ -152,7 +140,6 @@ function _initSubtabs() {
         });
     });
 }
-
 
 function _switchTab(tab) {
     WB.activeTab = tab;
@@ -166,10 +153,6 @@ function _switchTab(tab) {
     });
 }
 
-
-/* ══════════════════════════════════════════════════════════════
-   PROCESS WAREHOUSE
-══════════════════════════════════════════════════════════════ */
 function _initWarehouse() {
     const searchInput = document.getElementById('whSearchInput');
     const clearBtn    = document.getElementById('whSearchClearBtn');
@@ -289,10 +272,6 @@ function _buildProcessCard(proc) {
     return card;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   CONSTRUCTION
-══════════════════════════════════════════════════════════════ */
-
 // Add proc to chain: fills last empty node or appends a new one
 function _addProcessToChain(proc) {
     const last = WB.construction.nodes[WB.construction.nodes.length - 1];
@@ -350,7 +329,6 @@ function _initConstruction() {
     _addNode();
     _clearConConsole();
 
-
     addBtn.addEventListener('click', _addNode);
 
         clearBtn.addEventListener('click', () => {
@@ -368,7 +346,6 @@ function _initConstruction() {
         document.getElementById('conNotes').value = '';
         _clearConConsole();
     });
-
 
     form.addEventListener('submit', _handleConSubmit);
 }
@@ -542,7 +519,7 @@ async function _handleConSubmit(e) {
 
     const submitBtn = document.getElementById('conSubmitBtn');
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Running…';
+    submitBtn.textContent = 'Runningâ€¦';
 
     _clearConConsole();
     _appendConLog('Preparing payload from workbench form...', 'info');
@@ -597,7 +574,6 @@ async function _handleConSubmit(e) {
         submitBtn.textContent = 'Run LCA';
     }
 }
-
 
 function _clearConConsole() {
     const log = document.getElementById('conConsoleLog');
@@ -688,7 +664,6 @@ async function _persistWorkbenchRun(payload, answerPack) {
         payload.productName || 'Unknown Product'
     );
 
-
     const carbonEmission = window.LciaUtils.toNumber(
         normalizedLcia?.totalMeanImpact || answerPack?.lcia_table?.totalMeanImpact || 0
     );
@@ -753,11 +728,6 @@ function _routeToPastResults(recordId) {
     window.location.assign(target);
 }
 
-
-/* ══════════════════════════════════════════════════════════════
-   HISTORY
-══════════════════════════════════════════════════════════════ */
-
 function _initHistory() {
     document.getElementById('histRefreshBtn').addEventListener('click', _loadHistory);
 }
@@ -804,9 +774,9 @@ function _renderHistory(records) {
                     <span class="hist-source-badge">${_esc(source)}</span>
                 </div>
                 <div class="hist-card-meta">
-                    ${rec.productName ? 'Product: ' + _esc(rec.productName) + ' &nbsp;·&nbsp; ' : ''}
+                    ${rec.productName ? 'Product: ' + _esc(rec.productName) + ' &nbsp;Â·&nbsp; ' : ''}
                     ${rec.nodes.length} step${rec.nodes.length !== 1 ? 's' : ''}
-                    ${fuText ? ' &nbsp;·&nbsp; FU: ' + _esc(fuText) : ''}
+                    ${fuText ? ' &nbsp;Â·&nbsp; FU: ' + _esc(fuText) : ''}
                 </div>
             </div>
             <div class="hist-card-actions">
@@ -814,7 +784,6 @@ function _renderHistory(records) {
                 <button class="hist-delete-btn" title="Delete record" aria-label="Delete record">&#10005;</button>
             </div>
         `;
-
 
         // Open detail modal
         const openDetail = () => _openHistDetail(rec);
@@ -840,9 +809,6 @@ function _renderHistory(records) {
     });
 }
 
-/* ══════════════════════════════════════════════════════════════
-   MODALS
-══════════════════════════════════════════════════════════════ */
 function _initModals() {
     // Process modal
     const modal        = document.getElementById('processModal');
@@ -855,10 +821,7 @@ function _initModals() {
     modal.addEventListener('click', (e) => { if (e.target === modal) _closeModal(modal); });
     processForm.addEventListener('submit', _handleProcessFormSubmit);
 
-    
-
-
-    // Region select — show custom input when 'others' is chosen
+    // Region select â€” show custom input when 'others' is chosen
     const regionSelect = document.getElementById('pfRegion');
     const regionCustom = document.getElementById('pfRegionCustom');
     regionSelect.addEventListener('change', () => {
@@ -874,7 +837,6 @@ function _initModals() {
         }
     });
 }
-
 
 function _openProcessModal() {
     const modal = document.getElementById('processModal');
@@ -940,7 +902,7 @@ async function _handleProcessFormSubmit(e) {
 
     const submitBtn = e.target.querySelector('[type="submit"]');
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Uploading…';
+    submitBtn.textContent = 'Uploadingâ€¦';
 
     try {
         await apiReq('POST', '/api/workbench/processes', body);
@@ -970,8 +932,8 @@ function _openHistDetail(rec) {
         if (idx > 0) chainHtml += '<div class="hist-detail-arrow"></div>';
         chainHtml += `
             <div class="hist-detail-node">
-                <div class="hist-detail-node-name">${_esc(n.processName || n.processId || '—')}</div>
-                <div class="hist-detail-node-sub">${_esc(n.region || '')}${n.processId ? ' · ' + _esc(n.processId) : ''}</div>
+                <div class="hist-detail-node-name">${_esc(n.processName || n.processId || 'â€”')}</div>
+                <div class="hist-detail-node-sub">${_esc(n.region || '')}${n.processId ? ' Â· ' + _esc(n.processId) : ''}</div>
             </div>`;
     });
     chainHtml += '</div>';
@@ -982,9 +944,9 @@ function _openHistDetail(rec) {
         <div class="hist-detail-layout">
             <div class="hist-detail-main">
                 <div class="hist-detail-grid">
-                    <div class="hist-detail-field"><label>Product Name</label><p>${_esc(rec.productName || '—')}</p></div>
-                    <div class="hist-detail-field"><label>Functional Unit</label><p>${_esc(rec.functionalUnit || `${rec.functionalUnitAmount || ''} ${rec.functionalUnitUnit || ''}`.trim() || '—')}</p></div>
-                    <div class="hist-detail-field"><label>System Boundary</label><p>${_esc(rec.systemBoundary || '—')}</p></div>
+                    <div class="hist-detail-field"><label>Product Name</label><p>${_esc(rec.productName || 'â€”')}</p></div>
+                    <div class="hist-detail-field"><label>Functional Unit</label><p>${_esc(rec.functionalUnit || `${rec.functionalUnitAmount || ''} ${rec.functionalUnitUnit || ''}`.trim() || 'â€”')}</p></div>
+                    <div class="hist-detail-field"><label>System Boundary</label><p>${_esc(rec.systemBoundary || 'â€”')}</p></div>
                     <div class="hist-detail-field"><label>Run At</label><p>${_esc(date)}</p></div>
                     <div class="hist-detail-field"><label>Source</label><p>${_esc(rec.source || 'workbench')}</p></div>
                     <div class="hist-detail-field"><label>Monte Carlo</label><p>${rec.runMc ? `Yes (${_esc(rec.nSimulations || '25')} simulations)` : 'No'}</p></div>
@@ -1014,7 +976,7 @@ function _openHistDetail(rec) {
                     <div class="results-chat-header" style="padding:10px 12px;border-bottom:1px solid var(--border-color);font-weight:700;">SustainOpedia Assistant</div>
                     <div id="histChatWindow" class="hist-chat-window"></div>
                     <form id="histChatForm" class="hist-chat-form">
-                        <textarea id="histChatInput" class="hist-chat-input" rows="1" placeholder="Ask about this result…"></textarea>
+                        <textarea id="histChatInput" class="hist-chat-input" rows="1" placeholder="Ask about this resultâ€¦"></textarea>
                         <button type="submit" class="hist-chat-send">Send</button>
                     </form>
                 </div>
@@ -1039,7 +1001,6 @@ function _openHistDetail(rec) {
     modal.hidden = false;
 }
 
-
 function _renderHistoryDetailTable(lcia) {
     const container = document.getElementById('histDetailTable');
     if (!container) return;
@@ -1059,15 +1020,15 @@ function _renderHistoryDetailTable(lcia) {
                     <th>Process</th>
                     <th>Location</th>
                     <th>Unit</th>
-                    <th>Mean Impact (kg CO₂-eq)</th>
+                    <th>Mean Impact (kg COâ‚‚-eq)</th>
                 </tr>
             </thead>
             <tbody>
                 ${lcia.processes.map(p => `
                     <tr>
-                        <td>${_esc(p.process || '—')}</td>
-                        <td>${_esc(p.location || p.unit_location || '—')}</td>
-                        <td>${_esc(p.unit || p.ref_product || '—')}</td>
+                        <td>${_esc(p.process || 'â€”')}</td>
+                        <td>${_esc(p.location || p.unit_location || 'â€”')}</td>
+                        <td>${_esc(p.unit || p.ref_product || 'â€”')}</td>
                         <td>${window.LciaUtils.toNumber(p.mean_impact).toFixed(3)}</td>
                     </tr>`).join('')}
                 <tr class="lcia-total-row"><td colspan="3"><strong>Total</strong></td><td><strong>${window.LciaUtils.toNumber(lcia.totalMeanImpact).toFixed(3)}</strong></td></tr>
@@ -1092,7 +1053,7 @@ function _renderHistoryDetailChart(lcia) {
     const canvas = document.getElementById('histDetailChart');
     if (!canvas || !lcia || !Array.isArray(lcia.processes) || !lcia.processes.length) return;
 
-    const labels = lcia.processes.map(p => (p.process || '—').slice(0, 24));
+    const labels = lcia.processes.map(p => (p.process || 'â€”').slice(0, 24));
     const values = lcia.processes.map(p => window.LciaUtils.toNumber(p.mean_impact));
     const ctx = canvas.getContext('2d');
     _detailChart = new Chart(ctx, {
@@ -1100,7 +1061,7 @@ function _renderHistoryDetailChart(lcia) {
         data: {
             labels,
             datasets: [{
-                label: 'kg CO₂-eq',
+                label: 'kg COâ‚‚-eq',
                 data: values,
                 backgroundColor: 'rgba(45, 106, 79, 0.72)',
                 borderColor: '#2d6a4f',
@@ -1238,10 +1199,6 @@ function _initHistoryDetailChat(rec, recordId) {
     });
 }
 
-/* ══════════════════════════════════════════════════════════════
-   ECOINVENT BULK IMPORT
-══════════════════════════════════════════════════════════════ */
-
 async function _importEcoinvent() {
     const btn      = document.getElementById('whImportBtn');
     const progress = document.getElementById('whImportProgress');
@@ -1269,7 +1226,7 @@ async function _importEcoinvent() {
 
         for (let i = 0; i < activities.length; i += BATCH_SIZE) {
             const batch = activities.slice(i, i + BATCH_SIZE).map(act => {
-                // Strip the ISIC number prefix ("2011:Manufacture of…" → "Manufacture of…")
+                // Strip the ISIC number prefix ("2011:Manufacture ofâ€¦" â†’ "Manufacture ofâ€¦")
                 let category = act.isic_category || act.ecospold_category || 'General';
                 const colon = category.indexOf(':');
                 if (colon !== -1) category = category.slice(colon + 1).trim();
@@ -1316,13 +1273,6 @@ async function _importEcoinvent() {
     }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   UTILITIES
-══════════════════════════════════════════════════════════════ */
-/**
- * Generate a unique process ID. Uses crypto.randomUUID() where available,
- * falls back to a timestamp + random hex string.
- */
 function _generateId() {
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
         return crypto.randomUUID();

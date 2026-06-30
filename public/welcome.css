@@ -1,23 +1,12 @@
-/* Sustainopedia Welcome Page Styles */
-:root {
-    /* ── Old color palette ───────────────────────────────────────────────── */
-    /* --primary: #1b4332; */
-    /* --secondary: #40916c; */
-    /* --accent: #8ecaaf; */
-    /* --bg: #f6fff8; */
-    /* --white: #fff; */
-    /* --header: #78a892; */
-    /* --gray: #e9ecef; */
-
-    /* ── New color palette ───────────────────────────────────────────────── */
-    --primary: #072E1B;             /* primary text */
-    --secondary: #305C42;           /* icons, buttons, accents */
-    --tertiary: #3c4b41;            /* highlights, secondary accents */
-    --accent: #8AAD9A;              /* highlight / active */
-    --bg: #E8E6DD;                  /* page background */
-    --white: #F3F1E9;               /* card / surface */
-    --header: #305C42;              /* header bar */
-    --gray: #D4D1C6;                /* dividers */
+﻿:root {
+    --primary: #072E1B;             
+    --secondary: #305C42;           
+    --tertiary: #3c4b41;            
+    --accent: #8AAD9A;              
+    --bg: #E8E6DD;                  
+    --white: #F3F1E9;               
+    --header: #305C42;              
+    --gray: #D4D1C6;                
 
     --shadow: 0 4px 24px rgba(64,145,108,0.08);
     --radius: 16px;
@@ -170,7 +159,6 @@ a {
     box-sizing: border-box;
 }
 
-
 .hero {
     justify-content: center;
     text-align: center;
@@ -185,12 +173,12 @@ a {
 }
 .hero-sub {
     font-size: 1.25rem;
-    /* color: #406c5c; */
+    
     color: var(--primary);
     margin-bottom: 32px;
 }
 .get-started-btn {
-    /* background: linear-gradient(90deg, var(--secondary), var(--accent)); */
+    
     background: linear-gradient(90deg, #305C42, #4A7A5A);
     color: var(--white);
     border: none;
@@ -251,7 +239,7 @@ a {
     color: var(--primary);
 }
 .feature-item p {
-    /* color: #406c5c; */
+    
     color: #305C42;
     font-size: 1.01rem;
 }
@@ -268,24 +256,17 @@ a {
 .product p:not(:last-child) {
     margin-bottom: 50px;
 }
-/* section:nth-child(odd) {
-  background-color: var(--bg); 
-}
 
-section:nth-child(even) {
-  background-color: var(--white); 
-} */
 .about p, .product p, .contact p {
-    /* color: #406c5c; */
+    
     color: #305C42;
     font-size: 1.08rem;
     text-align: justify;
 }
 
-
 .welcome-footer {
     background: var(--white);
-    /* color: #789f86; */
+    
     color: #305C42;
     text-align: center;
     padding: 18px 0 12px 0;
@@ -342,3 +323,4 @@ section:nth-child(even) {
         gap: 18px;
     }
 }
+

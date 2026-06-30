@@ -1,9 +1,5 @@
-/* ============================================================
-   workbench.css — Workbench feature styles
-   Inherits design tokens from style.css (:root variables)
-   ============================================================ */
+﻿
 
-/* ── Layout ──────────────────────────────────────────────── */
 .main-content {
   flex: 1;
   min-width: 0;
@@ -20,8 +16,6 @@
   overflow: hidden;
 }
 
-
-/* Maintenance banner */
 .wh-maintenance-banner {
   display: flex;
   align-items: center;
@@ -50,7 +44,6 @@
   to   { transform: rotate(360deg); }
 }
 
-/* ── Top bar ─────────────────────────────────────────────── */
 .wb-topbar {
   display: flex;
   align-items: center;
@@ -76,7 +69,6 @@
   margin: 0;
 }
 
-/* ── Sub-tab switcher ────────────────────────────────────── */
 .wb-subtabs {
   display: inline-flex;
   border: 1px solid rgba(255,255,255,0.28);
@@ -113,8 +105,6 @@
   pointer-events: none;
 }
 
-
-/* ── Tab panels ──────────────────────────────────────────── */
 .wb-tab-panel {
   display: none;
   flex: 1;
@@ -135,7 +125,6 @@
   flex-direction: column;
 }
 
-/* ── Shared button styles ────────────────────────────────── */
 .wb-primary-btn {
   border: none;
   border-radius: 9999px;
@@ -183,7 +172,6 @@
 }
 .wb-danger-btn:hover { background: #c0392b; color: #fff; }
 
-/* ── Empty state ─────────────────────────────────────────── */
 .wh-empty-state {
   display: flex;
   align-items: center;
@@ -199,9 +187,6 @@
   display: none;
 }
 
-/* ════════════════════════════════════════════════════════════
-   PROCESS WAREHOUSE
-════════════════════════════════════════════════════════════ */
 .wh-toolbar {
   display: flex;
   align-items: center;
@@ -247,7 +232,6 @@
   padding: 2px 4px;
 }
 
-/* Import progress bar */
 .wh-import-progress {
   font-size: 0.83rem;
   color: var(--text-secondary);
@@ -259,7 +243,6 @@
   font-weight: 600;
 }
 
-/* Grid of category rows */
 .wh-grid {
   display: flex;
   flex-direction: column;
@@ -267,7 +250,6 @@
   flex: 1;
 }
 
-/* One category row */
 .wh-category-row {}
 
 .wh-category-label {
@@ -292,18 +274,15 @@
 .wh-cards-scroll::-webkit-scrollbar-track { background: transparent; }
 .wh-cards-scroll::-webkit-scrollbar-thumb { background: #C8C5BA; border-radius: 9999px; }
 
-/* Region-group border accent colours — bright & distinct */
-.wh-card[data-rgroup="global"]   { --card-accent: #9aff64; } /* vivid red */
-.wh-card[data-rgroup="asia"]     { --card-accent: #f50057; } /* vivid pink */
-.wh-card[data-rgroup="europe"]   { --card-accent: #ffea00; } /* vivid yellow */
-.wh-card[data-rgroup="americas"] { --card-accent: #ff9100; } /* vivid orange */
-.wh-card[data-rgroup="africa"]   { --card-accent: #00e676; } /* vivid green */
-.wh-card[data-rgroup="mideast"]  { --card-accent: #2979ff; } /* vivid blue */
-.wh-card[data-rgroup="oceania"]  { --card-accent: #7c4dff; } /* vivid purple */
-.wh-card[data-rgroup="russia"]   { --card-accent: #d500f9; } /* vivid violet */
-.wh-card[data-rgroup="other"]    { --card-accent: #9e9e9e; } /* neutral grey */
-
-
+.wh-card[data-rgroup="global"]   { --card-accent: #9aff64; } 
+.wh-card[data-rgroup="asia"]     { --card-accent: #f50057; } 
+.wh-card[data-rgroup="europe"]   { --card-accent: #ffea00; } 
+.wh-card[data-rgroup="americas"] { --card-accent: #ff9100; } 
+.wh-card[data-rgroup="africa"]   { --card-accent: #00e676; } 
+.wh-card[data-rgroup="mideast"]  { --card-accent: #2979ff; } 
+.wh-card[data-rgroup="oceania"]  { --card-accent: #7c4dff; } 
+.wh-card[data-rgroup="russia"]   { --card-accent: #d500f9; } 
+.wh-card[data-rgroup="other"]    { --card-accent: #9e9e9e; } 
 
 .wh-card {
   flex-shrink: 0;
@@ -311,7 +290,7 @@
   background: var(--btn-bg);
   border-radius: 10px;
   border-top: 4px solid var(--card-accent, #7c8fa8);
-  padding: 12px 14px 38px;  /* bottom room for the abs-positioned button */
+  padding: 12px 14px 38px;  
   box-shadow: var(--shadow-sm);
   cursor: default;
   transition: box-shadow 0.15s, transform 0.15s;
@@ -330,7 +309,7 @@
   color: var(--text-primary);
   margin-bottom: 6px;
   line-height: 1.3;
-  /* allow wrapping but limit height */
+  
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -346,7 +325,6 @@
   text-overflow: ellipsis;
 }
 
-/* Category row gets a slightly dimmer text to distinguish long names */
 .wh-card-category span {
   color: var(--text-secondary) !important;
   font-weight: 500 !important;
@@ -381,9 +359,6 @@
   color: #e63946;
 }
 
-/* ════════════════════════════════════════════════════════════
-   CONSTRUCTION
-════════════════════════════════════════════════════════════ */
 .con-layout {
   display: flex;
   flex-direction: column;
@@ -391,7 +366,6 @@
   flex: 1;
 }
 
-/* Chain section */
 .con-chain-section {
   background: var(--btn-bg);
   border: 1px solid var(--border-color);
@@ -412,7 +386,6 @@
   color: var(--text-primary);
 }
 
-/* Horizontal scrollable chain */
 .con-chain-scroll {
   overflow-x: auto;
   padding-bottom: 4px;
@@ -431,7 +404,6 @@
   width: max-content;
 }
 
-/* Node */
 .con-node {
   display: flex;
   flex-direction: column;
@@ -510,7 +482,6 @@
 .con-node-box:hover .con-node-remove { opacity: 1; }
 .con-node-remove:hover { color: #e63946; }
 
-/* Arrow connector between nodes */
 .con-arrow {
   width: 32px;
   height: 2px;
@@ -529,7 +500,6 @@
   border-right: none;
 }
 
-/* Meta form */
 .con-meta-section {
   background: var(--btn-bg);
   border: 1px solid var(--border-color);
@@ -578,16 +548,6 @@
   color: var(--text-primary);
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-
-/* Remove native select rendering so the OS never flashes a dark background */
-/* .con-field select {
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  background-repeat: no-repeat;
-  background-position: right 11px center;
-  padding-right: 30px;
-  cursor: pointer;
-} */
 
 .con-field input[type="text"]:focus,
 .con-field select:focus,
@@ -650,14 +610,12 @@
 .con-console-level-warning { color: #d68910; }
 .con-console-level-success { color: #1e8449; }
 
-
 .con-form-error {
   color: #e63946;
   font-size: 0.82rem;
   margin: 0;
 }
 
-/* Field-level error highlight */
 .con-field--error > input[type="text"],
 .con-field--error > select,
 .con-field--error > textarea,
@@ -685,9 +643,6 @@
   box-shadow: 0 0 0 3px rgba(48,92,66,0.10);
 }
 
-/* ════════════════════════════════════════════════════════════
-   HISTORY
-════════════════════════════════════════════════════════════ */
 .hist-toolbar {
   display: flex;
   align-items: center;
@@ -749,7 +704,6 @@
   color: var(--text-secondary);
 }
 
-
 .hist-card-meta {
   font-size: 0.78rem;
   color: #667;
@@ -781,9 +735,6 @@
 
 .hist-delete-btn:hover { color: #e63946; }
 
-/* ════════════════════════════════════════════════════════════
-   MODAL
-════════════════════════════════════════════════════════════ */
 .wb-modal-overlay {
   position: fixed;
   inset: 0;
@@ -812,7 +763,6 @@
 .wb-modal--wide {
   max-width: min(1080px, 96vw);
 }
-
 
 .wb-modal-header {
   display: flex;
@@ -845,9 +795,6 @@
 
 .wb-modal-close:hover { color: #fff; }
 
-/* ════════════════════════════════════════════════════════════
-   WAREHOUSE  —  Add to Chain button
-════════════════════════════════════════════════════════════ */
 .wh-card-add-btn {
   position: absolute;
   bottom: 8px;
@@ -868,9 +815,6 @@
 .wh-card:hover .wh-card-add-btn { opacity: 1; }
 .wh-card-add-btn:hover { opacity: 0.82; }
 
-/* ════════════════════════════════════════════════════════════
-   CONSTRUCTION  —  filled-node state + header
-════════════════════════════════════════════════════════════ */
 .con-node-box--filled {
   border-color: var(--accent, #305c42);
 }
@@ -882,7 +826,6 @@
   margin-bottom: 6px;
 }
 
-/* Process info inside a filled node */
 .con-node-process {
   display: flex;
   flex-direction: column;
@@ -910,7 +853,6 @@
   letter-spacing: 0.02em;
 }
 
-/* per-group colours shared by warehouse card border AND region badge */
 .con-node-region-badge[data-rgroup="global"]   { background: #00b4fc; }
 .con-node-region-badge[data-rgroup="asia"]     { background: #ff3b30; }
 .con-node-region-badge[data-rgroup="europe"]   { background: #3d6ef5; }
@@ -932,7 +874,6 @@
 }
 .con-node-change:hover { border-color: var(--text-secondary); color: var(--text-primary); }
 
-/* ── Autocomplete search inside an empty node ── */
 .con-node-search-wrap {
   position: relative;
   width: 100%;
@@ -954,13 +895,13 @@
 .con-node-search::placeholder { color: var(--text-secondary); opacity: 0.7; }
 
 .con-node-dropdown {
-  position: fixed;       /* escapes overflow:auto parents */
+  position: fixed;       
   width: 220px;
   background: var(--btn-bg, #1e2130);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-  z-index: 9000;         /* above modals */
+  z-index: 9000;         
   max-height: 260px;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -1024,9 +965,6 @@
   color: var(--text-secondary);
 }
 
-/* ════════════════════════════════════════════════════════════
-   CONSTRUCTION sub-tab badge
-════════════════════════════════════════════════════════════ */
 .wb-tab-badge {
   display: inline-flex;
   align-items: center;
@@ -1044,9 +982,6 @@
   line-height: 1;
 }
 
-/* ════════════════════════════════════════════════════════════
-   TOAST  notification
-════════════════════════════════════════════════════════════ */
 .wb-toast {
   position: fixed;
   bottom: 28px;
@@ -1078,7 +1013,6 @@
   scrollbar-color: #C8C5BA transparent;
 }
 
-/* History detail modal content */
 .hist-detail-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1212,7 +1146,6 @@
   color: var(--text-secondary);
 }
 
-
 .hist-chat-panel {
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -1286,8 +1219,6 @@
   cursor: pointer;
 }
 
-
-/* ── Mobile adjustments ──────────────────────────────────── */
 @media (max-width: 700px) {
   .wb-topbar { flex-wrap: wrap; padding: 10px 14px; gap: 8px; }
   .wb-subtabs { width: 100%; justify-content: stretch; }

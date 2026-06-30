@@ -1,26 +1,13 @@
-/* Login Page Styling - Warm and Bright Green Theme */
-:root {
-    /* ── Old color palette ───────────────────────────────────────────────── */
-    /* --bg-primary: #f8fdfb; */
-    /* --bg-secondary: #2d6a4f; */
-    /* --bg-tertiary: #8ecaaf; */
-    /* --bg-light-green: #d8f3dc; */
-    /* --text-primary: #1b4332; */
-    /* --text-secondary: #048e4e; */
-    /* --text-tertiary: #f6fff8; */
-    /* --border-color: #b7e4c7; */
-    /* --success-color: #40916c; */
-
-    /* ── New color palette ───────────────────────────────────────────────── */
-    --bg-primary: #E8E6DD;          /* page background */
-    --bg-secondary: #305C42;        /* header, primary button */
-    --bg-tertiary: #8AAD9A;         /* highlight */
-    --bg-light-green: #E0DDD3;      /* footer, input bg */
-    --text-primary: #072E1B;        /* primary text */
-    --text-secondary: #305C42;      /* secondary text / links */
-    --text-tertiary: #F3F1E9;       /* light surface / card */
-    --border-color: #C8C5BA;        /* borders */
-    --success-color: #305C42;       /* success */
+﻿:root {
+    --bg-primary: #E8E6DD;          
+    --bg-secondary: #305C42;        
+    --bg-tertiary: #8AAD9A;         
+    --bg-light-green: #E0DDD3;      
+    --text-primary: #072E1B;        
+    --text-secondary: #305C42;      
+    --text-tertiary: #F3F1E9;       
+    --border-color: #C8C5BA;        
+    --success-color: #305C42;       
     --error-color: #e63946;
     --shadow-sm: 0 4px 5px 0 rgba(0, 0, 0, 0.1);
     --shadow-md: 0 10px 25px 0 rgba(45, 106, 79, 0.15);
@@ -45,7 +32,7 @@ html, body {
 
 body {
     font-family: "Segoe UI", Arial, Helvetica, sans-serif;
-    /* background: linear-gradient(135deg, #f8fdfb 0%, #e8f5f0 100%); */
+    
     background: #E8E6DD;
     color: var(--text-primary);
     display: flex;
@@ -209,16 +196,16 @@ body {
 .btn-primary {
     width: 100%;
     padding: 0.9rem;
-    /* background: linear-gradient(135deg, var(--bg-secondary) 0%, #40916c 100%); */
+    
     background: linear-gradient(135deg, #305C42 0%, #4A7A5A 100%);
     color: var(--text-tertiary);
     border: none;
 }
 
 .btn-primary:hover {
-    /* background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%); */
+    
     background: linear-gradient(135deg, #072E1B 0%, #305C42 100%);
-    /* box-shadow: 0 6px 15px rgba(45, 106, 79, 0.3); */
+    
     box-shadow: 0 6px 15px rgba(7, 46, 27, 0.3);
     transform: translateY(-2px);
 }
@@ -314,7 +301,6 @@ body {
     margin: 0;
 }
 
-/* Responsive Design */
 @media (max-width: 480px) {
     .login-card {
         border-radius: 8px;
@@ -338,7 +324,6 @@ body {
     }
 }
 
-/* Success Animation */
 @keyframes successPulse {
     0% {
         transform: scale(1);
@@ -355,3 +340,4 @@ body {
     background: var(--success-color);
     animation: successPulse 0.6s ease;
 }
+
