@@ -3,6 +3,7 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const path = require('path');
+const net = require('net');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
@@ -206,10 +207,50 @@ app.use(cors({ origin: 'https://www.sustainopedia.net' }));
 app.use(express.json({ limit: '10mb' }));
 
 // ── Security helpers ─────────────────────────────────────────────────────────
+function _normalizeIp(rawIp) {
+    if (typeof rawIp !== 'string') return '';
+    let ip = rawIp.trim();
+
+    if (!ip) {
+        return '';
+    }
+
+    if (ip.startsWith('[')) {
+        const closing = ip.indexOf(']');
+        if (closing !== -1) {
+            ip = ip.slice(1, closing);
+        }
+    }
+
+    const zoneIndex = ip.indexOf('%');
+    if (zoneIndex !== -1) {
+        ip = ip.slice(0, zoneIndex);
+    }
+
+    const portOffset = ip.lastIndexOf(':');
+    if (portOffset !== -1 && /^\d+$/.test(ip.slice(portOffset + 1))) {
+        const candidate = ip.slice(0, portOffset);
+        if (net.isIP(candidate)) {
+            ip = candidate;
+        }
+    }
+
+    return net.isIP(ip) ? ip : '';
+}
+
 function _clientIp(req) {
     const fwd = req.headers['x-forwarded-for'];
     if (fwd) return fwd.split(',')[0].trim();
     return req.socket?.remoteAddress || req.ip || '';
+}
+
+function _rateLimitKey(req) {
+    const rawIp = _clientIp(req) || req.headers['x-real-ip'] || req.ip || req.socket?.remoteAddress || '';
+    const normalized = _normalizeIp(rawIp);
+    if (normalized) {
+        return normalized;
+    }
+    return `unknown-${req.method}-${req.path}`;
 }
 
 function logSecurityEvent(type, req, extra = {}) {
@@ -233,6 +274,7 @@ const authRateLimiter = rateLimit({
     max:             20,
     standardHeaders: true,
     legacyHeaders:   false,
+    keyGenerator: _rateLimitKey,
     handler: (req, res) => {
         logSecurityEvent('rate_limited', req, {
             statusCode: 429,
