@@ -519,7 +519,7 @@ async function _handleConSubmit(e) {
 
     const submitBtn = document.getElementById('conSubmitBtn');
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Runningâ€¦';
+    submitBtn.textContent = 'Running...';
 
     _clearConConsole();
     _appendConLog('Preparing payload from workbench form...', 'info');

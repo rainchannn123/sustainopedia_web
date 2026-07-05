@@ -55,10 +55,10 @@
         
         <div id="tab-warehouse" class="wb-tab-panel active">
           <!-- Maintenance notice -->
-          <div class="wh-maintenance-banner" role="status">
+          <!-- <div class="wh-maintenance-banner" role="status">
             <span class="wh-maintenance-icon">&#9881;</span>
             <span>This section is currently under active development. Some features may be limited or unavailable — full functionality will be available in an upcoming release.</span>
-          </div>
+          </div> -->
           <!-- Toolbar: search + import + create -->
           <div class="wh-toolbar">
             <div class="wh-search-wrap">
@@ -246,6 +246,11 @@
           </div>
 
           <div class="con-field">
+            <label for="pfEmissions">Total Emissions (kg CO<sub>2</sub>-eq per tonne)</label>
+            <input type="text" id="pfEmissions" placeholder="e.g 1.39">
+          </div>
+
+          <div class="con-field">
             <label for="pfDescription">Description <span style="font-weight:400;color:#889;">(optional)</span></label>
             <textarea id="pfDescription" rows="3" placeholder="Short description of this process…"></textarea>
           </div>
@@ -254,8 +259,11 @@
 
           <div class="con-form-actions">
             <button type="button" id="processModalCancel" class="wb-secondary-btn">Cancel</button>
-            <button type="submit" class="wb-primary-btn">Upload to Warehouse</button>
+            <button type="submit" id="processModalSubmit" class="wb-primary-btn" disabled>Upload to Warehouse</button>
           </div>
+          <p id="temp-unavailable" hidden>The Process Creation Function is temporarily closed due to ongoing functional updates.</p>
+
+
         </form>
       </div>
     </div>

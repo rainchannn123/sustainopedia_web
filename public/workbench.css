@@ -139,6 +139,22 @@
   white-space: nowrap;
 }
 
+#temp-unavailable {
+  display: block;
+  color: rgb(222, 0, 0);
+  font-size: 13px;
+  padding-top: 5px;
+}
+
+#processModalSubmit {
+  background: grey;
+}
+
+#processModalSubmit:hover {
+  background: grey;
+  cursor:default;
+}
+
 .wb-primary-btn:hover { background: var(--btn-primary-hover); }
 
 .wb-secondary-btn {
@@ -249,8 +265,6 @@
   gap: 24px;
   flex: 1;
 }
-
-.wh-category-row {}
 
 .wh-category-label {
   font-size: 0.78rem;
@@ -681,8 +695,6 @@
   transform: translateY(-1px);
 }
 
-.hist-card-info {}
-
 .hist-card-name {
   font-weight: 700;
   font-size: 0.95rem;
@@ -1011,6 +1023,10 @@
   padding: 20px 22px 22px;
   scrollbar-width: thin;
   scrollbar-color: #C8C5BA transparent;
+}
+
+#processForm div {
+  padding: 5px 0;
 }
 
 .hist-detail-grid {
