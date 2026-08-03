@@ -12,7 +12,7 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
+require("node:dns/promises").setServers(["1.1.1.1", "8.8.8.8"]);
 // Environment variables
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/sustainopedia';
 const JWT_SECRET = process.env.JWT_SECRET || 'NONE';

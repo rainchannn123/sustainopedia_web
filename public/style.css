@@ -95,7 +95,9 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     font-weight: 600;
     border: none;
     height: 90px;
+    text-align: center;
 }
+
 
 .logo-img {
     width: 36px;
