@@ -4,11 +4,15 @@ const helmet = require('helmet');
 const cors = require('cors');
 const path = require('path');
 const net = require('net');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
+
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || '';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -317,6 +321,9 @@ function verifyToken(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
+        if (!decoded.userId || decoded.role === 'admin') {
+            return res.status(401).json({ message: 'Invalid user token' });
+        }
         req.userId = decoded.userId;
         next();
     } catch (error) {
@@ -325,51 +332,97 @@ function verifyToken(req, res, next) {
     }
 }
 
+function verifyAdmin(req, res, next) {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'Admin authentication required' });
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded.role !== 'admin' || decoded.username !== ADMIN_USERNAME || !ADMIN_USERNAME) {
+            return res.status(403).json({ message: 'Admin access required' });
+        }
+        req.adminUsername = decoded.username;
+        next();
+    } catch {
+        res.status(401).json({ message: 'Invalid or expired admin session' });
+    }
+}
+
+function safeSecretEquals(provided, configured) {
+    if (typeof provided !== 'string' || !configured) return false;
+    const providedBytes = Buffer.from(provided);
+    const configuredBytes = Buffer.from(configured);
+    return providedBytes.length === configuredBytes.length && crypto.timingSafeEqual(providedBytes, configuredBytes);
+}
+
 // ============ Authentication Endpoints ============
 
-// Register endpoint
-app.post('/api/auth/register', async (req, res) => {
+// Public self-registration is disabled; accounts are created through the admin API below.
+app.post('/api/auth/register', (req, res) => {
+    res.status(403).json({ message: 'Public registration is disabled' });
+});
+
+app.post('/api/admin/login', authRateLimiter, (req, res) => {
+    if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
+        return res.status(503).json({ message: 'Admin access is not configured on this server' });
+    }
+
+    const { username, password } = req.body || {};
+    if (username !== ADMIN_USERNAME || !safeSecretEquals(password, ADMIN_PASSWORD)) {
+        logSecurityEvent('login_failure', req, { statusCode: 401, username, detail: 'Admin login failed' });
+        return res.status(401).json({ message: 'Invalid username or password' });
+    }
+
+    const token = jwt.sign({ role: 'admin', username: ADMIN_USERNAME }, JWT_SECRET, { expiresIn: '8h' });
+    res.json({ token, username: ADMIN_USERNAME });
+});
+
+app.get('/api/admin/session', verifyAdmin, (req, res) => {
+    res.json({ username: req.adminUsername });
+});
+
+app.post('/api/admin/users', verifyAdmin, async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const body = req.body || {};
+        const username = typeof body.username === 'string' ? body.username.trim() : '';
+        const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+        const password = typeof body.password === 'string' ? body.password : '';
 
-        // Validation
         if (!username || !email || !password) {
-            return res.status(400).json({ message: 'All fields are required' });
+            return res.status(400).json({ message: 'Username, email, and password are required' });
+        }
+        if (username.length < 3 || username.length > 32) {
+            return res.status(400).json({ message: 'Username must be between 3 and 32 characters' });
+        }
+        if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.status(400).json({ message: 'Enter a valid email address' });
+        }
+        const passwordBytes = Buffer.byteLength(password, 'utf8');
+        if (passwordBytes < 8 || passwordBytes > 72) {
+            return res.status(400).json({ message: 'Password must be between 8 and 72 UTF-8 bytes' });
         }
 
-        // Check if user exists
-        const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+        const emailPattern = new RegExp(`^${email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+        const existingUser = await User.findOne({ $or: [{ username }, { email: emailPattern }] });
         if (existingUser) {
-            logSecurityEvent('register_failure', req, { statusCode: 400, username, detail: 'Username or email already exists' });
-            return res.status(400).json({ message: 'Username or email already exists' });
+            return res.status(409).json({ message: 'Username or email already exists' });
         }
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create user
-        const user = new User({
-            username,
-            email,
-            password: hashedPassword
-        });
-
+        const user = new User({ username, email, password: await bcrypt.hash(password, 10) });
         await user.save();
-
-        // Generate token
-        const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: '30d' });
-
-        logSecurityEvent('register_success', req, { statusCode: 201, userId: String(user._id), username: user.username });
-        res.status(201).json({
-            message: 'User registered successfully',
-            token,
-            userId: user._id,
+        logSecurityEvent('register_success', req, {
+            statusCode: 201,
+            userId: String(user._id),
             username: user.username,
-            email: user.email
+            detail: `Created by admin ${req.adminUsername}`
         });
+        res.status(201).json({ message: 'User created successfully', userId: user._id, username: user.username, email: user.email });
     } catch (error) {
-        console.error('Registration error:', error);
-        res.status(500).json({ message: 'Registration failed' });
+        if (error.code === 11000) {
+            return res.status(409).json({ message: 'Username or email already exists' });
+        }
+        console.error('Admin user creation error:', error);
+        res.status(500).json({ message: 'User creation failed' });
     }
 });
 
@@ -616,11 +669,13 @@ app.post('/api/lca-results-chat/:recordId', verifyToken, async (req, res) => {
 // Search / list all processes — no userId filter, visible to every logged-in user
 app.get('/api/workbench/processes', verifyToken, async (req, res) => {
     try {
-        const q     = (req.query.q     || '').trim();
+        const q     = String(req.query.q || '').trim();
         const limit = parseInt(req.query.limit) || 0;   // 0 = no limit
         const filter = {};  // global: not scoped to the requesting user
         if (q) {
-            const re = new RegExp(q, 'i');
+            // Search input is literal text, not a user-supplied regular expression.
+            const escapedQuery = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const re = new RegExp(escapedQuery, 'i');
             filter.$or = [
                 { processName: re },
                 { providerName: re },
@@ -630,7 +685,10 @@ app.get('/api/workbench/processes', verifyToken, async (req, res) => {
                 { unit: re }
             ];
         }
-        let query = WarehouseProcess.find(filter).sort({ createdAt: -1 });
+        let query = WarehouseProcess.find(filter)
+            .select('_id processName processId region unit category providerName createdAt')
+            .sort({ createdAt: -1 })
+            .lean();
         if (limit > 0) query = query.limit(limit);
         const processes = await query;
         res.json(processes);

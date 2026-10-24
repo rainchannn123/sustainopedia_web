@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/mobile-check.js"></script>
+    <title>SustainOpedia - Admin</title>
+    <link rel="icon" type="image/x-icon" href="/static/img/logo.ico">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <main class="admin-shell">
+        <header class="admin-header">
+            <img src="static/img/logo.png" alt="SustainOpedia Logo">
+            <div>
+                <p class="eyebrow">SUSTAINOPEDIA</p>
+                <h1>Account administration</h1>
+            </div>
+        </header>
+
+        <section class="admin-card" id="adminLoginPanel">
+            <h2>Administrator sign in</h2>
+            <p class="intro">Sign in with the administrator credentials configured for this server.</p>
+            <form id="adminLoginForm">
+                <label for="adminUsername">Admin username</label>
+                <input id="adminUsername" name="username" autocomplete="username" required>
+
+                <label for="adminPassword">Admin password</label>
+                <input id="adminPassword" name="password" type="password" autocomplete="current-password" required>
+
+                <button class="primary-button" type="submit">Sign in</button>
+            </form>
+            <p class="status" id="adminLoginStatus" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="admin-card" id="adminUsersPanel" hidden>
+            <div class="panel-heading">
+                <div>
+                    <h2>Register a user</h2>
+                    <p class="intro">New account credentials are securely hashed and saved in MongoDB.</p>
+                </div>
+                <button class="quiet-button" id="adminLogoutButton" type="button">Sign out</button>
+            </div>
+            <p class="signed-in">Signed in as <strong id="signedInAdmin"></strong></p>
+
+            <form id="createUserForm">
+                <label for="newUsername">Username</label>
+                <input id="newUsername" name="username" autocomplete="off" minlength="3" maxlength="32" required>
+
+                <label for="newEmail">Email address</label>
+                <input id="newEmail" name="email" type="email" autocomplete="off" maxlength="254" required>
+
+                <label for="newPassword">Temporary password</label>
+                <input id="newPassword" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required>
+
+                <label for="confirmNewPassword">Confirm password</label>
+                <input id="confirmNewPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="72" required>
+
+                <button class="primary-button" id="createUserButton" type="submit">Create account</button>
+            </form>
+            <p class="status" id="createUserStatus" role="status" aria-live="polite"></p>
+        </section>
+
+        <footer>Administrator access is limited to this session and expires automatically.</footer>
+    </main>
+    <script src="admin.js"></script>
+</body>
+</html>

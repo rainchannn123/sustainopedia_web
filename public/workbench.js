@@ -17,6 +17,8 @@ const WB = {
 
 let _workbenchPollTimer = null;
 let _workbenchActiveJob = null;
+let _warehouseSearchTimer = null;
+let _warehouseRequestId = 0;
 
 let _nodeCounter = 0;
 function nextNodeId() { return ++_nodeCounter; }
@@ -162,13 +164,21 @@ function _initWarehouse() {
 
     searchInput.addEventListener('input', () => {
         clearBtn.hidden = searchInput.value.length === 0;
-        _fetchWarehouse(searchInput.value.trim());
+        clearTimeout(_warehouseSearchTimer);
+        const requestId = ++_warehouseRequestId;
+        const query = searchInput.value.trim();
+        if (!query) {
+            _loadPreview(requestId);
+            return;
+        }
+        _warehouseSearchTimer = setTimeout(() => _fetchWarehouse(query, requestId), 180);
     });
 
     clearBtn.addEventListener('click', () => {
         searchInput.value = '';
         clearBtn.hidden = true;
-        _loadPreview();  // back to preview when search is cleared
+        clearTimeout(_warehouseSearchTimer);
+        _loadPreview(++_warehouseRequestId);  // back to preview when search is cleared
     });
 
     createBtn.addEventListener('click', () => _openProcessModal());
@@ -190,29 +200,35 @@ function _initWarehouse() {
 }
 
 // Search all processes matching query; empty query falls back to preview
-async function _fetchWarehouse(query = '') {
-    if (!query) { _loadPreview(); return; }
+async function _fetchWarehouse(query = '', requestId = ++_warehouseRequestId) {
+    if (!query) { _loadPreview(requestId); return; }
     try {
         const processes = await apiReq('GET', `/api/workbench/processes?q=${encodeURIComponent(query)}`);
+        if (requestId !== _warehouseRequestId) return;
         WB.warehouse.processes = processes;
-        _renderWarehouse(processes);
+        _renderWarehouse(processes, query);
     } catch (err) {
-        console.error('Failed to search warehouse processes:', err);
+        if (requestId === _warehouseRequestId) {
+            console.error('Failed to search warehouse processes:', err);
+        }
     }
 }
 
 // Default view: 20 random processes for each of the top-10 featured regions
-async function _loadPreview() {
+async function _loadPreview(requestId = ++_warehouseRequestId) {
     try {
         const processes = await apiReq('GET', '/api/workbench/processes/preview');
+        if (requestId !== _warehouseRequestId) return;
         WB.warehouse.processes = processes;
         _renderWarehouse(processes);
     } catch (err) {
-        console.error('Failed to load warehouse preview:', err);
+        if (requestId === _warehouseRequestId) {
+            console.error('Failed to load warehouse preview:', err);
+        }
     }
 }
 
-function _renderWarehouse(processes) {
+function _renderWarehouse(processes, query = '') {
     const grid     = document.getElementById('whGrid');
     const emptyMsg = document.getElementById('whEmptyState');
 
@@ -220,6 +236,12 @@ function _renderWarehouse(processes) {
     grid.querySelectorAll('.wh-category-row').forEach(r => r.remove());
 
     if (!processes.length) {
+        const message = emptyMsg.querySelector('p');
+        if (message) {
+            message.textContent = query
+                ? `No activities match "${query}".`
+                : 'No processes yet. Click + Create Process to add your first one.';
+        }
         emptyMsg.hidden = false;
         return;
     }
