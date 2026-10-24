@@ -175,18 +175,10 @@
   font-weight: 700;
 }
 
-.question-header > label:not(.lca-checkbox-label) {
+.question-header > label {
   font-weight: 600;
   flex: 1;
   min-width: 0;
-}
-
-.lca-checkbox-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: #566;
-  font-size: 0.85rem;
 }
 
 .lca-hint {

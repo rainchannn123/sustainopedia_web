@@ -55,7 +55,6 @@ function createBlankRecord() {
             runMc: false,
             nSimulations: '',
             furtherNotes: '',
-            unknowns: {},
             options: {
                 regionMode: 'region'
             }
@@ -71,10 +70,11 @@ function createId() {
 
 function normalizeForm(form) {
     const defaults = createBlankRecord().form;
+    const savedForm = { ...(form || {}) };
+    delete savedForm.unknowns;
     const merged = {
         ...defaults,
-        ...(form || {}),
-        unknowns: {},
+        ...savedForm,
         options: {
             ...defaults.options,
             ...(form?.options || {})
@@ -159,11 +159,6 @@ function fillForm(form) {
 function setValue(id, value) {
     const el = document.getElementById(id);
     if (el) el.value = value || '';
-}
-
-function setChecked(id, checked) {
-    const el = document.getElementById(id);
-    if (el) el.checked = !!checked;
 }
 
 function getGroupActiveValue(groupId) {
@@ -1065,40 +1060,40 @@ function buildFormInputsSection(form) {
     const nSimulations = f.runMc ? clampInt(f.nSimulations, 25, 1, 500) : 1;
     const usePhase = f.lifespan
         ? `${f.lifespan} years`
-        : formatStructuredValue(f.usageRough, f.unknowns?.q6);
+        : formatStructuredValue(f.usageRough);
     const boundaryLabel = BOUNDARY_LABELS[f.systemBoundary] ||
-        formatStructuredValue(f.systemBoundary, f.unknowns?.q8, 'cradle-to-gate');
+        formatStructuredValue(f.systemBoundary, 'cradle-to-gate');
 
     const groups = [
         {
             icon: '📦', label: 'Product',
             fields: [
-                { label: 'Product',         value: formatStructuredValue(f.productDescription, f.unknowns?.q1), wide: true },
+                { label: 'Product',         value: formatStructuredValue(f.productDescription), wide: true },
                 { label: 'Amount',          value: `${amount} ${f.functionalUnitUnit || 'tonne'}` }
             ]
         },
         {
             icon: '🏭', label: 'Materials & Manufacturing',
             fields: [
-                { label: 'Materials',              value: formatStructuredValue(f.materials, f.unknowns?.q3), wide: true },
+                { label: 'Materials',              value: formatStructuredValue(f.materials), wide: true },
                 { label: 'Manufacturing Location', value: REGION_LABELS[f.manufacturingLocation] || formatStructuredValue(f.manufacturingLocation) }
             ]
         },
         {
             icon: '🚚', label: 'Distribution & Use',
             fields: [
-                { label: 'Distribution', value: formatStructuredValue(f.distribution, f.unknowns?.q5), wide: true },
+                { label: 'Distribution', value: formatStructuredValue(f.distribution), wide: true },
                 { label: 'Use Phase',    value: usePhase },
-                { label: 'End of Life',  value: formatStructuredValue(f.endOfLife, f.unknowns?.q7) }
+                { label: 'End of Life',  value: formatStructuredValue(f.endOfLife) }
             ]
         },
         {
             icon: '⚙️', label: 'Assessment Settings',
             fields: [
                 { label: 'System Boundary',      value: boundaryLabel },
-                { label: 'Impact Categories',    value: formatStructuredValue(f.impactCategories, f.unknowns?.q9, 'null') },
+                { label: 'Impact Categories',    value: formatStructuredValue(f.impactCategories, 'null') },
                 { label: 'Simulations',          value: String(nSimulations) },
-                { label: 'Additional Notes',     value: formatStructuredValue(f.furtherNotes, f.unknowns?.q11, 'null'), wide: true }
+                { label: 'Additional Notes',     value: formatStructuredValue(f.furtherNotes, 'null'), wide: true }
             ]
         }
     ];
@@ -2219,7 +2214,7 @@ function bindOptionGroups() {
 }
 
 function bindInputs() {
-    document.querySelectorAll('#assessmentForm textarea, #assessmentForm input[type="text"], #assessmentForm select, #assessmentForm input[type="checkbox"]').forEach(el => {
+    document.querySelectorAll('#assessmentForm textarea, #assessmentForm input[type="text"], #assessmentForm select').forEach(el => {
         el.addEventListener('input', collectAndSaveForm);
         el.addEventListener('change', collectAndSaveForm);
     });
