@@ -1,9 +1,7 @@
 'use strict';
 
 const ADMIN_TOKEN_KEY = 'sustainopediaAdminToken';
-const API_BASE = window.location.hostname === 'localhost'
-    ? 'http://localhost:3000'
-    : window.location.origin;
+let adminAuthGeneration = 0;
 
 const loginPanel = document.getElementById('adminLoginPanel');
 const usersPanel = document.getElementById('adminUsersPanel');
@@ -32,7 +30,8 @@ function showUsersPanel(username) {
 
 async function adminRequest(url, options = {}) {
     const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
-    const response = await fetch(`${API_BASE}${url}`, {
+    const requestGeneration = adminAuthGeneration;
+    const response = await fetch(url, {
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -42,40 +41,50 @@ async function adminRequest(url, options = {}) {
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
+        if ((response.status === 401 || response.status === 403)
+            && requestGeneration === adminAuthGeneration
+            && sessionStorage.getItem(ADMIN_TOKEN_KEY) === token) {
             sessionStorage.removeItem(ADMIN_TOKEN_KEY);
             showLogin('Your administrator session has expired. Sign in again.');
         }
         throw new Error(data.message || 'The request failed.');
+    }
+    if (requestGeneration !== adminAuthGeneration) {
+        throw new Error('Administrator session changed during the request.');
     }
     return data;
 }
 
 loginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
+    const loginGeneration = ++adminAuthGeneration;
+    sessionStorage.removeItem(ADMIN_TOKEN_KEY);
     const button = loginForm.querySelector('button[type="submit"]');
     button.disabled = true;
     setStatus(loginStatus, 'Signing in...');
 
     try {
-        const response = await fetch(`${API_BASE}/api/admin/login`, {
+        const response = await fetch('/api/admin/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                username: document.getElementById('adminUsername').value,
+                username: document.getElementById('adminUsername').value.trim(),
                 password: document.getElementById('adminPassword').value
             })
         });
         const data = await response.json().catch(() => ({}));
+        if (loginGeneration !== adminAuthGeneration) return;
         if (!response.ok) throw new Error(data.message || 'Sign in failed.');
 
         sessionStorage.setItem(ADMIN_TOKEN_KEY, data.token);
         loginForm.reset();
         showUsersPanel(data.username);
     } catch (error) {
-        setStatus(loginStatus, error.message || 'Could not connect to the server.', true);
+        if (loginGeneration === adminAuthGeneration) {
+            setStatus(loginStatus, error.message || 'Could not connect to the server.', true);
+        }
     } finally {
-        button.disabled = false;
+        if (loginGeneration === adminAuthGeneration) button.disabled = false;
     }
 });
 
@@ -111,6 +120,7 @@ createUserForm.addEventListener('submit', async (event) => {
 });
 
 document.getElementById('adminLogoutButton').addEventListener('click', () => {
+    adminAuthGeneration++;
     sessionStorage.removeItem(ADMIN_TOKEN_KEY);
     createUserForm.reset();
     setStatus(createUserStatus, '');

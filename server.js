@@ -9,9 +9,9 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || '';
+const ADMIN_USERNAME = (process.env.ADMIN_USERNAME || '').trim();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 
 const app = express();
