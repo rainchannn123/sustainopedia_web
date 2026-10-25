@@ -1924,3 +1924,166 @@
     }
 }
 
+@media (max-width: 760px) {
+    .records-header.lca-form-topbar {
+        min-width: 0;
+        padding: calc(10px + env(safe-area-inset-top)) 12px 10px;
+    }
+
+    .records-header-top {
+        width: 100%;
+        min-width: 0;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .records-header-top > h2,
+    .records-header-top > #workspaceTitle {
+        flex: 1 1 calc(100% - 112px);
+        min-width: 0;
+        font-size: 1rem;
+        overflow-wrap: anywhere;
+    }
+
+    .records-header-top > .lca-work-tabs {
+        flex: 1 1 100%;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .lca-work-tab {
+        min-height: 44px;
+        flex: 1 0 auto;
+        white-space: nowrap;
+    }
+
+    .lca-form-scroll,
+    .lca-results-scroll {
+        min-width: 0;
+        padding: 12px;
+        overscroll-behavior: contain;
+    }
+
+    .lca-form-container,
+    .question-card,
+    .lca-data-quality {
+        min-width: 0;
+        padding: 10px;
+    }
+
+    .question-card input[type="text"],
+    .question-card select,
+    .question-card textarea {
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .question-card textarea {
+        min-height: 90px;
+    }
+
+    .lca-option-group {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lca-option-btn {
+        min-height: 44px;
+        padding: 8px 10px;
+        overflow-wrap: anywhere;
+    }
+
+    .lca-generate-btn,
+    .lca-secondary-btn,
+    .lca-back-btn {
+        min-height: 44px;
+    }
+
+    .lca-results-with-chat {
+        height: 100%;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .lca-results-pane,
+    .lca-results-chat-pane {
+        min-width: 0;
+        min-height: 0;
+        flex: 1 1 0;
+    }
+
+    .lca-results-pane .lca-results-scroll {
+        padding: 12px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .lca-results-scroll table {
+        min-width: 520px;
+    }
+
+    .results-chat-form {
+        padding: 8px;
+        padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    }
+
+    .results-chat-input {
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .results-chat-send-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .past-results-page .records-header {
+        padding: 12px;
+    }
+
+    .past-results-page .records-container {
+        min-width: 0;
+        padding: 12px;
+    }
+
+    .past-results-page .record-card.record-card--row {
+        width: 100%;
+        min-width: 0;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 420px) {
+    .lca-results-with-chat {
+        overflow-y: auto;
+    }
+
+    .lca-results-pane,
+    .lca-results-chat-pane {
+        flex: 0 0 50%;
+        min-height: 260px;
+    }
+
+    .lca-results-chat-pane {
+        min-height: 220px;
+    }
+
+    .lca-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .lca-quality-bar {
+        border-radius: 10px;
+        flex-direction: column;
+    }
+
+    .lca-quality-complete,
+    .lca-quality-assumptions {
+        min-height: 48px;
+    }
+}
+

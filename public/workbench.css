@@ -1236,13 +1236,175 @@
 }
 
 @media (max-width: 700px) {
-  .wb-topbar { flex-wrap: wrap; padding: 10px 14px; gap: 8px; }
-  .wb-subtabs { width: 100%; justify-content: stretch; }
-  .wb-subtab { flex: 1; text-align: center; padding: 7px 6px; font-size: 0.8rem; }
-  .wb-tab-panel { padding: 14px; }
-  .con-field-row { grid-template-columns: 1fr; }
-    .hist-detail-grid { grid-template-columns: 1fr; }
-  .hist-detail-layout { grid-template-columns: 1fr; }
-  .hist-chat-panel { min-height: 360px; }
+  .wb-topbar {
+    flex-wrap: wrap;
+    padding: calc(8px + env(safe-area-inset-top)) 12px 8px;
+    gap: 8px;
+  }
+
+  .wb-topbar-left {
+    min-width: 0;
+  }
+
+  .wb-title {
+    min-width: 0;
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+  }
+
+  .wb-subtabs {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    justify-content: stretch;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .wb-subtab {
+    flex: 1 0 auto;
+    min-height: 44px;
+    text-align: center;
+    padding: 7px 9px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .wb-tab-panel {
+    min-width: 0;
+    padding: 12px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .wh-toolbar {
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .wh-search-wrap {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  .wh-search-input {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .wh-toolbar > button {
+    min-height: 44px;
+    flex: 1 1 auto;
+  }
+
+  .wb-primary-btn,
+  .wb-secondary-btn,
+  .wb-danger-btn {
+    min-height: 44px;
+  }
+
+  .wh-category,
+  .wh-grid,
+  .wh-cards-scroll {
+    min-width: 0;
+  }
+
+  .wh-cards-scroll {
+    scroll-snap-type: x proximity;
+    padding: 2px 2px 10px;
+    margin: 0 -2px;
+  }
+
+  .wh-card {
+    width: min(78vw, 280px);
+    scroll-snap-align: start;
+  }
+
+  .wh-card-delete,
+  .wh-card-add-btn {
+    opacity: 1;
+  }
+
+  .wh-card-delete {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .wh-card-add-btn {
+    min-height: 40px;
+  }
+
+  .con-chain-section {
+    min-width: 0;
+    padding: 12px;
+  }
+
+  .con-chain-header {
+    gap: 10px;
+  }
+
+  .con-chain-scroll {
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .con-node-box {
+    width: 160px;
+  }
+
+  .con-node-remove {
+    opacity: 1;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .con-field-row,
+  .hist-detail-grid,
+  .hist-detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hist-detail-grid > *,
+  .hist-detail-layout > * {
+    min-width: 0;
+  }
+
+  .hist-chat-panel {
+    min-height: 280px;
+    max-height: 55dvh;
+  }
+
+  .wb-modal-overlay {
+    align-items: flex-end;
+    padding: 8px 8px max(8px, env(safe-area-inset-bottom));
+  }
+
+  .wb-modal,
+  .wb-modal--wide {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 16px);
+    border-radius: 14px 14px 10px 10px;
+  }
+
+  .wb-modal-header {
+    padding: 14px 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .wb-tab-panel {
+    padding: 10px;
+  }
+
+  .wh-toolbar > button {
+    font-size: 0.78rem;
+    padding-inline: 10px;
+  }
+
+  .wh-card {
+    width: min(82vw, 260px);
+  }
 }
 
