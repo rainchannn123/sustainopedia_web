@@ -1703,6 +1703,10 @@
 }
 
 .results-chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
     padding: 11px 16px;
     background: var(--bg-secondary);
     color: rgba(255, 255, 255, 0.92);
@@ -1710,6 +1714,38 @@
     font-weight: 600;
     flex-shrink: 0;
     letter-spacing: 0.02em;
+}
+
+.results-chat-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 9px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.results-chat-toggle:hover,
+.results-chat-toggle:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    outline: 2px solid rgba(255, 255, 255, 0.75);
+    outline-offset: 2px;
+}
+
+.results-chat-toggle svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.18s ease;
 }
 
 .results-chat-window {
@@ -2084,6 +2120,60 @@
     .lca-quality-complete,
     .lca-quality-assumptions {
         min-height: 48px;
+    }
+}
+
+@media (max-width: 760px) {
+    .lca-results-with-chat {
+        height: 100%;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .lca-results-pane {
+        width: 100%;
+        flex: 1 1 0;
+        min-height: 0;
+    }
+
+    .lca-results-chat-pane {
+        width: 100%;
+        flex: 0 0 42%;
+        min-height: 190px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .results-chat-header {
+        min-height: 48px;
+        padding: 4px 10px 4px 14px;
+        flex: 0 0 auto;
+    }
+
+    .results-chat-toggle {
+        display: inline-flex;
+        min-width: 40px;
+        min-height: 40px;
+    }
+
+    .lca-results-with-chat.assistant-collapsed .lca-results-pane {
+        flex: 1 1 auto;
+    }
+
+    .lca-results-with-chat.assistant-collapsed .lca-results-chat-pane {
+        flex: 0 0 auto;
+        min-height: 0;
+        height: auto;
+    }
+
+    .lca-results-with-chat.assistant-collapsed .results-chat-window,
+    .lca-results-with-chat.assistant-collapsed .results-chat-form {
+        display: none;
+    }
+
+    .results-chat-toggle[aria-expanded="false"] svg {
+        transform: rotate(180deg);
     }
 }
 

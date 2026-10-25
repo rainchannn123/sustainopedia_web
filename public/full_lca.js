@@ -2241,11 +2241,19 @@ function bindUI() {
         renderConsole(record.logs);
     });
 
-    ['mobileMenuBtn', 'mobileMenuBtn2'].forEach(id => {
-        document.getElementById(id)?.addEventListener('click', () => {
-            document.querySelector('.left-nav')?.classList.toggle('open');
+    document.querySelectorAll('.results-chat-toggle').forEach(button => {
+        button.addEventListener('click', () => {
+            const layout = button.closest('.lca-results-with-chat');
+            if (!layout) return;
+
+            const expanded = button.getAttribute('aria-expanded') !== 'true';
+            layout.classList.toggle('assistant-collapsed', !expanded);
+            button.setAttribute('aria-expanded', String(expanded));
+            button.setAttribute('aria-label', expanded ? 'Collapse assistant chat' : 'Expand assistant chat');
+            button.title = expanded ? 'Collapse assistant chat' : 'Expand assistant chat';
         });
     });
+
 }
 
 function initializePage() {

@@ -663,7 +663,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentMode = item.dataset.mode;
         // Update button label to reflect the selected mode
         document.getElementById('modeBtnLabel').textContent =
-            currentMode === 'thinking' ? 'Thinking ⮝' : 'General ⮝';
+            currentMode === 'thinking' ? 'Thinking' : 'General';
         // Update active state on menu items
         modeMenuEl.querySelectorAll('.mode-menu-item').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.mode === currentMode);

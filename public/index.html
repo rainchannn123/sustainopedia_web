@@ -32,8 +32,10 @@
                         <button id="newChatBtn" class="nav-icon-btn" title="New conversation">
                             <span class="nav-icon">+</span>
                         </button>
-                        <button id="toggleConversationList" class="nav-icon-btn" title="Conversation history" aria-expanded="false">
-                            <span class="toggle-icon">⮟</span>
+                        <button id="toggleConversationList" class="nav-icon-btn" title="Conversation history" aria-label="Conversation history" aria-expanded="false">
+                            <svg class="conversation-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                                <path d="m3 6 5 5 5-5" />
+                            </svg>
                         </button>
                     </div>
                 </li>
@@ -114,7 +116,10 @@
                                 <!-- Mode button + popup -->
                                 <div class="mode-btn-wrapper">
                                     <button type="button" id="modeMenuBtn" data-mode="fast" class="mode-btn" aria-expanded="false">
-                                        <span id="modeBtnLabel">General ⮝</span>
+                                        <span id="modeBtnLabel">General</span>
+                                        <svg class="mode-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                                            <path d="m3 10 5-5 5 5" />
+                                        </svg>
                                     </button>
                                     <div id="modeMenu" class="mode-menu" hidden>
                                         <button class="mode-menu-item" data-mode="thinking" type="button" disabled>

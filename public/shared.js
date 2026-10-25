@@ -74,17 +74,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Mobile navigation ────────────────────────────────────────────────────
     const leftNav = document.querySelector('.left-nav');
-    const menuBtn = document.getElementById('mobileMenuBtn');
+    const menuButtons = Array.from(document.querySelectorAll('#mobileMenuBtn, #mobileMenuBtn2'));
 
-    if (menuBtn && leftNav) {
-        // Inject semi-transparent overlay that closes the nav when tapped
-        const overlay = document.createElement('div');
-        overlay.className = 'mobile-nav-overlay';
-        document.body.appendChild(overlay);
+    if (menuButtons.length && leftNav) {
+        let overlay = document.querySelector('.mobile-nav-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'mobile-nav-overlay';
+            document.body.appendChild(overlay);
+        }
 
-        const closeNav = () => document.body.classList.remove('nav-open');
-        menuBtn.addEventListener('click', () => document.body.classList.add('nav-open'));
+        const setNavOpen = (isOpen) => {
+            document.body.classList.toggle('nav-open', isOpen);
+            menuButtons.forEach((button) => {
+                button.setAttribute('aria-expanded', String(isOpen));
+                button.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+            });
+        };
+        const closeNav = () => setNavOpen(false);
+
+        menuButtons.forEach((button) => {
+            button.setAttribute('aria-expanded', 'false');
+            button.addEventListener('click', () => {
+                setNavOpen(!document.body.classList.contains('nav-open'));
+            });
+        });
         overlay.addEventListener('click', closeNav);
         leftNav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeNav));
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeNav();
+        });
     }
 });
