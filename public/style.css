@@ -815,16 +815,6 @@ p:hover, li:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     background: var(--btn-bg);
 }
 
-.mode-menu-item.active::after {
-    content: 'âœ“';
-    color: var(--text-secondary);
-    font-weight: 700;
-    font-size: 0.9rem;
-    margin-left: auto;
-    padding-left: 12px;
-    flex-shrink: 0;
-}
-
 .mode-item-text {
     display: flex;
     flex-direction: column;
@@ -2142,6 +2132,30 @@ html.dark-mode .nav-conv-panel {
         width: 100%;
         max-width: 800px;
         padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    }
+
+    .input-bottom-left,
+    .input-bottom-right {
+        width: 100%;
+        min-width: 0;
+        flex-wrap: wrap;
+    }
+
+    .input-bottom-right {
+        position: relative;
+        justify-content: space-between;
+    }
+
+    .mode-btn-wrapper {
+        position: relative;
+    }
+
+    .mode-menu {
+        left: 0;
+        right: auto;
+        width: min(290px, calc(100vw - 24px));
+        min-width: 0;
+        max-width: calc(100vw - 24px);
     }
 
     .message,
