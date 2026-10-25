@@ -954,8 +954,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }, 300);
         }
-        const t1 = setTimeout(() => _setLabel('Fetching Relevant Sources from Database'), 4000);
-        const t2 = setTimeout(() => _setLabel('Generating Response Based on User\'s Query'), 14000);
+        const t1 = setTimeout(() => _setLabel('Fetching Relevant Sources from Database'), 8000);
+        const t2 = setTimeout(() => _setLabel('Generating Response Based on User\'s Query'), 20000);
         messageDiv._labelTimers = [t1, t2];
 
         return messageDiv;
